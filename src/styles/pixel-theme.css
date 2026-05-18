@@ -1,0 +1,251 @@
+/* ═══════════════════════════════════════════════════════════════
+   PIXEL THEME — 마인크래프트 오마주 비주얼 테마
+   ─ 마인크래프트 잔디+흙 블록 배경, 픽셀 애니메이션, 특수 효과
+═══════════════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════════════
+   MINECRAFT 벽돌 블록 텍스처 — GNB + 하단탭 공용
+   격자 모르타르(수직·수평) + 벽돌 상단 하이라이트
+══════════════════════════════════════════════════════════════ */
+.bg-mc-brick {
+  background-color: #2E1206;
+  background-image:
+    /* 벽돌 상단 밝은 면 (Minecraft 블록 입체감) */
+    repeating-linear-gradient(
+      0deg,
+      rgba(220, 130, 60, 0.18) 0px,
+      rgba(220, 130, 60, 0.18) 3px,
+      transparent 3px,
+      transparent 16px
+    ),
+    /* 수평 모르타르 라인 */
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.75) 14px,
+      rgba(0, 0, 0, 0.75) 16px,
+      transparent 16px,
+      transparent 32px
+    ),
+    /* 수직 모르타르 라인 */
+    repeating-linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.75) 30px,
+      rgba(0, 0, 0, 0.75) 32px,
+      transparent 32px,
+      transparent 64px
+    ),
+    /* 벽돌 면 색상 변화 (짝수/홀수 행) */
+    repeating-linear-gradient(
+      0deg,
+      #4A1E08 0px,
+      #4A1E08 16px,
+      #3E1806 16px,
+      #3E1806 32px
+    );
+  background-size:
+    100% 16px,
+    100% 32px,
+    64px 100%,
+    100% 32px;
+}
+
+/* ── 배경 패턴 ─────────────────────────────────────────────── */
+.bg-minecraft {
+  background-color: #5C8A1E;
+  background-image:
+    repeating-linear-gradient(
+      0deg, transparent, transparent 15px,
+      rgba(0,0,0,0.05) 15px, rgba(0,0,0,0.05) 16px
+    ),
+    repeating-linear-gradient(
+      90deg, transparent, transparent 15px,
+      rgba(0,0,0,0.05) 15px, rgba(0,0,0,0.05) 16px
+    );
+}
+
+.bg-login-day {
+  background: linear-gradient(180deg,
+    #87CEEB 0%, #87CEEB 60%,
+    #5C8A1E 60%, #8B5E3C 80%, #8B5E3C 100%);
+}
+
+.bg-login-night {
+  background: linear-gradient(180deg,
+    #1a1a3e 0%, #1a1a3e 60%,
+    #2d4a1a 60%, #3d2a1a 80%, #3d2a1a 100%);
+}
+
+/* ── EXP 바 ──────────────────────────────────────────────── */
+.exp-bar {
+  background: #555;
+  border: 3px solid #1A1A1A;
+  height: 18px;
+}
+.exp-bar-fill {
+  background: linear-gradient(90deg, #43A047, #66BB6A);
+  height: 100%;
+  transition: width 0.5s steps(10);
+  position: relative;
+}
+.exp-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 4px; right: 4px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ── 난이도 블록 배경색 ────────────────────────────────────── */
+.diff-1 { background: #9E9E9E; }
+.diff-2 { background: #43A047; }
+.diff-3 { background: #4FC3F7; }
+.diff-4 { background: #FB8C00; }
+.diff-5 { background: #E53935; }
+
+/* ── 알림 배지 ───────────────────────────────────────────── */
+.notif-badge {
+  background: #E53935;
+  color: white;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 8px;
+  min-width: 18px; height: 18px;
+  border: 2px solid #1A1A1A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   KEYFRAME 애니메이션
+═══════════════════════════════════════════════════════════════ */
+
+/* 캐릭터 통통 */
+@keyframes characterBob {
+  0%, 100% { transform: translateY(0) scaleX(1); }
+  25%      { transform: translateY(-3px) scaleX(1); }
+  75%      { transform: translateY(2px) scaleX(1); }
+}
+/* 곡괭이 채굴 */
+@keyframes characterMine {
+  0%   { transform: rotate(0deg); }
+  25%  { transform: rotate(-20deg); }
+  75%  { transform: rotate(10deg); }
+  100% { transform: rotate(0deg); }
+}
+/* 검 공격 */
+@keyframes characterSword {
+  0%   { transform: rotate(0deg) translateX(0); }
+  30%  { transform: rotate(-45deg) translateX(-4px); }
+  60%  { transform: rotate(30deg) translateX(4px); }
+  100% { transform: rotate(0deg) translateX(0); }
+}
+/* 토스트/팝업 등장 */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* 코인 연출 */
+@keyframes coinDrop {
+  0%   { transform: translateY(-20px); opacity: 0; }
+  60%  { opacity: 1; }
+  100% { transform: translateY(0); opacity: 0; }
+}
+/* 스플래시 줌 */
+@keyframes splashZoom {
+  0%   { opacity: 0; transform: scale(0.3); letter-spacing: -4px; }
+  60%  { opacity: 1; transform: scale(1.08); letter-spacing: 4px; }
+  100% { transform: scale(1); letter-spacing: 2px; }
+}
+@keyframes splashFadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+/* 헤더 로고 shimmer */
+@keyframes logoShimmer {
+  0%, 100% {
+    color: #FFD700;
+    text-shadow: 2px 2px 0 #7B5000, 0 0 8px #FFD700;
+  }
+  40% {
+    color: #FFEE58;
+    text-shadow: 2px 2px 0 #7B5000, 0 0 20px #FFD700, 0 0 40px #FFD700;
+  }
+  70% {
+    color: #FFA000;
+    text-shadow: 2px 2px 0 #5C3000, 0 0 4px #FF6F00;
+  }
+}
+/* 조르기 30초 주기 통통 */
+@keyframes begBounce {
+  0%, 93%   { transform: translateY(0) scale(1); }
+  94%       { transform: translateY(-6px) scale(1.05); }
+  96%       { transform: translateY(0) scale(0.97); }
+  97.5%     { transform: translateY(-3px) scale(1.02); }
+  99%, 100% { transform: translateY(0) scale(1); }
+}
+/* 두근두근 질문 풍선 통통 */
+@keyframes balloonBob {
+  0%, 100% { transform: translateY(0) scale(1); }
+  30%      { transform: translateY(-5px) scale(1.08); }
+  60%      { transform: translateY(2px) scale(0.96); }
+  80%      { transform: translateY(-3px) scale(1.04); }
+}
+/* 모달 하단 슬라이드 업 */
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ── 로그인 로고 전용 ─────────────────────────────────────── */
+
+/* 박스 전체 떠다니기 — 2D 블록 게임 float */
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%      { transform: translateY(-9px); }
+}
+
+/* 글자 개별 파도 — 위아래 bounce */
+@keyframes letterWave {
+  0%, 55%, 100% { transform: translateY(0px) scaleY(1); }
+  25%           { transform: translateY(-9px) scaleY(1.05); }
+  40%           { transform: translateY(-2px) scaleY(0.97); }
+}
+
+/* ── 스플래시 전용 ────────────────────────────────────────── */
+
+/* A. 3D 원근 펄싱 — perspective wrapper 에 적용 */
+@keyframes logoPulse3D {
+  0%, 100% { transform: rotateX(0deg)   rotateY(0deg)  scale(1); }
+  15%      { transform: rotateX(4deg)   rotateY(-3deg) scale(1.06); }
+  35%      { transform: rotateX(-3deg)  rotateY(4deg)  scale(1.09); }
+  55%      { transform: rotateX(3deg)   rotateY(-2deg) scale(1.05); }
+  75%      { transform: rotateX(-2deg)  rotateY(3deg)  scale(1.07); }
+}
+
+/* B. 글로스 shimmer — 박스 내부 오버레이에 적용 */
+@keyframes logoGloss {
+  0%   { transform: translateX(-220%) skewX(-18deg); }
+  100% { transform: translateX(420%)  skewX(-18deg); }
+}
+
+/* C. 보더 glow 펄스 */
+@keyframes borderGlow {
+  0%, 100% { box-shadow: 0 0 20px #FFD700, 0 0 40px rgba(255,215,0,0.25); }
+  50%      { box-shadow: 0 0 40px #FFD700, 0 0 80px rgba(255,215,0,0.45), inset 0 0 20px rgba(255,215,0,0.1); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMATION UTILITY CLASSES
+═══════════════════════════════════════════════════════════════ */
+.animate-character-bob   { animation: characterBob   1s steps(4) infinite; }
+.animate-character-mine  { animation: characterMine  0.6s steps(4) infinite; }
+.animate-character-sword { animation: characterSword 0.5s steps(4) 1 forwards; }
+.animate-fade-slide-up   { animation: fadeSlideUp    0.3s ease-out forwards; }
+.animate-coin-drop       { animation: coinDrop       0.8s steps(6) forwards; }
+.animate-splash-zoom     { animation: splashZoom     1.2s steps(12) forwards; }
+.animate-splash-fadeout  { animation: splashFadeOut  0.4s steps(4) forwards; }
+.animate-logo-shimmer    { animation: logoShimmer    3s ease-in-out infinite; }
+.animate-beg-bounce      { animation: begBounce      30s ease-in-out infinite; }
+.animate-balloon-bob     { animation: balloonBob     2s ease-in-out infinite; }
+.animate-slide-up        { animation: slideUp        0.25s ease-out forwards; }

@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs ls *)",
+      "Bash(firebase deploy *)",
+      "Bash(python -c \"import docx; print\\('python-docx OK'\\)\")",
+      "PowerShell(python3 --version 2>&1)",
+      "PowerShell(python --version 2>&1)",
+      "PowerShell(py --version 2>&1)",
+      "PowerShell(pip install python-docx 2>&1)"
+    ]
+  }
+}

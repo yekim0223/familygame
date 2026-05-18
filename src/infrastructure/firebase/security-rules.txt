@@ -1,0 +1,82 @@
+// Design Ref: §4.2 Firestore 보안 규칙
+// firebase.rules 파일로 복사하여 사용
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isFamilyMember(familyId) {
+      return request.auth != null &&
+        exists(/databases/$(database)/documents/families/$(familyId)/members/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/families/$(familyId)/members/$(request.auth.uid)).data.isActive == true;
+    }
+
+    function getRole(familyId) {
+      return get(/databases/$(database)/documents/families/$(familyId)/members/$(request.auth.uid)).data.role;
+    }
+
+    function isParent(familyId) {
+      return getRole(familyId) in ['DAD', 'MOM'];
+    }
+
+    function isDad(familyId) {
+      return getRole(familyId) == 'DAD';
+    }
+
+    function isOwner(memberId) {
+      return request.auth.uid == memberId;
+    }
+
+    match /families/{familyId} {
+
+      match /settings {
+        allow read: if isFamilyMember(familyId);
+        allow write: if isParent(familyId);
+      }
+
+      match /members/{memberId} {
+        allow read: if isFamilyMember(familyId) || request.auth != null;
+        allow create: if request.auth != null; // 회원가입
+        allow update: if isFamilyMember(familyId) &&
+                      (isOwner(memberId) ||
+                       (isDad(familyId) &&
+                        request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'isActive'])));
+      }
+
+      match /missions/{missionId} {
+        allow read: if isFamilyMember(familyId);
+        allow create: if isParent(familyId);
+        allow update: if isParent(familyId) ||
+                      (getRole(familyId) == 'CHILD' &&
+                       request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'completedBy', 'statusHistory']));
+        allow delete: if isParent(familyId);
+      }
+
+      match /rewards/{rewardId} {
+        allow read: if isFamilyMember(familyId);
+        allow write: if isParent(familyId);
+      }
+
+      match /messages/{messageId} {
+        allow read: if isFamilyMember(familyId);
+        allow create: if isFamilyMember(familyId) &&
+                      (getRole(familyId) != 'OBSERVER' ||
+                       request.resource.data.type == 'CHEER');
+        allow update: if isFamilyMember(familyId) &&
+                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['readBy']);
+      }
+
+      match /notifications/{notifId} {
+        allow read: if isFamilyMember(familyId);
+        allow create: if isFamilyMember(familyId);
+        allow update: if isFamilyMember(familyId) &&
+                      request.auth.uid == resource.data.targetMemberId;
+      }
+
+      match /competition/{yearWeek} {
+        allow read: if isFamilyMember(familyId);
+        allow write: if false; // Cloud Functions만 쓰기 가능
+      }
+    }
+  }
+}

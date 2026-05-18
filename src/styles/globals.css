@@ -1,0 +1,209 @@
+@import './pixel-theme.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════════════
+   BASE RESET
+   ─ DotGothic16는 로그인 대형 타이틀(.font-pixel-kr)만 사용.
+   ─ 모든 인터랙션 요소(input/button/select)는 Pretendard 적용.
+   ─ html 에는 font-size 지정 금지 (rem 단위 전체 바뀜).
+═══════════════════════════════════════════════════════════════ */
+@layer base {
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-grass font-korean text-pixel-dark;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    overscroll-behavior: none;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 인터랙션 요소: Pretendard 고딕 통일 */
+  input, textarea, select, button {
+    font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR',
+                 system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #root {
+    min-height: 100vh;
+    max-width: 428px;
+    margin: 0 auto;
+    position: relative;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENT LAYER — 재사용 클래스
+   ※ @apply 안에는 빌트인 Tailwind 클래스 또는 text-[px] 형태만 사용
+═══════════════════════════════════════════════════════════════ */
+@layer components {
+
+  /* ── 1. 타이포그래피 위계 ─────────────────────────────────── */
+
+  /* 페이지 제목 — h1 (16px bold) */
+  .t-title {
+    @apply font-korean text-base font-bold text-pixel-dark leading-tight;
+  }
+
+  /* 섹션 헤더 — 소제목 (15px bold purple) */
+  .t-heading {
+    @apply font-korean font-bold text-purple;
+    font-size: 15px;
+  }
+
+  /* 본문 — 카드 내 주요 텍스트 (14px) */
+  .t-body {
+    @apply font-korean text-sm text-pixel-dark leading-snug;
+  }
+
+  /* 보조 설명 — 부가 정보 (12px stone) */
+  .t-sub {
+    @apply font-korean text-xs text-stone;
+  }
+
+  /* 마이크로 라벨 — 날짜·태그·상태 (10px stone) */
+  .t-micro {
+    @apply font-korean text-stone;
+    font-size: 10px;
+  }
+
+  /* 픽셀 배지 — Lv.숫자, EXP (8px Press Start 2P) */
+  .t-badge {
+    @apply font-pixel;
+    font-size: 8px;
+  }
+
+  /* ── 2. 버튼 기본 블록 ───────────────────────────────────── */
+
+  /* 픽셀 버튼 베이스 — 폰트·크기는 컴포넌트에서 지정 */
+  .btn-pixel {
+    @apply border-4 border-pixel-dark shadow-pixel
+           active:translate-y-0.5 active:shadow-none
+           transition-none cursor-pointer select-none;
+  }
+
+  /* 전체 너비 액션 버튼 베이스 */
+  .btn-block {
+    @apply w-full py-3 font-korean text-sm font-bold border-4 border-pixel-dark
+           active:translate-y-0.5 transition-all shadow-pixel;
+  }
+  .btn-block-gold {
+    @apply btn-block bg-gold text-pixel-dark border-yellow-600 hover:bg-yellow-400;
+  }
+  .btn-block-purple {
+    @apply btn-block bg-purple text-white border-purple hover:opacity-90;
+  }
+  .btn-block-sky {
+    @apply btn-block bg-sky text-pixel-dark border-sky hover:opacity-90;
+  }
+  .btn-block-danger {
+    @apply btn-block bg-rejected text-white border-red-800 hover:bg-red-600;
+  }
+  .btn-block-ghost {
+    @apply btn-block bg-cream text-pixel-dark border-pixel-dark hover:border-gold;
+  }
+
+  /* ── 3. 입력창 통일 ──────────────────────────────────────── */
+
+  /* 다크 픽셀 입력창 */
+  .input-pixel {
+    @apply w-full bg-pixel-dark text-gold font-korean text-sm
+           border-4 border-pixel-dark px-3 py-2.5
+           focus:outline-none focus:border-gold;
+  }
+  .input-pixel::placeholder { color: rgba(158,158,158,0.6); }
+
+  /* 밝은 배경 입력창 */
+  .input-light {
+    @apply w-full bg-cream text-pixel-dark font-korean text-sm
+           border-4 border-pixel-dark px-3 py-2.5
+           focus:outline-none focus:border-purple;
+  }
+
+  /* ── 4. 카드 ─────────────────────────────────────────────── */
+
+  .card-pixel {
+    @apply bg-cream border-4 border-dirt shadow-pixel;
+  }
+
+  .card-highlight {
+    @apply bg-cream border-4 border-gold;
+    box-shadow: 3px 3px 0px #7B5000;
+  }
+
+  /* ── 5. 상태 배지 태그 ───────────────────────────────────── */
+
+  .badge-base {
+    @apply font-korean font-bold px-1.5 py-0.5 border-2;
+    font-size: 10px;
+  }
+  .badge-active   { @apply badge-base bg-sky text-white border-sky; opacity: 0.85; }
+  .badge-pending  { @apply badge-base bg-hold text-white border-hold; opacity: 0.85; }
+  .badge-approved { @apply badge-base bg-approved text-white border-approved; opacity: 0.85; }
+  .badge-rejected { @apply badge-base bg-rejected text-white border-rejected; opacity: 0.85; }
+  .badge-hold     { @apply badge-base bg-hold text-white border-hold; opacity: 0.85; }
+  .badge-expired  { @apply badge-base bg-stone text-white border-stone; opacity: 0.85; }
+
+  /* ── 6. 말풍선 ───────────────────────────────────────────── */
+
+  .speech-bubble {
+    @apply bg-cream border-4 border-pixel-dark relative;
+  }
+
+  /* ── 7. 인벤토리 슬롯 ────────────────────────────────────── */
+
+  .inventory-slot {
+    @apply w-16 h-16 bg-stone border-4 border-pixel-dark
+           flex items-center justify-center cursor-pointer hover:bg-gray-400;
+  }
+  .inventory-slot.unlocked { @apply bg-cream hover:bg-yellow-50; }
+  .inventory-slot.selected { @apply border-gold bg-yellow-50; }
+
+  /* ── 8. hover 전역 강조 ─────────────────────────────────── */
+
+  .hover-block:hover {
+    outline: 3px solid #FFD700;
+    outline-offset: 1px;
+  }
+
+  /* ── 9. 날짜 구분선 (채팅) ──────────────────────────────── */
+
+  .chat-date-divider {
+    @apply flex items-center gap-2 font-korean text-xs text-stone my-2;
+  }
+  .chat-date-divider::before,
+  .chat-date-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(158, 158, 158, 0.4);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   UTILITIES
+═══════════════════════════════════════════════════════════════ */
+@layer utilities {
+  .border-3 { border-width: 3px; }
+  .border-5 { border-width: 5px; }
+
+  .text-on-dark { @apply text-cream; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+
+  .text-ellipsis-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}

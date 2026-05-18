@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(pdca)",
+      "Skill(pdca:*)",
+      "Skill(bkit:pdca)",
+      "Skill(bkit:pdca:*)",
+      "Bash(npm run *)"
+    ]
+  }
+}
