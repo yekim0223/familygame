@@ -1,39 +1,42 @@
 // Design Ref: §5.3 SCR-22 NotificationsPage — 알림 목록 (중복제거 + 스태킹)
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useNotifications } from '@/presentation/hooks/useNotifications'
 import { useAuthStore } from '@/infrastructure/stores/authStore'
+import { useNotificationStore } from '@/infrastructure/stores/notificationStore'
 import { useMissionStore } from '@/infrastructure/stores/missionStore'
 import { markNotificationRead, markAllNotificationsRead } from '@/infrastructure/firebase/collections/notifications'
 import { subscribeMembers } from '@/infrastructure/firebase/collections/members'
 import { PixelCard } from '@/presentation/components/pixel/PixelCard'
+import { PixelButton } from '@/presentation/components/pixel/PixelButton'
 import type { NotificationType, Notification } from '@/domain/entities/Message'
 import type { Member } from '@/domain/entities/Member'
 
 const NOTIF_ICONS: Record<NotificationType, string> = {
-  MISSION_PENDING:   '⏳',
-  MISSION_APPROVED:  '🎉',
-  MISSION_REJECTED:  '💪',
-  MISSION_HOLD:      '🤔',
-  LEVEL_UP:          '🆙',
-  BEG_RESULT:        '🙏',
-  BEGGING_REQUEST:   '🙏',
-  CHEER:             '💚',
-  NEW_MISSION:       '⚔️',
-  NEW_MESSAGE:       '💌',
+  MISSION_PENDING:    '⏳',
+  MISSION_APPROVED:   '🎉',
+  MISSION_REJECTED:   '💪',
+  MISSION_HOLD:       '🤔',
+  MISSION_CONFIRMED:  '✅',
+  LEVEL_UP:           '🆙',
+  BEG_RESULT:         '🙏',
+  BEGGING_REQUEST:    '🙏',
+  CHEER:              '💚',
+  NEW_MISSION:        '⚔️',
+  NEW_MESSAGE:        '💌',
 }
 
 const NOTIF_LABEL: Record<NotificationType, string> = {
-  MISSION_PENDING:   '완료 신청',
-  MISSION_APPROVED:  '미션 승인',
-  MISSION_REJECTED:  '미션 반려',
-  MISSION_HOLD:      '미션 보류',
-  LEVEL_UP:          '레벨 업',
-  BEG_RESULT:        '조르기 결과',
-  BEGGING_REQUEST:   '조르기 요청',
-  CHEER:             '응원',
-  NEW_MISSION:       '새 퀘스트',
-  NEW_MESSAGE:       '메시지',
+  MISSION_PENDING:    '완료 신청',
+  MISSION_APPROVED:   '미션 승인',
+  MISSION_REJECTED:   '미션 반려',
+  MISSION_HOLD:       '미션 보류',
+  MISSION_CONFIRMED:  '퀘스트 확인',
+  LEVEL_UP:           '레벨 업',
+  BEG_RESULT:         '조르기 결과',
+  BEGGING_REQUEST:    '조르기 요청',
+  CHEER:              '응원',
+  NEW_MISSION:        '새 퀘스트',
+  NEW_MESSAGE:        '메시지',
 }
 
 interface StackedGroup {
@@ -76,7 +79,7 @@ function stackNotifications(notifications: Notification[]): StackedGroup[] {
 
 export default function NotificationsPage() {
   const navigate    = useNavigate()
-  const { notifications }     = useNotifications()
+  const { notifications }     = useNotificationStore()
   const { familyId }          = useAuthStore()
   const { getMissionById }    = useMissionStore()
   const [members, setMembers] = useState<Member[]>([])
@@ -124,22 +127,23 @@ export default function NotificationsPage() {
     <div className="p-3">
       {/* 헤더 */}
       <div className="flex items-center justify-between mb-3">
-        <h1 className="font-korean text-base font-bold text-gold">🔔 알림</h1>
+        <h1 className="t-heading text-gold t-pixel-shadow">🔔 알림</h1>
         {unreadCount > 0 && (
-          <button type="button" onClick={handleMarkAll} disabled={markingAll}
-            className="font-korean text-xs font-bold text-pixel-dark
-                       bg-cream border-2 border-pixel-dark px-3 py-1.5
-                       hover:border-gold active:translate-y-0.5 transition-all
-                       disabled:opacity-50">
+          <PixelButton
+            variant="ghost"
+            size="sm"
+            disabled={markingAll}
+            onClick={handleMarkAll}
+          >
             {markingAll ? '처리 중...' : `전체 읽기 (${unreadCount})`}
-          </button>
+          </PixelButton>
         )}
       </div>
 
       {stacked.length === 0 ? (
         <div className="text-center py-10">
           <p className="text-3xl mb-2">🔔</p>
-          <p className="font-korean text-sm text-stone">새로운 알림이 없어요</p>
+          <p className="font-korean text-sm text-panel-sub">새로운 알림이 없어요</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -152,7 +156,7 @@ export default function NotificationsPage() {
                 className="w-full text-left"
                 onClick={() => handleClick(group)}
               >
-                <PixelCard padding="sm" className={!allRead ? 'border-gold' : ''}>
+                <PixelCard padding="sm" className={!allRead ? '!border-gold' : ''}>
                   <div className="flex items-start gap-2">
                     {/* 아이콘 */}
                     <span className="text-2xl flex-shrink-0 leading-none mt-0.5">
@@ -162,12 +166,12 @@ export default function NotificationsPage() {
                     <div className="flex-1 min-w-0">
                       {/* 타입 배지 + 미션명 */}
                       <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                        <span className="font-korean text-[10px] font-bold text-stone bg-stone/10
-                                         px-1.5 py-0.5 border border-stone/30 flex-shrink-0">
+                        <span className="font-korean text-xs font-bold text-panel-sub
+                                         bg-panel-surface px-1.5 py-0.5 border border-panel-border flex-shrink-0">
                           {NOTIF_LABEL[latest.type]}
                         </span>
                         {mission && (
-                          <span className="font-korean text-xs font-bold text-purple truncate">
+                          <span className="font-korean text-xs font-bold text-gold truncate">
                             {mission.emoji} {mission.title}
                           </span>
                         )}
@@ -175,7 +179,7 @@ export default function NotificationsPage() {
 
                       {/* 내용 — 스태킹 시 요약 표시 */}
                       <p className={`font-korean text-sm leading-snug
-                        ${!allRead ? 'font-bold text-pixel-dark' : 'text-stone'}`}>
+                        ${!allRead ? 'font-bold text-cream' : 'text-panel-sub'}`}>
                         {count > 1
                           ? `${latest.content.slice(0, 20)}... 외 ${count - 1}건`
                           : latest.content}
@@ -183,14 +187,14 @@ export default function NotificationsPage() {
 
                       {/* 시간 + 스택 수 */}
                       <div className="flex items-center gap-2 mt-1">
-                        <span className="font-korean text-[10px] text-stone/70">
+                        <span className="font-korean text-xs text-panel-sub">
                           {latest.createdAt.toLocaleString('ko-KR', {
                             month: '2-digit', day: '2-digit',
                             hour: '2-digit', minute: '2-digit', hour12: false,
                           })}
                         </span>
                         {count > 1 && (
-                          <span className="font-korean text-[10px] font-bold text-hold
+                          <span className="font-korean text-xs font-bold text-hold
                                            bg-hold/10 px-1.5 py-0.5 border border-hold/30">
                             {count}건 묶음
                           </span>

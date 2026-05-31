@@ -5,10 +5,7 @@
 @tailwind utilities;
 
 /* ═══════════════════════════════════════════════════════════════
-   BASE RESET
-   ─ DotGothic16는 로그인 대형 타이틀(.font-pixel-kr)만 사용.
-   ─ 모든 인터랙션 요소(input/button/select)는 Pretendard 적용.
-   ─ html 에는 font-size 지정 금지 (rem 단위 전체 바뀜).
+   BASE RESET (마인크래프트 다크 테마 인프라)
 ═══════════════════════════════════════════════════════════════ */
 @layer base {
   * {
@@ -17,22 +14,18 @@
   }
 
   body {
-    @apply bg-grass font-korean text-pixel-dark;
+    @apply bg-panel-darkest font-korean text-cream;
     margin: 0;
     padding: 0;
     min-height: 100vh;
     overscroll-behavior: none;
-    font-size: 15px;
+    font-size: 16px;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
 
-  /* 인터랙션 요소: Pretendard 고딕 통일 */
   input, textarea, select, button {
-    font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR',
-                 system-ui, -apple-system, sans-serif;
-    -webkit-font-smoothing: antialiased;
+    font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
   }
 
   #root {
@@ -40,113 +33,107 @@
     max-width: 428px;
     margin: 0 auto;
     position: relative;
+    @apply bg-panel-dark;
   }
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   COMPONENT LAYER — 재사용 클래스
-   ※ @apply 안에는 빌트인 Tailwind 클래스 또는 text-[px] 형태만 사용
+   COMPONENT LAYER — 마인크래프트풍 통일 규격
 ═══════════════════════════════════════════════════════════════ */
 @layer components {
 
-  /* ── 1. 타이포그래피 위계 ─────────────────────────────────── */
+  /* ── 1. 타이포그래피 & 마인크래프트 외곽선 ────────────────── */
 
-  /* 페이지 제목 — h1 (16px bold) */
+  .t-pixel-shadow {
+    text-shadow: 2px 2px 0px #000000;
+  }
+
   .t-title {
-    @apply font-korean text-base font-bold text-pixel-dark leading-tight;
+    @apply font-korean font-bold leading-tight text-gold;
+    font-size: 22px;
+    text-shadow: 2px 2px 0px #000000;
   }
 
-  /* 섹션 헤더 — 소제목 (15px bold purple) */
   .t-heading {
-    @apply font-korean font-bold text-purple;
-    font-size: 15px;
+    @apply font-korean font-bold text-cream;
+    font-size: 19px;
+    text-shadow: 2px 2px 0px #000000;
   }
 
-  /* 본문 — 카드 내 주요 텍스트 (14px) */
   .t-body {
-    @apply font-korean text-sm text-pixel-dark leading-snug;
+    @apply font-korean text-base text-cream leading-snug;
   }
 
-  /* 보조 설명 — 부가 정보 (12px stone) */
   .t-sub {
-    @apply font-korean text-xs text-stone;
+    @apply font-korean text-panel-sub;
+    font-size: 14px;
   }
 
-  /* 마이크로 라벨 — 날짜·태그·상태 (10px stone) */
   .t-micro {
-    @apply font-korean text-stone;
-    font-size: 10px;
+    @apply font-korean text-stone text-xs;
   }
 
-  /* 픽셀 배지 — Lv.숫자, EXP (8px Press Start 2P) */
   .t-badge {
-    @apply font-pixel;
-    font-size: 8px;
+    @apply font-pixel text-gold;
+    font-size: 11px;
+    text-shadow: 2px 2px 0px #000000;
   }
 
-  /* ── 2. 버튼 기본 블록 ───────────────────────────────────── */
+  /* ── 2. 버튼 블록 (마인크래프트 UI 베이스) ────────────────── */
 
-  /* 픽셀 버튼 베이스 — 폰트·크기는 컴포넌트에서 지정 */
   .btn-pixel {
-    @apply border-4 border-pixel-dark shadow-pixel
-           active:translate-y-0.5 active:shadow-none
-           transition-none cursor-pointer select-none;
+    @apply border-4 border-black text-cream font-korean font-bold text-sm
+           active:translate-y-1 transition-none cursor-pointer select-none
+           shadow-[inset_2px_2px_0px_#ffffff40,inset_-2px_-2px_0px_#00000080];
   }
 
-  /* 전체 너비 액션 버튼 베이스 */
   .btn-block {
-    @apply w-full py-3 font-korean text-sm font-bold border-4 border-pixel-dark
-           active:translate-y-0.5 transition-all shadow-pixel;
+    @apply w-full py-3 font-korean text-sm font-bold border-4 border-black text-center
+           active:translate-y-1 transition-none select-none
+           shadow-[inset_2px_2px_0px_#ffffff30,inset_-2px_-2px_0px_#00000060];
   }
   .btn-block-gold {
-    @apply btn-block bg-gold text-pixel-dark border-yellow-600 hover:bg-yellow-400;
+    @apply btn-block bg-gold text-panel-darkest;
   }
   .btn-block-purple {
-    @apply btn-block bg-purple text-white border-purple hover:opacity-90;
+    @apply btn-block bg-purple text-cream;
   }
   .btn-block-sky {
-    @apply btn-block bg-sky text-pixel-dark border-sky hover:opacity-90;
+    @apply btn-block bg-sky text-panel-darkest;
   }
   .btn-block-danger {
-    @apply btn-block bg-rejected text-white border-red-800 hover:bg-red-600;
+    @apply btn-block bg-rejected text-cream;
   }
   .btn-block-ghost {
-    @apply btn-block bg-cream text-pixel-dark border-pixel-dark hover:border-gold;
+    @apply btn-block bg-panel-darkest text-panel-sub hover:text-cream;
   }
 
-  /* ── 3. 입력창 통일 ──────────────────────────────────────── */
+  /* ── 3. 입력창 규격화 (인벤토리 슬롯 다크 테마) ────────────── */
 
-  /* 다크 픽셀 입력창 */
   .input-pixel {
-    @apply w-full bg-pixel-dark text-gold font-korean text-sm
-           border-4 border-pixel-dark px-3 py-2.5
-           focus:outline-none focus:border-gold;
+    @apply w-full bg-panel-darkest text-gold font-korean text-sm
+           border-4 border-black px-3 py-3
+           focus:outline-none focus:border-gold
+           shadow-[inset_3px_3px_0px_#00000090];
   }
-  .input-pixel::placeholder { color: rgba(158,158,158,0.6); }
+  .input-pixel::placeholder { @apply text-panel-border; }
 
-  /* 밝은 배경 입력창 */
-  .input-light {
-    @apply w-full bg-cream text-pixel-dark font-korean text-sm
-           border-4 border-pixel-dark px-3 py-2.5
-           focus:outline-none focus:border-purple;
-  }
-
-  /* ── 4. 카드 ─────────────────────────────────────────────── */
+  /* ── 4. 카드 (마인크래프트 정통 상자) ─────────────────────── */
 
   .card-pixel {
-    @apply bg-cream border-4 border-dirt shadow-pixel;
+    @apply bg-panel-dark border-4 border-black text-cream
+           shadow-[inset_3px_3px_0px_#ffffff15,inset_-3px_-3px_0px_#00000060];
   }
 
   .card-highlight {
-    @apply bg-cream border-4 border-gold;
-    box-shadow: 3px 3px 0px #7B5000;
+    @apply bg-panel-dark border-4 border-gold text-gold
+           shadow-[inset_3px_3px_0px_#ffd70030,inset_-3px_-3px_0px_#00000080];
   }
 
   /* ── 5. 상태 배지 태그 ───────────────────────────────────── */
 
   .badge-base {
-    @apply font-korean font-bold px-1.5 py-0.5 border-2;
-    font-size: 10px;
+    @apply font-korean font-bold px-1.5 py-0.5 border-2 text-xs;
   }
   .badge-active   { @apply badge-base bg-sky text-white border-sky; opacity: 0.85; }
   .badge-pending  { @apply badge-base bg-hold text-white border-hold; opacity: 0.85; }
@@ -158,17 +145,21 @@
   /* ── 6. 말풍선 ───────────────────────────────────────────── */
 
   .speech-bubble {
-    @apply bg-cream border-4 border-pixel-dark relative;
+    @apply bg-panel-darkest border-4 border-black relative text-cream p-3
+           shadow-[inset_2px_2px_0px_#ffffff10];
   }
 
   /* ── 7. 인벤토리 슬롯 ────────────────────────────────────── */
 
   .inventory-slot {
-    @apply w-16 h-16 bg-stone border-4 border-pixel-dark
-           flex items-center justify-center cursor-pointer hover:bg-gray-400;
+    @apply w-16 h-16 bg-panel-darkest border-4 border-black
+           flex items-center justify-center cursor-pointer
+           shadow-[inset_3px_3px_0px_#00000090];
   }
-  .inventory-slot.unlocked { @apply bg-cream hover:bg-yellow-50; }
-  .inventory-slot.selected { @apply border-gold bg-yellow-50; }
+  .inventory-slot.unlocked {
+    @apply bg-panel-dark shadow-[inset_2px_2px_0px_#ffffff10];
+  }
+  .inventory-slot.selected { @apply border-gold bg-panel-dark; }
 
   /* ── 8. hover 전역 강조 ─────────────────────────────────── */
 
@@ -180,14 +171,14 @@
   /* ── 9. 날짜 구분선 (채팅) ──────────────────────────────── */
 
   .chat-date-divider {
-    @apply flex items-center gap-2 font-korean text-xs text-stone my-2;
+    @apply flex items-center gap-2 font-korean text-sm font-bold text-cream my-3;
   }
   .chat-date-divider::before,
   .chat-date-divider::after {
     content: '';
     flex: 1;
     height: 1px;
-    background: rgba(158, 158, 158, 0.4);
+    background: rgba(255, 255, 255, 0.3);
   }
 }
 
@@ -198,7 +189,7 @@
   .border-3 { border-width: 3px; }
   .border-5 { border-width: 5px; }
 
-  .text-on-dark { @apply text-cream; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+  .text-on-dark { @apply text-cream t-pixel-shadow; }
 
   .text-ellipsis-2 {
     display: -webkit-box;

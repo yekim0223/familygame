@@ -132,12 +132,12 @@ export default function QuestionBoxPage() {
         {ALL_QUESTIONS.map((item, i) => (
           <PixelCard key={i} padding="sm">
             <div className="flex items-start gap-2">
-              <span className="font-pixel text-[9px] text-purple flex-shrink-0 mt-0.5">
+              <span className="font-pixel text-xs text-purple flex-shrink-0 mt-0.5">
                 Q{String(i + 1).padStart(2, '0')}
               </span>
               <div className="flex-1 min-w-0">
                 <p className="font-korean text-sm text-pixel-dark">{item.q}</p>
-                <p className="font-korean text-[10px] text-approved mt-0.5">보상: {item.reward}</p>
+                <p className="font-korean text-xs text-approved mt-0.5">보상: {item.reward}</p>
               </div>
             </div>
           </PixelCard>

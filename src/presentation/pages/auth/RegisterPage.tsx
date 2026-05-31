@@ -330,7 +330,7 @@ export default function RegisterPage() {
             className="font-korean text-cream text-sm">
             ← 뒤로
           </button>
-          <span className="font-pixel text-[9px] text-gold">{step} / 4</span>
+          <span className="font-pixel text-xs text-gold">{step} / 4</span>
         </div>
         <div className="exp-bar">
           <div className="exp-bar-fill" style={{ width: `${progressPct}%` }} />

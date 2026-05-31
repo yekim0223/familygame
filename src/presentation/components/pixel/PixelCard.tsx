@@ -1,17 +1,47 @@
-// Design Ref: §5.2 Pixel UI — 돌 블록 스타일 카드
+// Design Ref: §3-2 Component System — 픽셀 카드 컴포넌트 (v3.0)
+// Variant: dark(default), special, highlight, light
+// Padding: none, sm, md(default), lg
 import type { HTMLAttributes } from 'react'
 
-interface PixelCardProps extends HTMLAttributes<HTMLDivElement> {
-  padding?: 'sm' | 'md' | 'lg'
+type Variant = 'dark' | 'special' | 'highlight' | 'light'
+type Padding = 'none' | 'sm' | 'md' | 'lg'
+
+export interface PixelCardProps extends HTMLAttributes<HTMLDivElement> {
+  variant?: Variant
+  padding?: Padding
 }
 
-const paddingStyles = { sm: 'p-3', md: 'p-4', lg: 'p-5' }
+const variantStyles: Record<Variant, string> = {
+  // 기본 — 다크 마인크래프트 패널
+  dark:      'bg-panel-mid border-4 border-panel-border shadow-pixel',
+  // 특별 퀘스트 — 황금탄 배경 + gold 테두리
+  special:   'bg-[#D4A843] border-4 border-gold shadow-pixel-gold',
+  // 홈 섹션 강조 — panel-surface 배경 + 옅은 gold 테두리
+  highlight: 'bg-panel-surface border-2 border-gold/40',
+  // 밝은 배경이 필요한 경우 (로그인 등)
+  light:     'bg-cream border-4 border-pixel-dark shadow-pixel',
+}
 
-export function PixelCard({ padding = 'md', className = '', children, ...props }: PixelCardProps) {
+const paddingStyles: Record<Padding, string> = {
+  none: '',
+  sm:   'p-3',
+  md:   'p-4',
+  lg:   'p-5',
+}
+
+export function PixelCard({
+  variant = 'dark',
+  padding = 'md',
+  className = '',
+  children,
+  ...props
+}: PixelCardProps) {
   return (
     <div
       {...props}
-      className={`card-pixel ${paddingStyles[padding]} ${className}`}
+      className={[variantStyles[variant], paddingStyles[padding], className]
+        .filter(Boolean)
+        .join(' ')}
     >
       {children}
     </div>

@@ -5,7 +5,34 @@
       "Skill(pdca:*)",
       "Skill(bkit:pdca)",
       "Skill(bkit:pdca:*)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(firebase login *)",
+      "Bash(firebase projects:list)",
+      "Bash(node set-login-id.mjs)",
+      "Bash(node scripts/bump-version.mjs)",
+      "Bash(lsof -ti:5173)",
+      "Bash(npx playwright *)",
+      "Bash(npx puppeteer *)",
+      "Bash(mkdir -p /Users/youngeon/dev/familygame/captures)",
+      "Bash(node scripts/capture-screenshots.mjs 1111)",
+      "Bash(rm -f /Users/youngeon/dev/familygame/captures/*.png)",
+      "Bash(node /Users/youngeon/dev/familygame/scripts/capture-screenshots.mjs 1111)",
+      "Bash(rm -f /Users/youngeon/dev/familygame/captures/*.png && node /Users/youngeon/dev/familygame/scripts/capture-screenshots.mjs 1111 2>&1)",
+      "Bash(npx tsc *)",
+      "Bash(xargs sed -i '' 's/font-pixel text-\\\\[7px\\\\]/font-pixel text-[10px]/g')",
+      "Bash(xargs sed -i '' 's/text-\\\\[7px\\\\] font-pixel/text-[10px] font-pixel/g')",
+      "Bash(xargs sed -i '' 's/font-pixel text-\\\\[8px\\\\]/font-pixel text-[10px]/g')",
+      "Bash(xargs sed -i '' 's/text-\\\\[8px\\\\] font-pixel/text-[10px] font-pixel/g')",
+      "Bash(xargs sed -i '' 's/text-\\\\[9px\\\\]/text-xs/g')",
+      "Bash(xargs sed -i '' 's/text-\\\\[10px\\\\]/text-xs/g')",
+      "Bash(xargs sed -i '' 's/text-\\\\[11px\\\\]/text-xs/g')",
+      "Bash(xargs sed -i '' 's/text-stone\\\\/40/text-stone/g;s/text-stone\\\\/50/text-stone/g;s/text-stone\\\\/60/text-stone/g')",
+      "Bash(xargs sed -i '' 's/text-stone\\\\/70/text-stone/g')",
+      "Bash(xargs sed -i '' 's/text-cream\\\\/40/text-cream\\\\/80/g;s/text-cream\\\\/50/text-cream\\\\/80/g;s/text-cream\\\\/60/text-cream\\\\/90/g;s/text-cream\\\\/70/text-cream\\\\/90/g')"
+    ],
+    "additionalDirectories": [
+      "/Users/youngeon/dev/familygame",
+      "/Users/youngeon/dev/familygame/captures"
     ]
   }
 }

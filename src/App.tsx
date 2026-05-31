@@ -32,6 +32,7 @@ import SpecialDaysPage from '@/presentation/pages/settings/SpecialDaysPage'
 import RewardTypesPage from '@/presentation/pages/settings/RewardTypesPage'
 import RewardSendPage from '@/presentation/pages/settings/RewardSendPage'
 import NoticesPage from '@/presentation/pages/settings/NoticesPage'
+import GamePage from '@/presentation/pages/game/GamePage'
 
 // Phase 3 예정 화면 (플레이스홀더)
 const Placeholder = ({ name }: { name: string }) => (
@@ -124,6 +125,7 @@ export default function App() {
           <Route path="settings/reward-types"    element={<RewardTypesPage />} />
           <Route path="settings/rewards-send"   element={<RewardSendPage />} />
           <Route path="settings/notices"        element={<NoticesPage />} />
+          <Route path="game"                    element={<GamePage />} />
         </Route>
 
         {/* 404 */}

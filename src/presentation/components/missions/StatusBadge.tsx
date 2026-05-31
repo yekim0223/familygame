@@ -1,13 +1,25 @@
-// Design Ref: §5.2 Pixel UI — 미션 상태 색상 블록 뱃지
+// Design Ref: §3-4 StatusBadge — 미션 상태 배지 단일 소스 (v3.0)
+// MissionCard, MissionDetailPage 등에서 공통 사용
 import type { MissionStatus } from '@/domain/entities/Mission'
 
-const STATUS_CONFIG: Record<MissionStatus, { label: string; className: string }> = {
-  ACTIVE:            { label: '진행중',   className: 'status-active' },
-  PENDING_APPROVAL:  { label: '완료신청', className: 'status-pending' },
-  APPROVED:          { label: '승인됨',   className: 'status-approved' },
-  ON_HOLD:           { label: '보류중',   className: 'status-hold' },
-  REJECTED:          { label: '미승인',   className: 'status-rejected' },
-  EXPIRED:           { label: '소멸됨',   className: 'status-expired' },
+const LABEL: Record<MissionStatus, string> = {
+  ACTIVE:           '진행중',
+  PENDING_APPROVAL: '완료신청',
+  APPROVED:         '승인됨',
+  ON_HOLD:          '보류중',
+  REJECTED:         '미승인',
+  EXPIRED:          '소멸됨',
+  CHILD_REJECTED:   '거절됨',
+}
+
+const COLOR: Record<MissionStatus, string> = {
+  ACTIVE:           'bg-sky     text-white border-sky',
+  PENDING_APPROVAL: 'bg-hold    text-white border-hold',
+  APPROVED:         'bg-approved text-white border-approved',
+  ON_HOLD:          'bg-hold    text-white border-hold',
+  REJECTED:         'bg-rejected text-white border-rejected',
+  EXPIRED:          'bg-stone   text-white border-stone',
+  CHILD_REJECTED:   'bg-rejected text-white border-rejected',
 }
 
 interface StatusBadgeProps {
@@ -16,14 +28,12 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, size = 'sm' }: StatusBadgeProps) {
-  const { label, className } = STATUS_CONFIG[status]
-  const textSize = size === 'sm' ? 'text-[8px]' : 'text-[10px]'
-
+  const textSize = size === 'md' ? 'text-sm' : 'text-xs'
   return (
     <span
-      className={`inline-block px-2 py-0.5 font-pixel ${textSize} text-white border-2 border-pixel-dark rounded-none ${className}`}
+      className={`inline-block font-korean font-bold ${textSize} px-1.5 py-0.5 border-2 ${COLOR[status]}`}
     >
-      {label}
+      {LABEL[status]}
     </span>
   )
 }

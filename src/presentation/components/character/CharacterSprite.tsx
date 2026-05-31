@@ -50,12 +50,12 @@ const SIZE: Record<string, {
   md: {
     box:      'w-14 h-14 text-4xl',
     text:     'text-[8px]',
-    badge:    'text-[10px] w-5 h-5',
+    badge:    'text-xs w-5 h-5',
     badgePos: '-top-1.5 -right-1.5',
   },
   lg: {
     box:      'w-20 h-20 text-5xl',
-    text:     'text-[9px]',
+    text:     'text-xs',
     badge:    'text-sm w-7 h-7',
     badgePos: '-top-2 -right-2',
   },

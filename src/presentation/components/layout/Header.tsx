@@ -53,8 +53,8 @@ export function Header() {
     'transition-all active:scale-95 focus:outline-none'
 
   return (
-    <header className="bg-mc-brick fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[428px]
-                       border-b-[3px] border-black/70 flex items-center
+    <header className="bg-panel-darkest fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[428px]
+                       border-b-[3px] border-gold/30 flex items-center
                        justify-between px-3 z-40" style={{ height: '52px' }}>
 
       {/* 좌측: 뒤로가기 OR 로고 */}
@@ -126,12 +126,12 @@ export function Header() {
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
                 <div className="absolute right-0 top-12 z-50 min-w-[145px]
-                                bg-cream border-4 border-pixel-dark shadow-pixel">
-                  <div className="px-3 py-2 border-b-2 border-stone/30">
-                    <p className="font-korean text-xs font-bold text-pixel-dark">
+                                bg-panel-mid border-4 border-panel-border shadow-pixel">
+                  <div className="px-3 py-2 border-b-2 border-panel-border">
+                    <p className="font-korean text-xs font-bold text-gold">
                       {currentMember.name}
                     </p>
-                    <p className="font-korean text-[10px] text-stone">
+                    <p className="font-korean text-xs text-panel-sub">
                       {currentMember.realName}
                       {currentMember.role === 'CHILD' && ` · Lv.${currentMember.level}`}
                     </p>
@@ -139,16 +139,16 @@ export function Header() {
                   {/* 프로필 설정 — 모든 역할 */}
                   <button type="button"
                     onClick={() => { setShowMenu(false); navigate('/profile') }}
-                    className="w-full px-3 py-2 text-left font-korean text-xs text-pixel-dark
-                               hover:bg-purple/10 border-b border-stone/20">
+                    className="w-full px-3 py-2 text-left font-korean text-xs text-cream
+                               hover:bg-panel-surface border-b border-panel-border">
                     👤 프로필 설정
                   </button>
                   {/* 작업공간 — 부모 전용 */}
                   {currentMember.role !== 'CHILD' && (
                     <button type="button"
                       onClick={() => { setShowMenu(false); navigate('/settings') }}
-                      className="w-full px-3 py-2 text-left font-korean text-xs text-pixel-dark
-                                 hover:bg-purple/10 border-b border-stone/20">
+                      className="w-full px-3 py-2 text-left font-korean text-xs text-cream
+                                 hover:bg-panel-surface border-b border-panel-border">
                       {currentMember.role === 'DAD' ? '🛠️ 아빠 작업공간' : '🛠️ 엄마 작업공간'}
                     </button>
                   )}

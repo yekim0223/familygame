@@ -1,6 +1,7 @@
 // Design Ref: §4.1 Firestore — messages 컬렉션 (채팅 + 응원)
 import { where, orderBy } from 'firebase/firestore'
-import { fsAdd, fsUpdate, fsSubscribe, toDate } from '../firestore'
+import { fsAdd, fsUpdate, fsDelete, fsSubscribe, toDate } from '../firestore'
+import { createNotification } from './notifications'
 import type { Message } from '@/domain/entities/Message'
 
 function col(familyId: string) { return `families/${familyId}/messages` }
@@ -21,24 +22,62 @@ export function subscribeGroupChat(
   )
 }
 
-// 1:1 채팅 구독
+// 1:1 채팅 구독 (양방향 병합)
 export function subscribeDirectChat(
   familyId: string,
   userId: string,
   otherId: string,
   onData: (messages: Message[]) => void
 ): () => void {
-  // Firestore에서는 OR 쿼리 대신 두 방향 모두 구독 후 클라이언트 병합
+  let sent: Message[] = []
+  let received: Message[] = []
+  const merge = () =>
+    onData([...sent, ...received].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime()))
+
+  const constraints = (s: string, r: string) => [
+    where('type', '==', 'CHAT'), where('senderId', '==', s),
+    where('receiverId', '==', r), orderBy('createdAt', 'asc'),
+  ]
+  const colPath = col(familyId)
+  const unsubSent = fsSubscribe<any>(colPath, constraints(userId, otherId),
+    raw => { sent = raw.map(toMessage); merge() })
+  const unsubRecv = fsSubscribe<any>(colPath, constraints(otherId, userId),
+    raw => { received = raw.map(toMessage); merge() })
+  return () => { unsubSent(); unsubRecv() }
+}
+
+// 나에게 온 DM 전체 구독 (unread 뱃지용)
+export function subscribeReceivedDMs(
+  familyId: string,
+  userId: string,
+  onData: (messages: Message[]) => void
+): () => void {
   return fsSubscribe<any>(
     col(familyId),
-    [
-      where('type', '==', 'CHAT'),
-      where('senderId', '==', userId),
-      where('receiverId', '==', otherId),
-      orderBy('createdAt', 'asc'),
-    ],
+    [where('type', '==', 'CHAT'), where('receiverId', '==', userId), orderBy('createdAt', 'asc')],
     raw => onData(raw.map(toMessage))
   )
+}
+
+// 1:1 메시지 전송 + 알림
+export async function sendDirectMessage(
+  familyId: string,
+  senderId: string,
+  receiverId: string,
+  content: string
+): Promise<{ id: string | null; error: string | null }> {
+  const result = await fsAdd(col(familyId), {
+    type: 'CHAT', senderId, receiverId, content, readBy: [senderId],
+  })
+  if (!result.error && result.id) {
+    createNotification(familyId, {
+      type: 'NEW_MESSAGE',
+      targetMemberId: receiverId,
+      content: '새 메시지가 도착했어요',
+      relatedId: result.id,
+    })
+  }
+  return result
 }
 
 // 응원 메시지 구독 (내가 받은 응원)
@@ -101,4 +140,24 @@ export async function markMessageRead(
   return fsUpdate(`${col(familyId)}/${messageId}`, {
     readBy: [...currentReadBy, memberId],
   })
+}
+
+// 그룹 메시지 일괄 읽음 처리 (Firestore 업데이트)
+export async function markGroupMessagesRead(
+  familyId: string,
+  messages: { id: string; readBy: string[] }[],
+  memberId: string
+): Promise<void> {
+  const unread = messages.filter(m => !m.readBy.includes(memberId))
+  await Promise.all(
+    unread.map(m => markMessageRead(familyId, m.id, memberId, m.readBy))
+  )
+}
+
+// 메시지 삭제 (본인이 보낸 메시지만)
+export async function deleteMessage(
+  familyId: string,
+  messageId: string
+): Promise<{ error: string | null }> {
+  return fsDelete(`${col(familyId)}/${messageId}`)
 }

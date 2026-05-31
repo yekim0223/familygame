@@ -7,7 +7,7 @@ interface SpeechBubbleProps {
 }
 
 export function SpeechBubble({ text, direction = 'bottom', className = '', size = 'md' }: SpeechBubbleProps) {
-  const textSize = size === 'sm' ? 'text-[10px]' : 'text-xs'
+  const textSize = size === 'sm' ? 'text-xs' : 'text-xs'
 
   return (
     <div className={`relative ${className}`}>

@@ -17,6 +17,13 @@ export default {
         rejected:    '#E53935',
         hold:        '#FB8C00',
         'pixel-dark':'#1A1A1A',
+        // 다크 마인크래프트 인벤토리 패널 계층 (v3.0)
+        'panel-darkest': '#0F0A04',
+        'panel-dark':    '#1A1208',
+        'panel-mid':     '#2A1F0E',
+        'panel-surface': '#3D2800',
+        'panel-border':  '#6B4E2A',
+        'panel-sub':     '#C4A06A',
       },
 
       // ── 폰트 패밀리 ────────────────────────────────────────────
@@ -38,17 +45,22 @@ export default {
         'pixel-kr': ['"DotGothic16"', 'monospace'],
       },
 
-      // ── 타이포그래피 스케일 (커스텀 고정 px — rem 독립) ────────
+      // ── 타이포그래피 스케일 (9살 아이 기준 — 커스텀 고정 px) ────
       // 위계: ds-xl > ds-title > ds-heading > ds-body > ds-sub > ds-micro > ds-badge
+      // 2026-05-30 v2: 전체 +2~6px 상향 (가독성 개선)
       fontSize: {
-        'ds-badge':   ['8px',  { lineHeight: '1.2', letterSpacing: '0.05em' }],
-        'ds-label':   ['9px',  { lineHeight: '1.4' }],
-        'ds-micro':   ['10px', { lineHeight: '1.4' }],
-        'ds-sub':     ['12px', { lineHeight: '1.5' }],
-        'ds-body':    ['14px', { lineHeight: '1.6' }],
-        'ds-heading': ['15px', { lineHeight: '1.5' }],
-        'ds-title':   ['16px', { lineHeight: '1.4' }],
-        'ds-xl':      ['18px', { lineHeight: '1.3' }],
+        // Tailwind 기본값 override — 앱 전체 최소 크기 상향
+        'xs':   ['13px', { lineHeight: '1.5' }],
+        'sm':   ['15px', { lineHeight: '1.6' }],
+        // 커스텀 ds-* 스케일
+        'ds-badge':   ['10px', { lineHeight: '1.2', letterSpacing: '0.05em' }],
+        'ds-label':   ['12px', { lineHeight: '1.4' }],
+        'ds-micro':   ['13px', { lineHeight: '1.4' }],
+        'ds-sub':     ['15px', { lineHeight: '1.5' }],
+        'ds-body':    ['17px', { lineHeight: '1.6' }],
+        'ds-heading': ['19px', { lineHeight: '1.5' }],
+        'ds-title':   ['22px', { lineHeight: '1.4' }],
+        'ds-xl':      ['26px', { lineHeight: '1.3' }],
       },
 
       // ── 박스 그림자 ────────────────────────────────────────────

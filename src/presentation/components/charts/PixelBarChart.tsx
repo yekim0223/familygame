@@ -23,7 +23,7 @@ export function PixelBarChart({ data, maxValue, unit = '', height = 120, classNa
           const pct = max > 0 ? (d.value / max) * 100 : 0
           return (
             <div key={i} className="flex-1 flex flex-col items-center gap-1">
-              <span className="font-pixel text-[7px] text-pixel-dark">
+              <span className="font-pixel text-xs text-pixel-dark">
                 {d.value > 0 ? `${d.value}` : ''}
               </span>
               <div
@@ -41,12 +41,12 @@ export function PixelBarChart({ data, maxValue, unit = '', height = 120, classNa
       <div className="flex gap-1.5">
         {data.map((d, i) => (
           <div key={i} className="flex-1 text-center">
-            <span className="font-korean text-[9px] text-stone truncate block">{d.label}</span>
+            <span className="font-korean text-xs text-stone truncate block">{d.label}</span>
           </div>
         ))}
       </div>
       {unit && (
-        <p className="font-korean text-[9px] text-stone text-right">단위: {unit}</p>
+        <p className="font-korean text-xs text-stone text-right">단위: {unit}</p>
       )}
     </div>
   )

@@ -35,7 +35,7 @@ export default function RewardTypesPage() {
               <span className="text-2xl flex-shrink-0">{item.emoji}</span>
               <div className="flex-1 min-w-0">
                 <p className="font-korean text-sm font-bold text-pixel-dark">{item.label}</p>
-                <p className="font-korean text-[10px] text-stone">{item.unit}</p>
+                <p className="font-korean text-xs text-stone">{item.unit}</p>
               </div>
               <span className={`font-korean text-xs font-bold px-2 py-1 border-2 flex-shrink-0
                 ${item.active

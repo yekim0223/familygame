@@ -1,7 +1,7 @@
 // Design Ref: §5.3 SCR-02 LoginPage
-// 로그인 흐름: landing → family-code → (family-id-input) → characters → PIN → /home
-// 신규 기기: 초대코드 → 가족ID 입력(Firestore 검증) → 캐릭터 선택
-// 기존 기기: 초대코드 → 캐릭터 선택 (familyId 캐시 있음)
+// 로그인 흐름: landing → characters (기존 기기) | landing → family-id-input → characters (신규 기기)
+// 신규 기기: 가족 ID 입력 → 캐릭터 선택 → PIN
+// 기존 기기: 바로 캐릭터 선택 → PIN
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { subscribeMembers } from '@/infrastructure/firebase/collections/members'
@@ -9,6 +9,7 @@ import { login } from '@/application/use-cases/auth/login'
 import { startAnonymousSession } from '@/infrastructure/firebase/auth'
 import { fsGet } from '@/infrastructure/firebase/firestore'
 import { findFamilyByCode } from '@/infrastructure/firebase/collections/familyCodes'
+import { getMember } from '@/infrastructure/firebase/collections/members'
 import { useAuthStore } from '@/infrastructure/stores/authStore'
 import { CharacterSprite } from '@/presentation/components/character/CharacterSprite'
 import { PixelButton } from '@/presentation/components/pixel/PixelButton'
@@ -20,14 +21,12 @@ import { APP_VERSION_SHORT } from '@/config/version'
 // ── 상수 ────────────────────────────────────────────────────────
 const LS_MEMBER_CACHE = 'fq_member_cache'
 const LS_LAST_LOGIN   = 'fq_last_login'
-const MASTER_ID   = 'master'
-const MASTER_PW   = '10040101'
-const INVITE_CODE = 'family'   // 가족 초대 코드
+const MASTER_ID   = 'kye'
+const MASTER_PW   = '1111'
+const MASTER_LOGIN_ID = 'kye'
 
 // ── 타입 ────────────────────────────────────────────────────────
-// landing → family-code → family-id-input (新기기) → characters
-//                       ↘ characters (旧기기, familyId 있음)
-type View = 'landing' | 'family-code' | 'family-id-input' | 'characters'
+type View = 'landing' | 'family-id-input' | 'characters'
 
 interface CachedMember {
   id: string; name: string; realName: string
@@ -59,61 +58,31 @@ export default function LoginPage() {
   const { setCurrentMember, setFamilyId, isPinLocked,
           incrementPinFail, resetPinFail, pinLockedUntil } = useAuthStore()
 
-  // ── familyId (localStorage 우선) ────────────────────────────
   const [familyId, setFamilyIdLocal] = useState(localStorage.getItem('familyId') ?? '')
   const lastMemberId = localStorage.getItem(LS_LAST_LOGIN) ?? ''
 
   const [view, setView] = useState<View>('landing')
 
-  // ── 멤버 관련 상태 ──────────────────────────────────────────
   const cachedRef = useRef(familyId ? readMemberCache(familyId) : [])
   const [members, setMembers]                   = useState<CachedMember[]>(cachedRef.current)
   const [membersLoading, setMembersLoading]     = useState(false)
   const [membersLoadFailed, setMembersLoadFailed] = useState(false)
 
-  // ── 캐릭터 선택 / PIN ──────────────────────────────────────
   const [selected, setSelected] = useState<CachedMember | null>(null)
   const [pin, setPin]           = useState('')
   const [pinError, setPinError] = useState('')
   const [loading, setLoading]   = useState(false)
   const [lockRemaining, setLockRemaining] = useState(0)
 
-  // ── 초대코드 입력 ──────────────────────────────────────────
-  const [inviteCode, setInviteCode]   = useState('')
-  const [inviteError, setInviteError] = useState('')
-  const [showCode, setShowCode]       = useState(false)
-
-  // ── 가족 ID 입력 (신규 기기) ───────────────────────────────
   const [fidInput, setFidInput]         = useState('')
   const [fidError, setFidError]         = useState('')
   const [verifying, setVerifying]       = useState(false)
+  const [autoDetecting, setAutoDetecting] = useState(false)
 
-  // ── 마스터 패널 ─────────────────────────────────────────────
   const [showMasterPanel, setShowMasterPanel] = useState(false)
   const [masterId, setMasterId] = useState('')
   const [masterPw, setMasterPw] = useState('')
   const [masterError, setMasterError] = useState('')
-
-  // ── 초대코드 확인 → 다음 단계 분기 ───────────────────────────
-  const handleCodeSubmit = () => {
-    if (inviteCode.trim().toLowerCase() !== INVITE_CODE) {
-      setInviteError('초대 코드가 맞지 않아요 🔒')
-      return
-    }
-    setInviteError('')
-    if (familyId) {
-      // 이미 familyId 있는 기기 → 바로 캐릭터 선택
-      const cache = readMemberCache(familyId)
-      cachedRef.current = cache
-      setMembers(cache)
-      setSelected(cache.find(m => m.id === lastMemberId) ?? null)
-      setView('characters')
-      if (cache.length === 0) setMembersLoading(true)
-    } else {
-      // 신규 기기 → 가족 ID 입력 단계
-      setView('family-id-input')
-    }
-  }
 
   // ── 비밀코드 입력 → family_codes 조회 → Firestore 검증 ────────
   const handleFidSubmit = async () => {
@@ -123,7 +92,6 @@ export default function LoginPage() {
     setVerifying(true)
     setFidError('')
 
-    // Firebase Auth 세션 확보
     const { uid } = await startAnonymousSession()
     if (!uid) {
       setFidError('Firebase 연결에 실패했어요. 인터넷을 확인해줘요')
@@ -131,15 +99,35 @@ export default function LoginPage() {
       return
     }
 
-    // 비밀코드로 familyId 조회
+    const { data: loginIdDoc } = await fsGet<{ familyId: string; memberId: string }>(
+      `member_login_ids/${code.toLowerCase()}`
+    )
+    if (loginIdDoc?.familyId && loginIdDoc?.memberId) {
+      const { data: memberData } = await getMember(loginIdDoc.familyId, loginIdDoc.memberId)
+      if (memberData) {
+        const cached: CachedMember = {
+          id: memberData.id, name: memberData.name, realName: memberData.realName,
+          role: memberData.role, character: memberData.character,
+          level: memberData.level, isActive: memberData.isActive,
+        }
+        localStorage.setItem('familyId', loginIdDoc.familyId)
+        setFamilyIdLocal(loginIdDoc.familyId)
+        setMembers([cached])
+        setSelected(cached)
+        setVerifying(false)
+        setFidError('')
+        setView('characters')
+        return
+      }
+    }
+
     const { familyId: foundId, error: codeErr } = await findFamilyByCode(code)
     if (codeErr) { setFidError(codeErr); setVerifying(false); return }
 
     if (!foundId) {
-      // 직접 familyId 입력으로도 시도 (하위 호환)
       const { data } = await fsGet<{ familyCodeHash?: string }>(`families/${code}/config/settings`)
       if (!data) {
-        setFidError('비밀코드를 찾을 수 없어요. 아빠에게 다시 확인해줘요 🔍')
+        setFidError('ID 또는 가족 코드를 찾을 수 없어요 🔍')
         setVerifying(false)
         return
       }
@@ -242,28 +230,12 @@ export default function LoginPage() {
     navigate('/master')
   }
 
-  // ── 마스터 패널 ──────────────────────────────────────────────
-  const MasterPanel = () => (
-    <PixelCard padding="sm" className="mt-3 w-full animate-fade-slide-up">
-      <p className="font-pixel text-[8px] text-purple mb-3">아빠 작업방 (Master)</p>
-      <input type="text" value={masterId} onChange={e => setMasterId(e.target.value)}
-        placeholder="ID" className="w-full bg-pixel-dark text-gold font-korean text-sm
-                   border-4 border-pixel-dark px-3 py-2.5 mb-2 focus:outline-none focus:border-gold" />
-      <input type="password" value={masterPw} onChange={e => setMasterPw(e.target.value)}
-        onKeyDown={e => e.key === 'Enter' && handleMasterLogin()}
-        placeholder="Password" className="w-full bg-pixel-dark text-gold font-korean text-sm
-                   border-4 border-pixel-dark px-3 py-2.5 mb-2 focus:outline-none focus:border-gold" />
-      {masterError && <p className="font-korean text-sm text-rejected mb-2">{masterError}</p>}
-      <PixelButton variant="primary" fullWidth size="sm" onClick={handleMasterLogin}>접속</PixelButton>
-    </PixelCard>
-  )
-
   // ════════════════════════════════════════════════════════════════
   // VIEW 1: LANDING — 대형 타이틀
   // ════════════════════════════════════════════════════════════════
   if (view === 'landing') {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-minecraft">
+      <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-panel-darkest">
 
         {/* ── 2D 블록 애니메이션 로고 ── */}
         <div style={{
@@ -313,141 +285,118 @@ export default function LoginPage() {
         </div>
 
         {/* 버전 */}
-        <p className="font-pixel text-white text-center mb-10 text-[8px]">{APP_VERSION_SHORT}</p>
+        <p className="font-pixel text-cream/60 text-center mb-10 text-xs">{APP_VERSION_SHORT}</p>
 
         {/* FAMILY LOGIN 버튼 */}
         <div className="w-full max-w-xs">
-          <button type="button" onClick={() => {
-            if (familyId) {
-              // 이미 인증된 기기 → 초대코드 건너뛰고 캐릭터 선택
-              const cache = readMemberCache(familyId)
-              cachedRef.current = cache
-              setMembers(cache)
-              setSelected(cache.find(m => m.id === lastMemberId) ?? null)
-              setView('characters')
-              if (cache.length === 0) setMembersLoading(true)
-            } else {
-              // 새 기기 → 초대코드 입력
-              setView('family-code')
-            }
-          }}
-            className="w-full py-3 bg-gold border-4 border-yellow-600
-                       font-pixel text-pixel-dark text-[10px]
-                       hover:bg-yellow-400 active:translate-y-0.5 transition-all shadow-pixel">
-            FAMILY LOGIN
-          </button>
+          <PixelButton
+            variant="gold"
+            fontMode="pixel"
+            fullWidth
+            size="lg"
+            disabled={autoDetecting}
+            onClick={async () => {
+              setAutoDetecting(true)
+              await startAnonymousSession()
+              const { data: loginIdDoc } = await fsGet<{ familyId: string; memberId: string }>(
+                `member_login_ids/${MASTER_LOGIN_ID}`
+              )
+
+              const resolvedFamilyId = loginIdDoc?.familyId || familyId
+
+              if (resolvedFamilyId) {
+                localStorage.setItem('familyId', resolvedFamilyId)
+                setFamilyIdLocal(resolvedFamilyId)
+                const cache = readMemberCache(resolvedFamilyId)
+                cachedRef.current = cache
+                setMembers(cache)
+                setSelected(cache.find(m => m.id === lastMemberId) ?? null)
+                setAutoDetecting(false)
+                setMembersLoading(cache.length === 0)
+                setView('characters')
+              } else {
+                setAutoDetecting(false)
+                setView('family-id-input')
+              }
+            }}
+          >
+            {autoDetecting ? 'CONNECTING...' : 'FAMILY LOGIN'}
+          </PixelButton>
         </div>
 
         {/* 하단 링크 */}
         <div className="flex items-center gap-2 mt-5">
           <button type="button" onClick={() => navigate('/register')}
-            className="font-pixel text-cream/70 text-[8px] underline underline-offset-2 hover:text-cream whitespace-nowrap">
+            className="font-pixel text-cream/90 text-xs underline underline-offset-2 hover:text-cream whitespace-nowrap">
             VERIFY ACCOUNT
           </button>
-          <span className="text-cream/30 text-[8px]">|</span>
+          <span className="text-cream/30 text-xs">|</span>
           <button type="button" onClick={() => navigate('/observer-login')}
-            className="font-pixel text-cream/70 text-[8px] underline underline-offset-2 hover:text-cream whitespace-nowrap">
+            className="font-pixel text-cream/90 text-xs underline underline-offset-2 hover:text-cream whitespace-nowrap">
             GUEST
           </button>
-          <span className="text-cream/30 text-[8px]">|</span>
+          <span className="text-cream/30 text-xs">|</span>
           <button type="button" onClick={() => setShowMasterPanel(p => !p)}
-            className="font-pixel text-cream/50 text-[8px] underline underline-offset-2 hover:text-cream whitespace-nowrap">
+            className="font-pixel text-cream/80 text-xs underline underline-offset-2 hover:text-cream whitespace-nowrap">
             SETTING
           </button>
         </div>
 
-        {showMasterPanel && <div className="w-full max-w-xs mt-3"><MasterPanel /></div>}
-      </div>
-    )
-  }
-
-  // ════════════════════════════════════════════════════════════════
-  // VIEW 2: FAMILY CODE — 초대 코드 입력
-  // ════════════════════════════════════════════════════════════════
-  if (view === 'family-code') {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-minecraft">
-        <div className="w-full max-w-xs">
-
-          {/* 헤더 */}
-          <div className="text-center mb-8">
-            <p className="font-pixel text-gold text-xs tracking-widest mb-2">FAMILY QUEST</p>
-            <p className="font-korean text-cream text-base font-bold">🔑 가족 초대 코드</p>
-            <p className="font-korean text-cream/60 text-xs mt-1">
-              가족만 알고 있는 초대 코드를 입력해줘요
-            </p>
-          </div>
-
-          {/* 입력창 */}
-          <PixelCard padding="sm" className="mb-4">
-            <p className="font-korean text-sm font-bold text-purple mb-3">초대 코드 입력</p>
-            <div className="relative mb-2">
+        {showMasterPanel && (
+          <div className="w-full max-w-xs mt-3">
+            <PixelCard padding="sm" className="animate-fade-slide-up">
+              <p className="font-pixel text-xs text-gold mb-3">아빠 작업방 (Master)</p>
               <input
-                type={showCode ? 'text' : 'password'}
-                value={inviteCode}
-                onChange={e => { setInviteCode(e.target.value); setInviteError('') }}
-                onKeyDown={e => e.key === 'Enter' && handleCodeSubmit()}
-                placeholder="초대 코드를 입력해주세요"
-                className="w-full bg-pixel-dark text-gold font-korean text-sm
-                           border-4 border-pixel-dark px-3 py-3 pr-10
-                           focus:outline-none focus:border-gold"
-                autoFocus
+                type="text"
+                value={masterId}
+                onChange={e => setMasterId(e.target.value)}
+                placeholder="ID"
+                className="input-pixel mb-2"
               />
-              <button type="button" onClick={() => setShowCode(p => !p)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gold text-base">
-                {showCode ? '🙈' : '👁️'}
-              </button>
-            </div>
-            {inviteError && (
-              <p className="font-korean text-xs text-rejected font-bold mb-2">{inviteError}</p>
-            )}
-            <button type="button" onClick={handleCodeSubmit}
-              className="w-full py-3 bg-gold border-4 border-yellow-600
-                         font-korean text-base font-bold text-pixel-dark
-                         hover:bg-yellow-400 active:translate-y-0.5 transition-all shadow-pixel">
-              확인
-            </button>
-          </PixelCard>
-
-          <button type="button" onClick={() => setView('landing')}
-            className="w-full text-center font-korean text-cream/50 text-xs underline">
-            ← 돌아가기
-          </button>
-        </div>
+              <input
+                type="password"
+                value={masterPw}
+                onChange={e => setMasterPw(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleMasterLogin()}
+                placeholder="Password"
+                className="input-pixel mb-2"
+              />
+              {masterError && <p className="font-korean text-sm text-rejected mb-2">{masterError}</p>}
+              <PixelButton variant="gold" fullWidth size="sm" onClick={handleMasterLogin}>접속</PixelButton>
+            </PixelCard>
+          </div>
+        )}
       </div>
     )
   }
 
   // ════════════════════════════════════════════════════════════════
-  // VIEW 3: FAMILY CODE INPUT — 비밀코드 입력 (신규 기기)
+  // VIEW 2: FAMILY ID INPUT — 가족 ID 입력 (신규 기기)
   // ════════════════════════════════════════════════════════════════
   if (view === 'family-id-input') {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-minecraft">
+      <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-panel-darkest">
         <div className="w-full max-w-xs">
 
           {/* 헤더 */}
           <div className="text-center mb-8">
             <p className="font-pixel text-gold text-xs tracking-widest mb-2">FAMILY QUEST</p>
-            <p className="font-korean text-cream text-base font-bold">🏠 가족 찾기</p>
-            <p className="font-korean text-cream/70 text-xs mt-2 leading-relaxed">
-              아빠에게 받은 비밀 코드를 입력해주세요.<br/>
-              입력하면 이미 등록된 가족을 불러올 수 있어요.
+            <p className="font-korean text-cream text-base font-bold">🔑 로그인</p>
+            <p className="font-korean text-cream/80 text-sm mt-2 leading-relaxed">
+              개인 ID를 입력해주세요
             </p>
           </div>
 
           <PixelCard padding="sm" className="mb-4">
-            <p className="font-korean text-sm font-bold text-purple mb-3">비밀코드 입력</p>
+            <p className="font-korean text-sm font-bold text-gold mb-3">ID 입력</p>
 
             <input
               type="text"
               value={fidInput}
               onChange={e => { setFidInput(e.target.value); setFidError('') }}
               onKeyDown={e => e.key === 'Enter' && !verifying && handleFidSubmit()}
-              placeholder="비밀코드를 입력해주세요"
-              className="w-full bg-pixel-dark text-gold font-korean text-sm
-                         border-4 border-pixel-dark px-3 py-3 mb-2
-                         focus:outline-none focus:border-gold"
+              placeholder="개인 ID 입력"
+              className="input-pixel mb-2"
               autoFocus
             />
 
@@ -461,47 +410,48 @@ export default function LoginPage() {
               </p>
             )}
 
-            <button type="button" onClick={handleFidSubmit} disabled={verifying || !fidInput.trim()}
-              className="w-full py-3 bg-gold border-4 border-yellow-600
-                         font-korean text-base font-bold text-pixel-dark
-                         hover:bg-yellow-400 active:translate-y-0.5 transition-all shadow-pixel
-                         disabled:opacity-50 disabled:cursor-not-allowed">
-              {verifying ? '확인 중...' : '🔍 가족 찾기'}
-            </button>
+            <PixelButton
+              variant="gold"
+              fullWidth
+              size="lg"
+              disabled={verifying || !fidInput.trim()}
+              onClick={handleFidSubmit}
+            >
+              {verifying ? '확인 중...' : '🔍 입장하기'}
+            </PixelButton>
           </PixelCard>
 
           {/* 신규 가입 안내 */}
-          <div className="bg-cream/10 border-2 border-cream/30 px-3 py-3 mb-4">
-            <p className="font-korean text-xs text-cream/70 leading-relaxed">
-              💡 <strong className="text-cream">처음 시작하나요?</strong><br/>
-              아빠가 먼저 가입 후 가족 ID를 공유해줘야 해요.
+          <div className="bg-panel-dark border-2 border-panel-border px-3 py-3 mb-4">
+            <p className="font-korean text-sm text-cream leading-relaxed">
+              💡 <strong className="text-gold">처음 시작하나요?</strong><br/>
+              아빠가 먼저 가입 후 ID를 공유해줘야 해요.
             </p>
             <button type="button" onClick={() => navigate('/register')}
-              className="mt-2 font-korean text-xs text-gold underline">
+              className="mt-2 font-korean text-xs text-gold underline hover:text-yellow-300">
               새 가족 만들기 →
             </button>
           </div>
 
-          <button type="button" onClick={() => setView('family-code')}
-            className="w-full text-center font-korean text-cream/50 text-xs underline">
+          <PixelButton variant="ghost" fullWidth onClick={() => setView('landing')}>
             ← 뒤로
-          </button>
+          </PixelButton>
         </div>
       </div>
     )
   }
 
   // ════════════════════════════════════════════════════════════════
-  // VIEW 4: CHARACTERS — 캐릭터 선택 + PIN 입력
+  // VIEW 3: CHARACTERS — 캐릭터 선택 + PIN 입력
   // ════════════════════════════════════════════════════════════════
   return (
-    <div className="min-h-screen flex flex-col bg-minecraft">
+    <div className="min-h-screen flex flex-col bg-panel-darkest">
       {/* 헤더 */}
       <div className="flex items-center justify-between px-4 pt-6 pb-2">
         <button type="button"
-          onClick={() => { setView('family-code'); setSelected(null); setPin('') }}
-          className="flex items-center gap-1 px-3 py-1.5 bg-cream/20 border-2 border-cream/50
-                     font-korean text-cream text-sm font-bold hover:bg-cream/30 transition-all active:scale-95">
+          onClick={() => { setView(familyId ? 'landing' : 'family-id-input'); setSelected(null); setPin('') }}
+          className="flex items-center gap-1 px-3 py-1.5 bg-panel-dark border-2 border-panel-border
+                     font-korean text-cream text-sm font-bold hover:border-gold transition-all active:scale-95">
           ← 뒤로
         </button>
         <div className="text-center">
@@ -518,8 +468,8 @@ export default function LoginPage() {
         {/* 로딩 */}
         {membersLoading && (
           <div className="flex flex-col items-center justify-center h-48 gap-2">
-            <p className="font-korean text-cream/70 text-sm animate-pulse">구성원 불러오는 중...</p>
-            <p className="font-korean text-cream/40 text-xs">최대 5초 소요</p>
+            <p className="font-korean text-cream/80 text-sm animate-pulse">구성원 불러오는 중...</p>
+            <p className="font-korean text-cream/60 text-xs">최대 5초 소요</p>
           </div>
         )}
 
@@ -536,7 +486,7 @@ export default function LoginPage() {
             {membersLoadFailed && (
               <button type="button"
                 onClick={() => { setMembersLoading(true); setMembersLoadFailed(false) }}
-                className="font-korean text-cream/50 text-xs underline">
+                className="font-korean text-cream/70 text-xs underline">
                 다시 불러오기
               </button>
             )}
@@ -561,8 +511,8 @@ export default function LoginPage() {
                     'border-4 transition-all duration-150',
                     'hover:scale-[1.05] active:scale-95',
                     isSelected
-                      ? 'bg-gold/30 border-gold scale-[1.03] shadow-pixel'
-                      : 'bg-cream/10 border-cream/30 hover:border-gold hover:bg-gold/10',
+                      ? 'bg-gold/20 border-gold scale-[1.03] shadow-pixel'
+                      : 'bg-panel-dark border-panel-border hover:border-gold hover:bg-gold/10',
                   ].join(' ')}
                 >
                   <CharacterSprite
@@ -576,13 +526,13 @@ export default function LoginPage() {
                       {member.name}
                     </p>
                     {member.realName && member.realName !== member.name && (
-                      <p className="font-korean text-cream/60 text-xs">({member.realName})</p>
+                      <p className="font-korean text-cream/80 text-xs">({member.realName})</p>
                     )}
                     {member.role === 'CHILD' && (
-                      <p className="font-pixel text-[7px] text-gold/70 mt-0.5">Lv.{member.level}</p>
+                      <p className="font-pixel text-xs text-gold/70 mt-0.5">Lv.{member.level}</p>
                     )}
                     {isLast && (
-                      <p className="font-korean text-[9px] text-gold mt-0.5">마지막 접속</p>
+                      <p className="font-korean text-xs text-gold mt-0.5">마지막 접속</p>
                     )}
                   </div>
                 </button>
@@ -603,21 +553,21 @@ export default function LoginPage() {
                   variant="job"
                 />
                 <div>
-                  <p className="font-korean text-sm font-bold text-pixel-dark leading-tight">
+                  <p className="font-korean text-sm font-bold text-cream leading-tight">
                     {selected.name}
                     {selected.realName && selected.realName !== selected.name && (
-                      <span className="font-normal text-stone text-xs ml-1">({selected.realName})</span>
+                      <span className="font-normal text-panel-sub text-xs ml-1">({selected.realName})</span>
                     )}
                   </p>
-                  <p className="font-korean text-xs text-stone">PIN 번호를 입력해주세요</p>
+                  <p className="font-korean text-xs text-panel-sub">PIN 번호를 입력해주세요</p>
                 </div>
               </div>
 
               {/* PIN 도트 표시 */}
               <div className="flex gap-2 justify-center mb-3">
                 {Array.from({ length: Math.max(pin.length, 4) }).map((_, i) => (
-                  <div key={i} className={`w-4 h-4 border-2 border-pixel-dark
-                    ${i < pin.length ? 'bg-pixel-dark' : 'bg-cream'}`} />
+                  <div key={i} className={`w-4 h-4 border-2 border-panel-border
+                    ${i < pin.length ? 'bg-gold' : 'bg-panel-darkest'}`} />
                 ))}
               </div>
 
@@ -628,9 +578,7 @@ export default function LoginPage() {
                 onKeyDown={e => e.key === 'Enter' && handleLogin()}
                 placeholder="PIN (숫자 또는 영문, 2~8자)"
                 maxLength={8}
-                className="w-full bg-pixel-dark text-gold font-korean text-sm text-center
-                           border-4 border-pixel-dark px-3 py-2.5 mb-2
-                           focus:outline-none focus:border-gold tracking-widest"
+                className="input-pixel text-center mb-2 tracking-widest"
                 autoFocus
               />
 
@@ -641,19 +589,22 @@ export default function LoginPage() {
               )}
 
               <div className="flex gap-2">
-                <button type="button" onClick={() => { setSelected(null); setPin('') }}
-                  className="flex-1 py-2.5 bg-cream border-4 border-pixel-dark
-                             font-korean text-sm font-bold text-pixel-dark
-                             hover:border-gold active:translate-y-0.5 transition-all">
+                <PixelButton
+                  variant="ghost"
+                  className="flex-1"
+                  onClick={() => { setSelected(null); setPin('') }}
+                >
                   취소
-                </button>
-                <button type="button" onClick={handleLogin} disabled={loading || pin.length < 2}
-                  className="flex-[2] py-2.5 bg-gold border-4 border-yellow-600
-                             font-korean text-base font-bold text-pixel-dark
-                             hover:bg-yellow-400 active:translate-y-0.5 transition-all shadow-pixel
-                             disabled:opacity-50 disabled:cursor-not-allowed">
+                </PixelButton>
+                <PixelButton
+                  variant="gold"
+                  size="lg"
+                  className="flex-[2]"
+                  disabled={loading || pin.length < 2}
+                  onClick={handleLogin}
+                >
                   {loading ? '확인 중...' : '입장 (Enter)'}
-                </button>
+                </PixelButton>
               </div>
             </div>
           </div>

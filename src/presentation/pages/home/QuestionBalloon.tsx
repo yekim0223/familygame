@@ -118,7 +118,7 @@ function QuestionModal({
             <p className="font-korean text-base font-bold text-pixel-dark leading-snug">
               ❓ {question}
             </p>
-            <p className="font-korean text-[10px] text-approved mt-2 font-bold">
+            <p className="font-korean text-xs text-approved mt-2 font-bold">
               정답 보상: {reward}
             </p>
           </div>
@@ -134,7 +134,7 @@ function QuestionModal({
                          border-4 border-pixel-dark px-3 py-2 resize-none
                          focus:outline-none focus:border-gold"
             />
-            <span className="absolute bottom-2 right-2 font-pixel text-[7px] text-stone">
+            <span className="absolute bottom-2 right-2 font-pixel text-xs text-stone">
               {answer.length}/300
             </span>
           </div>

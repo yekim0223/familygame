@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "deploy": "node scripts/bump-version.mjs && vite build && firebase deploy --only hosting",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:e2e": "playwright test",

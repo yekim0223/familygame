@@ -7,6 +7,8 @@ import { BottomNav } from './BottomNav'
 import { ProtectedRoute } from './ProtectedRoute'
 import { useAuthStore } from '@/infrastructure/stores/authStore'
 import { signOut, clearAllLocalData } from '@/infrastructure/firebase/auth'
+import { useMissions } from '@/presentation/hooks/useMissions'
+import { useNotifications } from '@/presentation/hooks/useNotifications'
 
 const IDLE_MS = 30 * 60 * 1000  // 30분
 
@@ -14,6 +16,10 @@ export function AppLayout() {
   const { clearSession, currentMember } = useAuthStore()
   const navigate = useNavigate()
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // 전역 구독 — 어느 페이지에 있어도 Firestore 변경사항이 즉시 반영됨
+  useMissions()
+  useNotifications()
 
   const resetTimer = () => {
     if (timerRef.current) clearTimeout(timerRef.current)
@@ -40,7 +46,7 @@ export function AppLayout() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-minecraft">
+      <div className="min-h-screen bg-panel-dark">
         <Header />
         <main className="pt-[52px] pb-[60px] min-h-screen overflow-y-auto">
           <Outlet />

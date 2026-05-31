@@ -25,13 +25,14 @@ export function BottomNav() {
     { to: '/calendar', icon: '📅', badge: 0 },
     { to: '/messages', icon: '💌', badge: unreadGroupCount },
     { to: '/rewards',  icon: '🏆', badge: notifCount },
+    { to: '/game',     icon: '🎮', badge: 0 },
   ]
 
   return (
     <nav
-      className="bg-mc-brick fixed bottom-0 left-1/2 -translate-x-1/2
+      className="bg-panel-darkest fixed bottom-0 left-1/2 -translate-x-1/2
                  w-full max-w-[428px] h-[60px] flex z-40
-                 border-t-[3px] border-black/70"
+                 border-t-[3px] border-gold/30"
     >
       {TABS.map(tab => (
         <NavLink
@@ -42,23 +43,25 @@ export function BottomNav() {
         >
           {({ isActive }) => (
             <>
-              {/* 아이콘 — 테두리 없음, 크기·밝기로만 활성 표현 */}
+              {/* 활성 탭 상단 gold 인디케이터 라인 */}
+              {isActive && (
+                <span className="absolute top-0 left-2 right-2 h-[2px] bg-gold" />
+              )}
+
+              {/* 아이콘 — 크기·glow로 활성 표현 */}
               <span
                 className="leading-none transition-none active:translate-y-[2px]"
                 style={{
-                  fontSize:   isActive ? '30px' : '24px',
-                  /* 활성: 강한 금빛 glow / 비활성: 필터 없이 원래 색상 유지 */
+                  fontSize:   isActive ? '26px' : '20px',
                   filter: isActive
                     ? 'drop-shadow(0 0 8px #FFD700) drop-shadow(0 0 4px #FFD700)'
                     : 'none',
-                  /* 비활성도 선명하게 — 50% 투명도만 */
                   opacity: isActive ? 1 : 0.7,
                   willChange: 'transform',
                 }}
               >
                 {tab.icon}
               </span>
-
 
               {/* 빨간 콩 배지 — 활성 탭에선 즉시 사라짐 */}
               {tab.badge > 0 && !isActive && (

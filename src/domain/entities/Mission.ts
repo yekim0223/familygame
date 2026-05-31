@@ -52,6 +52,7 @@ export interface Mission {
   slot_evaluations?: Record<string, Record<string, DaySlot>>  // 아이별 날짜 평가 { memberId: { 'YYYY-MM-DD': slot } }
   confirmedByChild?: boolean                        // 아이가 퀘스트 수신 확인 여부
   emoji?: string
+  isSpecial?: boolean                               // 특별 퀘스트 여부
   isFavorite: boolean
   repeatEnabled: boolean
   startDate: Date
@@ -86,9 +87,9 @@ export const STATUS_LABEL: Record<MissionStatus, { label: string; color: string 
 }
 
 export const DIFFICULTY_INFO: Record<Difficulty, { label: string; exp: number; color: string }> = {
-  1: { label: '아주 쉬움', exp: 1, color: 'bg-sky' },
-  2: { label: '쉬움',     exp: 2, color: 'bg-approved' },
-  3: { label: '보통',     exp: 3, color: 'bg-gold' },
-  4: { label: '높음',     exp: 4, color: 'bg-hold' },
-  5: { label: '매우 높음', exp: 5, color: 'bg-rejected' },
+  1: { label: '아주 쉬움', exp: 10, color: 'bg-sky' },
+  2: { label: '쉬움',     exp: 20, color: 'bg-approved' },
+  3: { label: '보통',     exp: 30, color: 'bg-gold' },
+  4: { label: '높음',     exp: 40, color: 'bg-hold' },
+  5: { label: '매우 높음', exp: 50, color: 'bg-rejected' },
 }

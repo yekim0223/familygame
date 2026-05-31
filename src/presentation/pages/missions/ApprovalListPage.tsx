@@ -30,7 +30,7 @@ export default function ApprovalListPage() {
 
   return (
     <div className="p-3">
-      <h1 className="font-pixel text-[9px] text-gold mb-3">
+      <h1 className="font-pixel text-xs text-gold mb-3">
         ✅ 승인 대기 ({pendingMissions.length})
       </h1>
 
@@ -52,7 +52,7 @@ export default function ApprovalListPage() {
                 </p>
                 <div className="flex flex-wrap gap-1 mt-1">
                   {mission.rewards.map((r, i) => (
-                    <span key={i} className="font-korean text-[10px] bg-gold/20 border border-gold px-1">
+                    <span key={i} className="font-korean text-xs bg-gold/20 border border-gold px-1">
                       {r.type === 'MONEY' ? `💰${r.amount.toLocaleString()}원` :
                        r.type === 'GAME_TIME' ? `🎮${r.amount}분` : '보상'}
                     </span>

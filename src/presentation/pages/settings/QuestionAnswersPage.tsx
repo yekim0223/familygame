@@ -58,7 +58,7 @@ export default function QuestionAnswersPage() {
       <div className="flex items-center gap-3 mb-1">
         <button type="button" onClick={() => navigate(-1)}
           className="font-korean text-sm font-bold text-pixel-dark">◀ 뒤로</button>
-        <h1 className="font-pixel text-[9px] text-purple">💌 두근두근 질문함</h1>
+        <h1 className="font-pixel text-xs text-purple">💌 두근두근 질문함</h1>
       </div>
 
       {/* 자녀 필터 탭 */}
@@ -84,7 +84,7 @@ export default function QuestionAnswersPage() {
 
       {/* 최신 답변 목록 */}
       <div>
-        <p className="font-pixel text-[8px] text-gold mb-2">
+        <p className="font-pixel text-xs text-gold mb-2">
           최근 답변 ({filtered.length})
         </p>
 
@@ -103,14 +103,14 @@ export default function QuestionAnswersPage() {
                   <span className="font-korean text-xs font-bold text-purple">
                     {ans.memberName}
                   </span>
-                  <span className="font-korean text-[10px] text-stone">
+                  <span className="font-korean text-xs text-stone">
                     {formatDateTime(ans.createdAt)}
                   </span>
                 </div>
 
                 {/* 질문 */}
                 <div className="bg-purple/10 border-2 border-purple/40 px-3 py-2 mb-2">
-                  <p className="font-korean text-[10px] text-stone mb-0.5">Q. 오늘의 질문</p>
+                  <p className="font-korean text-xs text-stone mb-0.5">Q. 오늘의 질문</p>
                   <p className="font-korean text-xs font-bold text-pixel-dark leading-snug">
                     {ans.question}
                   </p>
@@ -128,9 +128,9 @@ export default function QuestionAnswersPage() {
                       {EMOTION_LABEL[ans.emotion].label}
                     </span>
                   ) : (
-                    <span className="font-korean text-[10px] text-stone/60">감정 미선택</span>
+                    <span className="font-korean text-xs text-stone">감정 미선택</span>
                   )}
-                  <span className="font-korean text-[10px] text-approved font-bold">
+                  <span className="font-korean text-xs text-approved font-bold">
                     보상: {ans.reward}
                   </span>
                 </div>

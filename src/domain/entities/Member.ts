@@ -32,6 +32,7 @@ export interface Member {
   familyId: string
   name: string             // 닉네임
   realName: string         // 실제 이름 (하윤, 서윤, 아빠, 엄마 등)
+  loginId?: string         // 새 기기 로그인용 개인 ID (선택)
   role: Role
   calendarType: '양력' | '음력'
   birthDate: Date

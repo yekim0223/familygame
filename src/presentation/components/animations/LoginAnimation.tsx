@@ -44,7 +44,7 @@ export function LoginAnimation({ role, characterId, onComplete }: LoginAnimation
         {/* 로딩 텍스트 — tap to skip의 3배 크기, 금색 */}
         <p className="font-pixel text-2xl text-gold tracking-wide">Loading...</p>
         {/* 스킵 안내 */}
-        <p className="font-pixel text-[8px] text-stone animate-pulse">tap to skip</p>
+        <p className="font-pixel text-xs text-stone animate-pulse">tap to skip</p>
       </div>
     </div>
   )
