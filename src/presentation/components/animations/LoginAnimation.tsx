@@ -16,7 +16,7 @@ const ROLE_SCENES: Record<Role, { main: string; action: string; animClass: strin
   OBSERVER: { main: '📖', action: '👀', animClass: 'animate-character-bob' },
 }
 
-export function LoginAnimation({ role, characterId, onComplete }: LoginAnimationProps) {
+export function LoginAnimation({ role, onComplete }: LoginAnimationProps) {
   const [visible, setVisible] = useState(true)
   const scene = ROLE_SCENES[role]
 

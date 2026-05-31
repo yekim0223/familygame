@@ -60,7 +60,7 @@ function DetailModal({ reward, mission, cache, onClose }: {
   const submittedAt   = mission?.statusHistory?.find((h: any) => h.to === 'PENDING_APPROVAL')?.changedAt
 
   return (
-    <PixelModal title="📋 보상 상세" onClose={onClose}>
+    <PixelModal open title="📋 보상 상세" onClose={onClose}>
       <div className="space-y-3 pb-2">
         {/* 보상 내용 */}
         <div className="card-pixel p-3 text-center">
@@ -226,7 +226,7 @@ export default function RewardStatusPage() {
       ) : (
         <div className="space-y-1.5">
           {filtered.map(r => {
-            const mission = getMissionById(r.missionId)
+            const mission = r.missionId ? getMissionById(r.missionId) : undefined
             return (
               <button
                 key={r.id}

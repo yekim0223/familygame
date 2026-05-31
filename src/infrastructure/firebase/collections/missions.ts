@@ -1,6 +1,6 @@
 // Design Ref: §4.1 Firestore — missions 컬렉션 CRUD + 구독
 import { where, orderBy } from 'firebase/firestore'
-import { fsAdd, fsGet, fsUpdate, fsQuery, fsSubscribe, fsDelete, toDate } from '../firestore'
+import { fsAdd, fsGet, fsUpdate, fsSubscribe, fsDelete, toDate } from '../firestore'
 import type { Mission, MissionStatus, DaySlot } from '@/domain/entities/Mission'
 
 function col(familyId: string) { return `families/${familyId}/missions` }
@@ -80,9 +80,8 @@ export async function updateMissionStatus(
   missionId: string,
   status: MissionStatus,
   changedBy: string,
-  note?: string
+  _note?: string
 ): Promise<{ error: string | null }> {
-  const now = new Date()
   return fsUpdate(doc(familyId, missionId), {
     status,
     [`statusHistory`]: [], // Firestore arrayUnion으로 추가 권장 (단순화)

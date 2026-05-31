@@ -84,10 +84,28 @@
       ]
     },
     {
-      "collectionGroup": "game_scores",
+      "collectionGroup": "praise_stickers",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "score", "order": "DESCENDING" }
+        { "fieldPath": "targetMemberId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt",      "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "cheer_messages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "targetMemberId", "order": "ASCENDING" },
+        { "fieldPath": "isRead",         "order": "ASCENDING" },
+        { "fieldPath": "createdAt",      "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "tournament_scores",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "roundNumber", "order": "ASCENDING" },
+        { "fieldPath": "score",       "order": "DESCENDING" }
       ]
     }
   ],

@@ -30,7 +30,7 @@ export async function createNotification(
     relatedId: string
   }
 ): Promise<{ error: string | null }> {
-  const { id, error } = await fsAdd(col(familyId), { ...data, isRead: false })
+  const { error } = await fsAdd(col(familyId), { ...data, isRead: false })
   return { error }
 }
 

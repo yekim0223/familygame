@@ -1,7 +1,7 @@
 // Design Ref: §3-5 조르기 시스템 — Firestore CRUD
 // Plan FR-14: 주 1회 제한, 레벨 5마다 +1회, 부모 양쪽 승인
 import { where, orderBy } from 'firebase/firestore'
-import { fsAdd, fsUpdate, fsQuery, fsSubscribe, toDate } from '../firestore'
+import { fsAdd, fsUpdate, fsSubscribe, toDate } from '../firestore'
 
 export type BeggingType = 'MISSION_ADD' | 'REWARD_UP' | 'GIFT' | 'SPECIAL'
 export type BeggingStatus = 'PENDING' | 'DAD_APPROVED' | 'MOM_APPROVED' | 'APPROVED' | 'REJECTED'

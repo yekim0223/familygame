@@ -430,7 +430,50 @@ CHILD → border-approved | border-gold (id 해시로 자녀별 고유 배정)
 
 ---
 
-## 12. 현재 상태 (2026-05-31 Session 30 완료 기준 — v2.1.0, 미배포)
+## 12. 현재 상태 (2026-05-31 Session 32 완료 기준 — v2.1.0, 미배포)
+
+### 구현 완료 (Session 32 추가 — v2.1.0, 미배포)
+
+- **[HomePage.tsx 비주얼 RPG 오버홀]**:
+  - **프로필 카드 배경 던전 다크화**: `bg-gradient-to-b ${gradient}` 전면 폐기 → `bg-[#1a1510]` (MC 다크 우드). `BANNER_BG` import 및 `gradient` 변수 완전 제거
+  - **픽셀 내부 테두리 신규 주입**: `absolute inset-[3px] border border-gold/20 pointer-events-none` — 던전 RPG 감성 강화
+  - **텍스트 색상 통일**: `text-white / text-white/70 / text-white/80` → `text-cream / text-cream/70 / text-cream/80` (디자인 시스템 준수)
+  - **펫 박스 레트로 인벤토리 프레임**: `bg-panel-darkest border-2 border-gold/60 p-1 shadow-[inset_2px_2px_0px_#00000090,...]` — 인벤토리 슬롯 감성
+  - **배너 배지 다크화**: `text-white bg-black/30 border-white/30` → `text-gold bg-panel-darkest border-gold/40`
+
+- **[Header.tsx GNB 컴팩트화 — 75% 축소]**:
+  - `iconBtn` (알림·설정): `w-10 h-10 text-xl` → `w-8 h-8 text-lg`
+  - 뒤로가기 버튼: `w-10 h-10` + 이모지 22px → `w-8 h-8` + 18px
+  - 오디오 재생/다음 버튼: `w-7 h-8` → `w-6 h-7`
+  - 테마 선택기 버튼: `w-8 h-8 text-base` → `w-7 h-7 text-sm`
+  - 우측 그룹 간격: `gap-1.5` → `gap-1`
+  - 오디오 드롭다운 offset: `top-9` → `top-8`, 설정 드롭다운: `top-12` → `top-10`
+
+### 구현 완료 (Session 31 추가 — v2.1.0, 미배포)
+
+- **[CharacterSprite.tsx 레이어 완전체 복구]**:
+  - **L3 반려동물 레이어 신규 주입**: 박스(`overflow:hidden`) 바깥에 `relative` 래퍼 추가. `petBounce 0.9s` 애니메이션 + 역할별 액센트 테두리 소형 박스로 우하단 오버레이. `petId` prop 추가 (undefined→`currentPet` 스토어 폴백, null→강제 없음)
+  - **전역 스토어 구독 완전화**: `currentWeapon`만 구독하던 `useInventoryStore`를 `currentSkin` + `currentPet` 추가 구독. `characterId` prop 미전달/빈 문자열 → `currentSkin` 폴백, weapon/petId도 동일 패턴 적용
+  - **ROLE_BG_CSS 다크 우드 통일**: DAD(`#0d1b2a` navy) · MOM(`#1a0d1a` dark-purple) · CHILD(`#0f0a1e`) → 모두 `#1A1208` (MC 다크 우드). 역할 구분 테두리(sky/pink/purple/stone)는 유지
+  - `PET_EMOJI` 상수를 `CharacterSprite` 함수 앞으로 이동 (L3에서 공유 사용)
+
+- **[NotificationsPage.tsx 알림 규격 동기화]**:
+  - `NOTIF_ICONS` + `NOTIF_LABEL`에 `MISSION_EXPIRED`(💀 퀘스트 만료) · `MOM_CHEER`(💖 엄마·아빠 격려) 추가 → TS2739 완전 해소
+  - 미사용 `markNotificationRead` import 제거
+  - 미사용 `getMemberName` 함수 + `members` state + `subscribeMembers` useEffect + 관련 import 전체 제거
+
+- **[MasterSettingsPage.tsx 레거시 찌꺼기 제거]**:
+  - 미사용 `fsUpdate` import 제거 → TS6133 해소
+  - 대회 랭킹 게임 라벨 `s.gameId === 'tetris'` TS2367 수정 → 현행 `GameId('galaga'|'ponpoko'|'minesweeper')` 기준 매핑 (갤러그/너구리/지뢰찾기)으로 교체
+
+- **[Session 31 추가 — HomePage 실시간 인벤토리 연동 + TS 전면 청산]**:
+  - **HomePage.tsx 실시간 파이프라인**: `displayCharId = currentSkin || currentMember.character.characterId`, `displayPetId = currentPet || currentMember.character.petId` — XP 상점 장착 즉시 홈화면 캐릭터창에 반영 (새로고침 불필요). `jobLabel`도 `displayCharId` 기반으로 동기화
+  - **TS 에러 전면 청산** (`tsc --noEmit` 에러 0개 달성, 19개 파일):
+    - 미사용 import 제거: observerLogin/begging/members/missions(컬렉션)/StatisticsPage/SettingsPage
+    - 미사용 파라미터 `_` 접두: submitBegging(`_dadId/_momId`), respondMission(`_memberName`), missions(`_note`), CalendarPage(`_year`)
+    - 미사용 변수 제거: audioManager(`paused` 필드 + 4개 할당, `F3/A3/B3/F5`), notifications(`id`), TetrisGame(`PREVIEW_X`), SnakeGame(`uiPhase` 값), SpecialDaysPage(`showEmojiPicker` 값)
+    - 실제 타입에러 수정: RewardStatusPage(`open` prop 추가, `r.missionId` null 가드), tournament.ts(`unknown` 이중 캐스팅)
+  - **패밀리늬우스 검증**: NOTIF_ICON 14종(MISSION_EXPIRED `💀`, MOM_CHEER `💖` 포함), line-through 취소선, 타입별 라우팅 — 전 기능 정상 확인
 
 ### 구현 완료 (Session 30 추가 — v2.1.0, 미배포)
 
@@ -873,7 +916,7 @@ npm run deploy
 firebase deploy --only firestore:rules,firestore:indexes
 ```
 
-### 진행 현황 (Session 30 기준 — v2.1.0)
+### 진행 현황 (Session 32 기준 — v2.1.0)
 
 ```
 Phase 1 — 완료 ✓ (tailwind 토큰 + PixelButton/PixelCard/PixelModal)
@@ -888,6 +931,8 @@ Phase 4 — 완료 ✓ (보조 페이지 15개 다크 개편 전체)
 [대개정판 Session 28] 게임 대개편 + 오디오 파이프라인 + UI 수술 — 완료 ✓ (v2.0.0)
 [마일스톤 2-3 종착지 Session 29] 재화 단일화 + 슬롯 상점 + 특퀘 UX + 안전장치 — 완료 ✓ (v2.1.0)
 [Session 30] 인벤토리-Firebase 이중 장부 해결 — 완료 ✓ (CharacterSprite 폴백 + ProfilePage 완전 연동)
+[Session 31] HomePage 실시간 인벤토리 연동 + TS 에러 전면 청산 — 완료 ✓ (tsc 에러 0개, 19개 파일)
+[Session 32] HomePage 비주얼 RPG 오버홀(던전 다크·펫 프레임) + Header GNB 컴팩트화 — 완료 ✓
 
 Phase 5 — 다음 작업 (우선순위 순)
   Firestore 인덱스 배포 필요:
@@ -911,7 +956,7 @@ Phase 5 — 다음 작업 (우선순위 순)
   - dynamic import로 게임 코드 스플리팅 (현재 번들 ~956KB)
   코드 정리:
   - TetrisGame.tsx, SnakeGame.tsx 파일 자체 삭제 (현재 import만 제거된 상태)
-  - TS6133 미사용 import 전면 정리
+  - TS6133 미사용 import 전면 정리 — ✓ Session 31 완료
 ```
 
 ### 앱 초기화 로직
@@ -1023,10 +1068,14 @@ Phase 5 — 다음 작업 (우선순위 순)
 //     롱프레스(480ms) + 우클릭으로 ReactionPicker 팝업 — 내 메시지는 🗑️ 삭제 포함
 // 35. 메신저 탭 색상 고정: 그룹채팅=bg-sky, 1:1채팅=bg-pink (내 말풍선 bg-purple와 대비)
 //     절대로 탭을 bg-purple로 변경하지 말 것 (인지 왜곡 재발 방지)
-// 36. CharacterSprite weapon prop 규칙 (Session 30):
-//     weapon 미전달(undefined) → 전역 useInventoryStore.currentWeapon 자동 폴백
-//     weapon={null} → 무기 없음 강제 (로그인 화면 person variant는 L4 조건으로 자동 차단)
-//     weapon="laser" 등 값 전달 → 해당 무기만 표시
+// 36. CharacterSprite prop 폴백 규칙 (Session 31 통합):
+//     characterId 미전달/빈 문자열 → useInventoryStore.currentSkin 자동 폴백
+//     weapon 미전달(undefined) → useInventoryStore.currentWeapon 자동 폴백
+//     weapon={null} → 무기 없음 강제 (person variant는 L4 조건으로 자동 차단)
+//     petId 미전달(undefined) → useInventoryStore.currentPet 자동 폴백
+//     petId={null} → 펫 없음 강제
+//     petId="cat" 등 값 전달 → 해당 펫 L3 오버레이 (우하단 바운스)
+//     ROLE_BG_CSS 배경: 모두 #1A1208 통일. 테두리: sky/pink/purple/stone 역할별 유지
 // 37. 인벤토리 장착 시 이중 동기화 필수 (Session 30):
 //     handleEquip(skin) → setSkin() + updateMember({ character: safeChar }) 동시 호출
 //     handleEquip(pet)  → setInvPet() + updateMember({ 'character.petId': id })
@@ -1042,4 +1091,4 @@ Phase 5 — 다음 작업 (우선순위 순)
 ---
 
 *패밀리 퀘스트 — 우리 가족만의 특별한 게임 세계 ⛏*  
-*최초 작성: 2026-04-23 | 마지막 업데이트: 2026-05-31 (Session 29 완료 — v2.1.0 배포: ⭐ 특퀘 UX 완화 + 🏪 XP 상점 4탭 슬롯 + 💰 재화 단일화 + 🎵 오디오 Autoplay 완전 우회 + 🛡️ 이모지 레거시 안전장치)*
+*최초 작성: 2026-04-23 | 마지막 업데이트: 2026-05-31 (Session 32 완료 — v2.1.0 미배포: 🏠 HomePage 던전 다크 오버홀 + 🐾 펫 인벤토리 프레임 + 📱 Header GNB 75% 컴팩트화)*

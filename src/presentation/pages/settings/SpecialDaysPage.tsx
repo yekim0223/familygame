@@ -40,7 +40,7 @@ export default function SpecialDaysPage() {
   const [day,     setDay]     = useState(1)
   const [isLunar, setIsLunar] = useState(false)
   const [emoji,   setEmoji]   = useState('🎂')
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+  const [, setShowEmojiPicker] = useState(false)
 
   const isParent = currentMember?.role === 'DAD' || currentMember?.role === 'MOM'
 

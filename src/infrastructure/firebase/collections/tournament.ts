@@ -37,7 +37,7 @@ export async function saveTournamentSettings(
   familyId: string,
   settings: TournamentSettings
 ): Promise<{ error: string | null }> {
-  return fsSet(CFG_PATH(familyId), settings as Record<string, unknown>)
+  return fsSet(CFG_PATH(familyId), settings as unknown as Record<string, unknown>)
 }
 
 // 단일 문서 실시간 구독 (fsSubscribe는 컬렉션 전용이므로 직접 onSnapshot 사용)

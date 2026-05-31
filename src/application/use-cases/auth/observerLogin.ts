@@ -1,7 +1,7 @@
 // Design Ref: §2.3 Application Layer — 옵저버 비회원 접속 유스케이스
 // 개선: familyId 직접 입력 제거 → localStorage 자동 감지, 상태 확인 기능 추가
 import { startAnonymousSession } from '@/infrastructure/firebase/auth'
-import { fsAdd, fsGet, fsQuery, fsUpdate, where } from '@/infrastructure/firebase/firestore'
+import { fsAdd, fsQuery, fsUpdate, where } from '@/infrastructure/firebase/firestore'
 
 export type ObserverType =
   | 'GRANDMA' | 'GRANDPA' | 'DAD_FRIEND' | 'MOM_FRIEND'

@@ -681,5 +681,57 @@ BEFORE (현재 v1.4.0):              AFTER (v2.0 목표):
 
 ---
 
+---
+
+## Phase 5 — 통합 배포 규격 완공 (v2.1.0 → 다음 배포)
+
+### 5-1. '용사의 여정' 피드 규격 확정
+
+| 항목 | 변경 전 | 변경 후 |
+|------|---------|---------|
+| 섹션 타이틀 | `📰 패밀리 늬우스` | `📜 용사의 여정` |
+| 최대 출력 수 | `.slice(0, 10)` | `.slice(0, 5)` |
+| 삭제 퀘스트 가드 | 없음 | `missionEventTypes` 인라인 필터 추가 |
+
+```typescript
+// 삭제된 퀘스트 연관 알림 오해 방지 가드 (HomePage.tsx)
+const missionEventTypes = new Set([...])
+if (n.relatedId && missionEventTypes.has(n.type) && !getMissionById(n.relatedId)) return false
+```
+
+### 5-2. 영웅 대시보드 뷰포트 확장
+
+```tsx
+// PixelCard: padding="sm"(p-3) → padding="md"(p-4)
+// 내부 컨테이너: flex items-start gap-3 → py-4 sm:py-6 추가
+// 효과: 상하 공간 약 1.5배 확장 (104px → ~144px 기준 높이)
+```
+
+### 5-3. 공지사항 관리 권한 격리
+
+- **MasterSettingsPage** (DAD 전용): 공지 등록 + 삭제 통합 관리 유지
+- **SettingsPage** (DAD/MOM 공통): `📢 공지사항 관리` 버튼 제거 → `/settings/notices` 직접 접근 차단
+- 공지사항 관리는 마스터 패널(DAD only) 단일 경로로 격리 완료
+
+### 5-4. 데드 파일 완전 폐기
+
+| 파일 | 상태 | 조치 |
+|------|------|------|
+| `TetrisGame.tsx` | import 제거됨, 좀비 상태 | 물리적 삭제 완료 |
+| `SnakeGame.tsx`  | import 제거됨, 좀비 상태 | 물리적 삭제 완료 |
+
+### 5-5. Firestore 복합 인덱스 가드 추가
+
+```json
+// firestore.indexes.json — 신규 추가 3건
+praise_stickers:     targetMemberId ASC + createdAt DESC
+cheer_messages:      targetMemberId ASC + isRead ASC + createdAt DESC
+tournament_scores:   roundNumber ASC + score DESC
+```
+
+> 배포 시 `firebase deploy --only firestore:indexes` 별도 실행 필요.
+
+---
+
 *Family Quest Design Overhaul v3.0*  
 *최초 작성: 2026-05-30 | 마지막 업데이트: 2026-05-31 | 현재 배포 버전: v2.2.0*

@@ -1,4 +1,4 @@
-// Design Ref: §5.1 라우팅 구조
+// Design Ref: §5.1 라우팅 구조 (MasterSettings 통합 및 정리 완료)
 import { useEffect, useState } from 'react'
 import { SplashScreen } from '@/presentation/components/animations/SplashScreen'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
@@ -25,7 +25,6 @@ import ProfilePage from '@/presentation/pages/profile/ProfilePage'
 import RewardStatusPage from '@/presentation/pages/rewards/RewardStatusPage'
 import StatisticsPage from '@/presentation/pages/rewards/StatisticsPage'
 import SettingsPage from '@/presentation/pages/settings/SettingsPage'
-import MasterSettingsPage from '@/presentation/pages/settings/MasterSettingsPage'
 import QuestionBoxPage from '@/presentation/pages/settings/QuestionBoxPage'
 import QuestionAnswersPage from '@/presentation/pages/settings/QuestionAnswersPage'
 import SpecialDaysPage from '@/presentation/pages/settings/SpecialDaysPage'
@@ -52,22 +51,18 @@ function SessionRestorer() {
     const memberId = localStorage.getItem('fq_last_login')
     if (!familyId || !memberId) { setRestoring(false); return }
 
-    // Firebase auth 상태 복원을 한 번 기다린 뒤 세션 복원 시도
     const unsub = onAuthStateChanged(auth, async (user) => {
-      unsub() // 최초 1회만 실행
-
+      unsub() 
       if (!user) {
         const { uid } = await startAnonymousSession()
         if (!uid) { setRestoring(false); return }
       }
-
       const { data } = await getMember(familyId, memberId)
       if (data) {
         setCurrentMember(data)
         setFamilyId(familyId)
         localStorage.setItem('fq_login_at', Date.now().toString())
       } else {
-        // Firestore에 멤버 데이터가 없음 = 앱 초기화됨 → 완전 kick-out
         clearAllLocalData()
         window.location.replace('/login')
         return
@@ -93,11 +88,10 @@ export default function App() {
       {!splashDone && <SplashScreen onDone={handleSplashDone} />}
       <SessionRestorer />
       <Routes>
-        {/* 인증 전 화면 + 마스터 접속 (ProtectedRoute 없음) */}
+        {/* 인증 전 화면 */}
         <Route path="/login"           element={<LoginPage />} />
         <Route path="/register"        element={<RegisterPage />} />
         <Route path="/observer-login"  element={<ObserverLoginPage />} />
-        <Route path="/master"          element={<MasterSettingsPage />} />
 
         {/* 인증 후 화면 (AppLayout 보호) */}
         <Route path="/" element={<AppLayout />}>
@@ -118,7 +112,6 @@ export default function App() {
           <Route path="begging/manage"   element={<BeggingManagePage />} />
           <Route path="profile"          element={<ProfilePage />} />
           <Route path="settings"                   element={<SettingsPage />} />
-          <Route path="settings/master"          element={<MasterSettingsPage />} />
           <Route path="settings/questions"         element={<QuestionBoxPage />} />
           <Route path="settings/question-answers" element={<QuestionAnswersPage />} />
           <Route path="settings/special-days"    element={<SpecialDaysPage />} />

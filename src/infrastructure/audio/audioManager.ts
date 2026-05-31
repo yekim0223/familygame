@@ -5,10 +5,10 @@ export type BGMTheme = 'DEFAULT' | 'JOYFUL' | 'CALM' | 'MUTE'
 
 // ── Musical frequency constants (Hz) ─────────────────────────────────
 const R  = 0       // rest
-const E3 = 164.81, F3 = 174.61, G3 = 196.00, A3 = 220.00, B3 = 246.94
+const E3 = 164.81, G3 = 196.00
 const C4 = 261.63, D4 = 293.66, E4 = 329.63, F4 = 349.23
 const Fs4 = 369.99, G4 = 392.00, A4 = 440.00, Bb4 = 466.16, B4 = 493.88
-const C5 = 523.25, D5 = 587.33, E5 = 659.25, F5 = 698.46
+const C5 = 523.25, D5 = 587.33, E5 = 659.25
 const Fs5 = 739.99, G5 = 783.99, A5 = 880.00, B5 = 987.77
 const C6 = 1046.50, D6 = 1174.66
 
@@ -106,7 +106,6 @@ class AudioManager {
 
   private theme:    BGMTheme = 'MUTE'
   private running   = false
-  private paused    = false
   private timer:    ReturnType<typeof setTimeout> | null = null
   private noteIdx   = 0
   private nextTime  = 0   // AudioContext 타임라인상 다음 음표 시작 시각
@@ -232,7 +231,6 @@ class AudioManager {
   setTheme(theme: BGMTheme): void {
     this.stopBGM()
     this.theme = theme
-    this.paused = false
     this.noteIdx = 0
     try { localStorage.setItem('fq_bgm_theme', theme) } catch { /* ignore */ }
     if (theme !== 'MUTE') {
@@ -244,13 +242,11 @@ class AudioManager {
   getTheme(): BGMTheme { return this.theme }
 
   pause(): void {
-    this.paused = true
     this.stopBGM()
   }
 
   play(): void {
     if (this.theme === 'MUTE') return
-    this.paused = false
     this.noteIdx = 0
     this.resume()
     this.startBGM()
@@ -515,7 +511,6 @@ class AudioManager {
   /** BGM 자동 시작 (로그인 성공 후 호출 — 팡파르 종료 후 seamless 전환) */
   startAfterLogin(): void {
     if (this.theme === 'MUTE' || this.running) return
-    this.paused = false
     this.noteIdx = 0
     const ctx = this.getCtx()
     const doStart = () => setTimeout(() => this.startBGM(), 600)

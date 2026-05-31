@@ -12,7 +12,6 @@ import { PixelCard } from '@/presentation/components/pixel/PixelCard'
 import { ExpBar } from '@/presentation/components/pixel/ExpBar'
 import {
   CHARACTER_LABELS,
-  BANNER_BG,
   BANNER_UNLOCKS,
 } from '@/application/use-cases/characters/selectCharacter'
 import { useMissionStore } from '@/infrastructure/stores/missionStore'
@@ -25,31 +24,31 @@ import { subscribeMembers } from '@/infrastructure/firebase/collections/members'
 
 // ── 무기 아이콘 매핑 ──────────────────────────────────────────────
 const WEAPON_ICON: Record<string, string> = {
-  basic:  '🗡️',
-  laser:  '⚡',
+  basic: '🗡️',
+  laser: '⚡',
   double: '🔫',
 }
 const WEAPON_LABEL: Record<string, string> = {
-  basic:  '단검',
-  laser:  '레이저',
+  basic: '단검',
+  laser: '레이저',
   double: '더블건',
 }
 
 // ── 피드 타입별 아이콘 ────────────────────────────────────────────
 const NOTIF_ICON: Record<string, string> = {
-  NEW_MISSION:      '⚔️',
-  MISSION_CONFIRMED:'✅',
-  MISSION_PENDING:  '⏳',
+  NEW_MISSION: '⚔️',
+  MISSION_CONFIRMED: '✅',
+  MISSION_PENDING: '⏳',
   MISSION_APPROVED: '🎉',
   MISSION_REJECTED: '❌',
-  MISSION_HOLD:     '⏸️',
-  MISSION_EXPIRED:  '💀',
-  BEGGING_REQUEST:  '🙏',
-  BEG_RESULT:       '🎁',
-  LEVEL_UP:         '⬆️',
-  NEW_MESSAGE:      '💬',
-  CHEER:            '📣',
-  MOM_CHEER:        '💖',
+  MISSION_HOLD: '⏸️',
+  MISSION_EXPIRED: '💀',
+  BEGGING_REQUEST: '🙏',
+  BEG_RESULT: '🎁',
+  LEVEL_UP: '⬆️',
+  NEW_MESSAGE: '💬',
+  CHEER: '📣',
+  MOM_CHEER: '💖',
 }
 
 // ── 랜덤 가족 응원 문구 풀 ────────────────────────────────────────
@@ -157,13 +156,15 @@ export default function HomePage() {
   const { getMemberName } = useMembers()
   const navigate = useNavigate()
 
-  // 인벤토리 — 장착 무기
-  const currentWeapon = useInventoryStore(s => s.currentWeapon)
+  // 인벤토리 — 장착 무기·스킨·펫 (실시간 반영)
+  const currentWeapon = useInventoryStore(s => s.currentWeapon) || 'basic'
+  const currentSkin = useInventoryStore(s => s.currentSkin)
+  const currentPet = useInventoryStore(s => s.currentPet)
 
   const [showAnim, setShowAnim] = useState(true)
   const [animDone, setAnimDone] = useState(false)
-  const [notices, setNotices]   = useState<Notice[]>([])
-  const [members, setMembers]   = useState<Member[]>([])
+  const [notices, setNotices] = useState<Notice[]>([])
+  const [members, setMembers] = useState<Member[]>([])
 
   useEffect(() => {
     if (!familyId) return
@@ -177,24 +178,33 @@ export default function HomePage() {
 
   if (!currentMember) return null
 
-  const isParent  = currentMember.role === 'DAD' || currentMember.role === 'MOM'
-  const isChild   = currentMember.role === 'CHILD'
-  const jobLabel  = CHARACTER_LABELS[currentMember.character.characterId] ?? ''
+  const isParent = currentMember.role === 'DAD' || currentMember.role === 'MOM'
+  const isChild = currentMember.role === 'CHILD'
+  // 스토어 장착값 우선, 없으면 Firebase 기본값 (rule 38)
+  const displayCharId = currentSkin || currentMember.character.characterId
+  const displayPetId = currentPet || currentMember.character.petId
+  const jobLabel = CHARACTER_LABELS[displayCharId] ?? ''
 
-  // 패밀리 늬우스 피드 (MISSION_EXPIRED 포함, 최대 10개)
+  // 용사의 여정 피드 (MISSION_EXPIRED 포함, 최대 5개)
   const feedItems = useMemo(() => {
+    const missionEventTypes = new Set([
+      'NEW_MISSION', 'MISSION_CONFIRMED', 'MISSION_PENDING',
+      'MISSION_APPROVED', 'MISSION_REJECTED', 'MISSION_HOLD',
+    ])
     const seen = new Set<string>()
     return notifications
       .filter(n => {
         if (n.type === 'NEW_MESSAGE') return false
         if (!isParent && n.type === 'BEGGING_REQUEST') return false
+        // 삭제된 퀘스트 연관 알림 제외 (오해 방지 가드)
+        if (n.relatedId && missionEventTypes.has(n.type) && !getMissionById(n.relatedId)) return false
         const key = `${n.relatedId}-${n.type}`
         if (seen.has(key)) return false
         seen.add(key)
         return true
       })
-      .slice(0, 10)
-  }, [notifications, isParent])
+      .slice(0, 5)
+  }, [notifications, isParent, getMissionById])
 
   return (
     <>
@@ -218,16 +228,17 @@ export default function HomePage() {
 
         {/* ① 프로필 카드 — 무기·펫 풀셋 UI */}
         {(() => {
-          const bannerId   = currentMember.character.worldBanner ?? 'overworld'
-          const gradient   = BANNER_BG[bannerId] ?? 'from-grass to-green-700'
+          const bannerId = currentMember.character.worldBanner ?? 'overworld'
           const bannerInfo = BANNER_UNLOCKS.find(b => b.id === bannerId)
           return (
             <PixelCard
               variant="highlight"
-              padding="sm"
-              className={`bg-gradient-to-b ${gradient}`}
+              padding="md"
+              className="bg-[#1a1510] relative overflow-hidden"
             >
-              <div className="flex items-start gap-3">
+              {/* 던전 픽셀 내부 테두리 */}
+              <div className="absolute inset-[3px] border border-gold/20 pointer-events-none" />
+              <div className="flex items-start gap-3 py-3 relative">
                 {/* 좌: 캐릭터 + 무기 배지 */}
                 <div className="flex-shrink-0 relative">
                   <button
@@ -237,10 +248,9 @@ export default function HomePage() {
                     title="캐릭터 변경"
                   >
                     <CharacterSprite
-                      characterId={currentMember.character.characterId}
+                      characterId={displayCharId}
                       role={currentMember.role}
                       size="lg"
-                      variant="job"
                       animate={animDone ? 'bob' : 'none'}
                     />
                   </button>
@@ -260,18 +270,18 @@ export default function HomePage() {
                 {/* 중: 이름·정보 */}
                 <div className="flex-1 min-w-0 py-1">
                   <div className="flex items-center gap-1 flex-wrap">
-                    <span className="font-korean text-sm font-bold text-white drop-shadow">
+                    <span className="font-korean text-sm font-bold text-cream">
                       {currentMember.name}
                     </span>
                     {currentMember.realName && currentMember.realName !== currentMember.name && (
-                      <span className="font-korean text-xs text-white/70">({currentMember.realName})</span>
+                      <span className="font-korean text-xs text-cream/70">({currentMember.realName})</span>
                     )}
                   </div>
                   {jobLabel && (
-                    <span className="font-korean text-xs text-white/80">· {jobLabel}</span>
+                    <span className="font-korean text-xs text-cream/80">· {jobLabel}</span>
                   )}
                   {isParent && (
-                    <p className="font-korean text-xs text-white/80 mt-0.5">
+                    <p className="font-korean text-xs text-cream/80 mt-0.5">
                       관리자 · {currentMember.role === 'DAD' ? '아빠' : '엄마'}
                     </p>
                   )}
@@ -286,14 +296,17 @@ export default function HomePage() {
                     {isChild && familyId && (
                       <QuestionBalloonButton member={currentMember} familyId={familyId} />
                     )}
-                    {/* 펫 스프라이트 */}
+                    {/* 펫 스프라이트 — 레트로 인벤토리 프레임 */}
                     <button
                       type="button"
                       onClick={() => navigate('/profile', { state: { panel: 'pet' } })}
-                      className="relative active:scale-95 transition-transform flex flex-col items-center"
+                      className="relative active:scale-95 transition-transform"
                       title="마이펫 변경"
                     >
-                      <PetSprite petId={currentMember.character.petId} size="sm" />
+                      <div className="bg-panel-darkest border-2 border-gold/60 p-1
+                                       shadow-[inset_2px_2px_0px_#00000090,inset_-1px_-1px_0px_#ffffff15]">
+                        <PetSprite petId={displayPetId} size="sm" />
+                      </div>
                     </button>
                   </div>
                   {bannerInfo && (
@@ -303,8 +316,8 @@ export default function HomePage() {
                       className="mt-auto active:scale-95 transition-transform"
                       title="등급 변경"
                     >
-                      <span className="font-korean text-xs font-bold text-white
-                                       bg-black/30 px-1.5 py-0.5 border border-white/30
+                      <span className="font-korean text-xs font-bold text-gold
+                                       bg-panel-darkest px-1.5 py-0.5 border border-gold/40
                                        flex items-center gap-1">
                         {bannerInfo.emoji} {bannerInfo.label}
                       </span>
@@ -330,9 +343,9 @@ export default function HomePage() {
         {isParent && (
           <div className="grid grid-cols-3 gap-2">
             {[
-              { to: '/missions/new',   icon: '⚔️', label: '퀘스트 생성' },
+              { to: '/missions/new', icon: '⚔️', label: '퀘스트 생성' },
               { to: '/begging/manage', icon: '🙏', label: '조르기 관리' },
-              { to: '/rewards',        icon: '🏆', label: '보상 현황'   },
+              { to: '/rewards', icon: '🏆', label: '보상 현황' },
             ].map(item => (
               <Link key={item.to} to={item.to}
                 className="card-pixel flex flex-col items-center gap-1 py-3
@@ -350,7 +363,7 @@ export default function HomePage() {
         {feedItems.length > 0 && (
           <PixelCard variant="dark" padding="sm">
             <div className="flex items-center justify-between mb-2">
-              <p className="t-heading text-gold">📰 패밀리 늬우스</p>
+              <p className="t-heading text-gold">📜 용사의 여정</p>
               <Link to="/notifications" className="font-korean text-xs text-panel-sub underline">
                 전체 보기
               </Link>
@@ -362,9 +375,9 @@ export default function HomePage() {
                   .map(getMemberName).filter(Boolean).join(', ')
                 const timeStr = notif.createdAt
                   ? notif.createdAt.toLocaleString('ko-KR', {
-                      month: '2-digit', day: '2-digit',
-                      hour: '2-digit', minute: '2-digit', hour12: false,
-                    })
+                    month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit', hour12: false,
+                  })
                   : ''
                 const icon = NOTIF_ICON[notif.type] ?? '📌'
 
@@ -399,9 +412,8 @@ export default function HomePage() {
                           {relatedMission.title}
                         </p>
                       )}
-                      <p className={`font-korean text-xs leading-snug mt-0.5 ${
-                        notif.type === 'MISSION_EXPIRED' ? 'text-panel-sub line-through' : 'text-cream'
-                      }`}>
+                      <p className={`font-korean text-xs leading-snug mt-0.5 ${notif.type === 'MISSION_EXPIRED' ? 'text-panel-sub line-through' : 'text-cream'
+                        }`}>
                         {notif.content}
                       </p>
                       <div className="flex items-center gap-2 mt-0.5 flex-wrap">

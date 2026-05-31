@@ -27,8 +27,8 @@ export async function submitBegging(
   member: Member,
   type: BeggingType,
   content: string,
-  dadId: string,
-  momId: string
+  _dadId: string,
+  _momId: string
 ): Promise<SubmitResult> {
   if (!content.trim()) return { success: false, error: '내용을 입력해줘요!' }
 

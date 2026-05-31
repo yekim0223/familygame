@@ -1,15 +1,13 @@
 // Design Ref: §5.3 SCR-22 NotificationsPage — 알림 목록 (중복제거 + 스태킹)
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/infrastructure/stores/authStore'
 import { useNotificationStore } from '@/infrastructure/stores/notificationStore'
 import { useMissionStore } from '@/infrastructure/stores/missionStore'
-import { markNotificationRead, markAllNotificationsRead } from '@/infrastructure/firebase/collections/notifications'
-import { subscribeMembers } from '@/infrastructure/firebase/collections/members'
+import { markAllNotificationsRead } from '@/infrastructure/firebase/collections/notifications'
 import { PixelCard } from '@/presentation/components/pixel/PixelCard'
 import { PixelButton } from '@/presentation/components/pixel/PixelButton'
 import type { NotificationType, Notification } from '@/domain/entities/Message'
-import type { Member } from '@/domain/entities/Member'
 
 const NOTIF_ICONS: Record<NotificationType, string> = {
   MISSION_PENDING:    '⏳',
@@ -23,6 +21,8 @@ const NOTIF_ICONS: Record<NotificationType, string> = {
   CHEER:              '💚',
   NEW_MISSION:        '⚔️',
   NEW_MESSAGE:        '💌',
+  MISSION_EXPIRED:    '💀',
+  MOM_CHEER:          '💖',
 }
 
 const NOTIF_LABEL: Record<NotificationType, string> = {
@@ -37,6 +37,8 @@ const NOTIF_LABEL: Record<NotificationType, string> = {
   CHEER:              '응원',
   NEW_MISSION:        '새 퀘스트',
   NEW_MESSAGE:        '메시지',
+  MISSION_EXPIRED:    '퀘스트 만료',
+  MOM_CHEER:          '엄마·아빠 격려',
 }
 
 interface StackedGroup {
@@ -79,22 +81,10 @@ function stackNotifications(notifications: Notification[]): StackedGroup[] {
 
 export default function NotificationsPage() {
   const navigate    = useNavigate()
-  const { notifications }     = useNotificationStore()
-  const { familyId }          = useAuthStore()
-  const { getMissionById }    = useMissionStore()
-  const [members, setMembers] = useState<Member[]>([])
+  const { notifications }  = useNotificationStore()
+  const { familyId }       = useAuthStore()
+  const { getMissionById } = useMissionStore()
   const [markingAll, setMarkingAll] = useState(false)
-
-  useEffect(() => {
-    if (!familyId) return
-    return subscribeMembers(familyId, setMembers)
-  }, [familyId])
-
-  const getMemberName = (id?: string) => {
-    if (!id) return null
-    const m = members.find(m => m.id === id)
-    return m ? (m.name !== m.realName ? `${m.name} (${m.realName})` : m.name) : null
-  }
 
   const handleClick = async (group: StackedGroup) => {
     if (!group.allRead && familyId) {

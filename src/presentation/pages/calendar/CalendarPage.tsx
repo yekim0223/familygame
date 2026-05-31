@@ -36,7 +36,7 @@ function getSpecialDaysForDate(date: Date, docs: SpecialDayDoc[]): SpecialDayDoc
 }
 
 // 해당 월의 모든 특별일 (날짜순 정렬)
-function getSpecialDaysForMonth(year: number, month0: number, docs: SpecialDayDoc[]): (SpecialDayDoc & { day: number })[] {
+function getSpecialDaysForMonth(_year: number, month0: number, docs: SpecialDayDoc[]): (SpecialDayDoc & { day: number })[] {
   return docs
     .filter(d => d.month === month0 + 1)
     .sort((a, b) => a.day - b.day)

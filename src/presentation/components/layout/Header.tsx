@@ -98,7 +98,7 @@ export function Header() {
   const isHome = location.pathname === '/home' || location.pathname === '/'
 
   // 알림·설정 공통 버튼 스타일
-  const iconBtn = 'relative w-10 h-10 flex items-center justify-center text-xl ' +
+  const iconBtn = 'relative w-8 h-8 flex items-center justify-center text-lg ' +
     'bg-black/30 border-2 border-black/50 hover:border-gold hover:bg-black/40 ' +
     'transition-all active:scale-95 focus:outline-none'
 
@@ -113,7 +113,7 @@ export function Header() {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="w-10 h-10 flex items-center justify-center
+            className="w-8 h-8 flex items-center justify-center
                        bg-black/30 border-2 border-black/50
                        hover:border-gold hover:bg-black/40 transition-all active:scale-95
                        active:translate-y-[1px]"
@@ -121,7 +121,7 @@ export function Header() {
           >
             {/* 픽셀 블록 뒤로가기 화살표 */}
             <span style={{
-              fontSize: '22px', lineHeight: 1,
+              fontSize: '18px', lineHeight: 1,
               filter: 'drop-shadow(0 0 4px #FFD700) drop-shadow(0 1px 0 #7B5000)',
             }}>
               ⬅️
@@ -149,7 +149,7 @@ export function Header() {
       </div>
 
       {/* 우측: 오디오 플레이어 + 알림 + 설정 */}
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-1">
 
         {/* ── 미니 오디오 플레이어 ─────────────────────────────── */}
         {currentMember && (
@@ -160,7 +160,7 @@ export function Header() {
               onClick={handlePlayPause}
               disabled={bgmTheme === 'MUTE'}
               aria-label={isPlaying ? '일시정지' : '재생'}
-              className="w-7 h-8 flex items-center justify-center text-[11px] text-cream/80
+              className="w-6 h-7 flex items-center justify-center text-[10px] text-cream/80
                          hover:text-gold hover:bg-white/10
                          active:scale-95 transition-transform duration-100
                          disabled:opacity-30 select-none"
@@ -173,7 +173,7 @@ export function Header() {
               type="button"
               onClick={handleNextTheme}
               aria-label="다음 무드"
-              className="w-7 h-8 flex items-center justify-center text-[10px] text-cream/80
+              className="w-6 h-7 flex items-center justify-center text-[9px] text-cream/80
                          hover:text-gold hover:bg-white/10
                          active:scale-95 transition-transform duration-100 select-none"
             >
@@ -186,7 +186,7 @@ export function Header() {
                 type="button"
                 onClick={() => setShowAudioMenu(p => !p)}
                 aria-label="사운드 무드 선택"
-                className="w-8 h-8 flex items-center justify-center text-base
+                className="w-7 h-7 flex items-center justify-center text-sm
                            hover:bg-white/10
                            active:scale-95 transition-transform duration-100 select-none"
               >
@@ -196,7 +196,7 @@ export function Header() {
               {showAudioMenu && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowAudioMenu(false)} />
-                  <div className="absolute right-0 top-9 z-50 min-w-[118px]
+                  <div className="absolute right-0 top-8 z-50 min-w-[118px]
                                   bg-panel-mid border-4 border-panel-border shadow-pixel">
                     {BGM_ORDER.map(t => (
                       <button
@@ -249,7 +249,7 @@ export function Header() {
             {showMenu && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
-                <div className="absolute right-0 top-12 z-50 min-w-[145px]
+                <div className="absolute right-0 top-10 z-50 min-w-[145px]
                                 bg-panel-mid border-4 border-panel-border shadow-pixel">
                   <div className="px-3 py-2 border-b-2 border-panel-border">
                     <p className="font-korean text-xs font-bold text-gold">

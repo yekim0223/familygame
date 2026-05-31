@@ -1,13 +1,10 @@
 // Design Ref: §5.3 SCR-14 StatisticsPage — 통계 (부모 전용)
 // Plan UI Checklist: 이번 달 요약, 레벨 현황, 미션 달성률, 6개월 트렌드, 경쟁 현황
-import { useMemo } from 'react'
 import { useRewards, filterRewardsByYearMonth } from '@/presentation/hooks/useRewards'
 import { useMissions } from '@/presentation/hooks/useMissions'
 import { useAuthStore } from '@/infrastructure/stores/authStore'
 import { PixelCard } from '@/presentation/components/pixel/PixelCard'
 import { PixelBarChart } from '@/presentation/components/charts/PixelBarChart'
-import { ExpBar } from '@/presentation/components/pixel/ExpBar'
-import { CharacterSprite } from '@/presentation/components/character/CharacterSprite'
 
 // 6개월 월 이름
 function getLast6Months(): { year: number; month: number; label: string }[] {

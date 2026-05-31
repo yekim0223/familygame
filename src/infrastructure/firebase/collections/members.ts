@@ -1,5 +1,5 @@
 // Design Ref: §4.1 Firestore 컬렉션 — members 컬렉션 CRUD
-import { where, orderBy } from 'firebase/firestore'
+import { where } from 'firebase/firestore'
 import { fsGet, fsSet, fsAdd, fsQuery, fsUpdate, fsSubscribe, toDate } from '../firestore'
 import type { Member, MemberFirestore } from '@/domain/entities/Member'
 import { calcKoreanAge } from '@/domain/services/KoreanAge'

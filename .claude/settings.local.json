@@ -28,11 +28,19 @@
       "Bash(xargs sed -i '' 's/text-\\\\[11px\\\\]/text-xs/g')",
       "Bash(xargs sed -i '' 's/text-stone\\\\/40/text-stone/g;s/text-stone\\\\/50/text-stone/g;s/text-stone\\\\/60/text-stone/g')",
       "Bash(xargs sed -i '' 's/text-stone\\\\/70/text-stone/g')",
-      "Bash(xargs sed -i '' 's/text-cream\\\\/40/text-cream\\\\/80/g;s/text-cream\\\\/50/text-cream\\\\/80/g;s/text-cream\\\\/60/text-cream\\\\/90/g;s/text-cream\\\\/70/text-cream\\\\/90/g')"
+      "Bash(xargs sed -i '' 's/text-cream\\\\/40/text-cream\\\\/80/g;s/text-cream\\\\/50/text-cream\\\\/80/g;s/text-cream\\\\/60/text-cream\\\\/90/g;s/text-cream\\\\/70/text-cream\\\\/90/g')",
+      "Bash(mkdir -p /Users/youngeon/dev/familygame/src/infrastructure/audio)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(sed -n '5,10p' /Users/youngeon/dev/familygame/src/presentation/pages/settings/SettingsPage.tsx)",
+      "Bash(sed -n '40,46p' /Users/youngeon/dev/familygame/src/presentation/pages/settings/SpecialDaysPage.tsx)",
+      "Bash(python3 -c \"import json,sys; json.load\\(open\\('/Users/youngeon/dev/familygame/firestore.indexes.json'\\)\\); print\\('JSON valid'\\)\")"
     ],
     "additionalDirectories": [
       "/Users/youngeon/dev/familygame",
-      "/Users/youngeon/dev/familygame/captures"
+      "/Users/youngeon/dev/familygame/captures",
+      "/Users/youngeon/dev/familygame/src/infrastructure"
     ]
   }
 }

@@ -9,7 +9,7 @@ export async function acceptMission(
   familyId: string,
   missionId: string,
   memberId: string,
-  memberName: string
+  _memberName: string
 ): Promise<{ error: string | null }> {
   const { data: mission } = await getMission(familyId, missionId)
   if (!mission) return { error: '미션을 찾을 수 없어요' }
