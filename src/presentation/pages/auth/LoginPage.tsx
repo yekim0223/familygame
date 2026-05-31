@@ -1,7 +1,7 @@
 // Design Ref: §5.3 SCR-02 LoginPage
-// 로그인 흐름: landing → characters (기존 기기) | landing → family-id-input → characters (신규 기기)
-// 신규 기기: 가족 ID 입력 → 캐릭터 선택 → PIN
-// 기존 기기: 바로 캐릭터 선택 → PIN
+// 로그인 흐름: landing → characters (프로필 선택형)
+// 기존 기기: 캐릭터 카드 선택 → 숫자패드 PIN → /home
+// 신규 기기: landing → family-id-input → 캐릭터 선택 → PIN
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { subscribeMembers } from '@/infrastructure/firebase/collections/members'
@@ -17,16 +17,17 @@ import { PixelCard } from '@/presentation/components/pixel/PixelCard'
 import type { Member, Role } from '@/domain/entities/Member'
 import type { CharacterInfo } from '@/domain/entities/Member'
 import { APP_VERSION_SHORT } from '@/config/version'
+import { audioManager } from '@/infrastructure/audio/audioManager'
 
 // ── 상수 ────────────────────────────────────────────────────────
 const LS_MEMBER_CACHE = 'fq_member_cache'
 const LS_LAST_LOGIN   = 'fq_last_login'
-const MASTER_ID   = 'kye'
-const MASTER_PW   = '1111'
+const MASTER_ID       = 'kye'
+const MASTER_PW       = '1111'
 const MASTER_LOGIN_ID = 'kye'
 
 // ── 타입 ────────────────────────────────────────────────────────
-type View = 'landing' | 'family-id-input' | 'characters'
+type View = 'landing' | 'family-id-input' | 'characters' | 'pin-entry'
 
 interface CachedMember {
   id: string; name: string; realName: string
@@ -50,6 +51,39 @@ function writeMemberCache(familyId: string, members: Member[]) {
     role: m.role, character: m.character, level: m.level, isActive: m.isActive,
   }))
   localStorage.setItem(LS_MEMBER_CACHE, JSON.stringify({ familyId, members: cache }))
+}
+
+// ── 숫자 키패드 컴포넌트 ────────────────────────────────────────
+function NumPad({ onKey }: { onKey: (k: string) => void }) {
+  const KEYS = [
+    ['1','2','3'],
+    ['4','5','6'],
+    ['7','8','9'],
+    ['⌫','0','✓'],
+  ]
+  return (
+    <div className="grid grid-cols-3 gap-2 w-full max-w-[240px] mx-auto">
+      {KEYS.flat().map(k => (
+        <button
+          key={k}
+          type="button"
+          onPointerDown={e => { e.preventDefault(); onKey(k) }}
+          className={[
+            'h-14 border-4 font-pixel text-base leading-none',
+            'active:scale-95 transition-transform duration-75',
+            'shadow-[inset_2px_2px_0px_#ffffff30,inset_-2px_-2px_0px_#00000060]',
+            k === '✓'
+              ? 'bg-gold/80 border-gold text-pixel-dark'
+              : k === '⌫'
+              ? 'bg-panel-mid border-panel-border text-cream'
+              : 'bg-panel-dark border-panel-border text-cream hover:border-gold/60',
+          ].join(' ')}
+        >
+          {k}
+        </button>
+      ))}
+    </div>
+  )
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -84,11 +118,10 @@ export default function LoginPage() {
   const [masterPw, setMasterPw] = useState('')
   const [masterError, setMasterError] = useState('')
 
-  // ── 비밀코드 입력 → family_codes 조회 → Firestore 검증 ────────
+  // ── 비밀코드 입력 → 개인ID/가족코드 조회 → Firestore 검증 ───────
   const handleFidSubmit = async () => {
     const code = fidInput.trim()
-    if (!code) { setFidError('비밀코드를 입력해줘요'); return }
-
+    if (!code) { setFidError('개인 ID 또는 가족코드를 입력해줘요'); return }
     setVerifying(true)
     setFidError('')
 
@@ -116,7 +149,7 @@ export default function LoginPage() {
         setSelected(cached)
         setVerifying(false)
         setFidError('')
-        setView('characters')
+        setView('pin-entry')
         return
       }
     }
@@ -197,7 +230,26 @@ export default function LoginPage() {
   }, [pinLockedUntil])
 
   const handleSelectMember = (member: CachedMember) => {
+    audioManager.resume()
+    audioManager.keyClick()
     setSelected(member); setPin(''); setPinError('')
+    setView('pin-entry')
+  }
+
+  // ── 숫자 키패드 처리 ─────────────────────────────────────────
+  const handleNumKey = (k: string) => {
+    audioManager.resume()
+    if (k === '⌫') {
+      audioManager.keyClick()
+      setPin(p => p.slice(0, -1))
+      setPinError('')
+    } else if (k === '✓') {
+      handleLogin()
+    } else {
+      audioManager.keyClick()
+      setPin(p => (p.length < 8 ? p + k : p))
+      setPinError('')
+    }
   }
 
   // ── PIN 로그인 ───────────────────────────────────────────────
@@ -214,6 +266,8 @@ export default function LoginPage() {
       return
     }
     resetPinFail()
+    audioManager.loginFanfare()
+    audioManager.startAfterLogin()
     localStorage.setItem('familyId', familyId)
     localStorage.setItem(LS_LAST_LOGIN, member.id)
     localStorage.setItem('fq_login_at', Date.now().toString())
@@ -231,7 +285,7 @@ export default function LoginPage() {
   }
 
   // ════════════════════════════════════════════════════════════════
-  // VIEW 1: LANDING — 대형 타이틀
+  // VIEW 1: LANDING
   // ════════════════════════════════════════════════════════════════
   if (view === 'landing') {
     return (
@@ -284,7 +338,6 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* 버전 */}
         <p className="font-pixel text-cream/60 text-center mb-10 text-xs">{APP_VERSION_SHORT}</p>
 
         {/* FAMILY LOGIN 버튼 */}
@@ -296,12 +349,13 @@ export default function LoginPage() {
             size="lg"
             disabled={autoDetecting}
             onClick={async () => {
+              audioManager.resume()
+              audioManager.loginIntro()
               setAutoDetecting(true)
               await startAnonymousSession()
               const { data: loginIdDoc } = await fsGet<{ familyId: string; memberId: string }>(
                 `member_login_ids/${MASTER_LOGIN_ID}`
               )
-
               const resolvedFamilyId = loginIdDoc?.familyId || familyId
 
               if (resolvedFamilyId) {
@@ -346,21 +400,11 @@ export default function LoginPage() {
           <div className="w-full max-w-xs mt-3">
             <PixelCard padding="sm" className="animate-fade-slide-up">
               <p className="font-pixel text-xs text-gold mb-3">아빠 작업방 (Master)</p>
-              <input
-                type="text"
-                value={masterId}
-                onChange={e => setMasterId(e.target.value)}
-                placeholder="ID"
-                className="input-pixel mb-2"
-              />
-              <input
-                type="password"
-                value={masterPw}
-                onChange={e => setMasterPw(e.target.value)}
+              <input type="text" value={masterId} onChange={e => setMasterId(e.target.value)}
+                placeholder="ID" className="input-pixel mb-2" />
+              <input type="password" value={masterPw} onChange={e => setMasterPw(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleMasterLogin()}
-                placeholder="Password"
-                className="input-pixel mb-2"
-              />
+                placeholder="Password" className="input-pixel mb-2" />
               {masterError && <p className="font-korean text-sm text-rejected mb-2">{masterError}</p>}
               <PixelButton variant="gold" fullWidth size="sm" onClick={handleMasterLogin}>접속</PixelButton>
             </PixelCard>
@@ -371,25 +415,22 @@ export default function LoginPage() {
   }
 
   // ════════════════════════════════════════════════════════════════
-  // VIEW 2: FAMILY ID INPUT — 가족 ID 입력 (신규 기기)
+  // VIEW 2: FAMILY ID INPUT — 신규 기기 (ID 직접 입력)
   // ════════════════════════════════════════════════════════════════
   if (view === 'family-id-input') {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-panel-darkest">
         <div className="w-full max-w-xs">
-
-          {/* 헤더 */}
           <div className="text-center mb-8">
             <p className="font-pixel text-gold text-xs tracking-widest mb-2">FAMILY QUEST</p>
-            <p className="font-korean text-cream text-base font-bold">🔑 로그인</p>
+            <p className="font-korean text-cream text-base font-bold">🔑 새 기기 등록</p>
             <p className="font-korean text-cream/80 text-sm mt-2 leading-relaxed">
-              개인 ID를 입력해주세요
+              아빠가 알려준 개인 ID를 입력해요
             </p>
           </div>
 
           <PixelCard padding="sm" className="mb-4">
-            <p className="font-korean text-sm font-bold text-gold mb-3">ID 입력</p>
-
+            <p className="font-korean text-sm font-bold text-gold mb-3">개인 ID 입력</p>
             <input
               type="text"
               value={fidInput}
@@ -399,29 +440,18 @@ export default function LoginPage() {
               className="input-pixel mb-2"
               autoFocus
             />
-
-            {fidError && (
-              <p className="font-korean text-xs text-rejected font-bold mb-2">{fidError}</p>
-            )}
-
+            {fidError && <p className="font-korean text-xs text-rejected font-bold mb-2">{fidError}</p>}
             {verifying && (
               <p className="font-korean text-xs text-sky text-center mb-2 animate-pulse">
                 가족 데이터 확인 중...
               </p>
             )}
-
-            <PixelButton
-              variant="gold"
-              fullWidth
-              size="lg"
-              disabled={verifying || !fidInput.trim()}
-              onClick={handleFidSubmit}
-            >
+            <PixelButton variant="gold" fullWidth size="lg"
+              disabled={verifying || !fidInput.trim()} onClick={handleFidSubmit}>
               {verifying ? '확인 중...' : '🔍 입장하기'}
             </PixelButton>
           </PixelCard>
 
-          {/* 신규 가입 안내 */}
           <div className="bg-panel-dark border-2 border-panel-border px-3 py-3 mb-4">
             <p className="font-korean text-sm text-cream leading-relaxed">
               💡 <strong className="text-gold">처음 시작하나요?</strong><br/>
@@ -442,172 +472,206 @@ export default function LoginPage() {
   }
 
   // ════════════════════════════════════════════════════════════════
-  // VIEW 3: CHARACTERS — 캐릭터 선택 + PIN 입력
+  // VIEW 3: CHARACTERS — 프로필 선택 (대형 카드 그리드)
+  // ════════════════════════════════════════════════════════════════
+  if (view === 'characters') {
+    return (
+      <div className="min-h-screen flex flex-col bg-panel-darkest">
+        {/* 헤더 */}
+        <div className="flex items-center justify-between px-4 pt-6 pb-3 border-b border-gold/20">
+          <button type="button"
+            onClick={() => { setView('landing'); setSelected(null); setPin('') }}
+            className="flex items-center gap-1 px-3 py-1.5 bg-panel-dark border-2 border-panel-border
+                       font-korean text-cream text-sm font-bold hover:border-gold transition-all active:scale-95">
+            ← 뒤로
+          </button>
+          <div className="text-center">
+            <p className="font-pixel text-gold text-[10px]">FAMILY QUEST</p>
+            <p className="font-korean text-cream text-sm font-semibold mt-0.5">누가 오셨나요? 👋</p>
+          </div>
+          <div className="w-14" />
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-4 py-5">
+          {/* 로딩 */}
+          {membersLoading && (
+            <div className="flex flex-col items-center justify-center h-64 gap-3">
+              <p className="text-4xl animate-bounce">⚔️</p>
+              <p className="font-korean text-cream/80 text-sm animate-pulse">구성원 불러오는 중...</p>
+            </div>
+          )}
+
+          {/* 실패 */}
+          {!membersLoading && (membersLoadFailed || members.length === 0) && (
+            <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
+              <p className="text-4xl">😢</p>
+              <p className="font-korean text-cream/80 text-sm">
+                구성원을 불러올 수 없어요.<br/>
+                가족 ID가 올바른지 확인해주세요.
+              </p>
+              <PixelButton variant="ghost" size="sm" onClick={() => setView('family-id-input')}>
+                가족 ID 다시 입력
+              </PixelButton>
+            </div>
+          )}
+
+          {/* 대형 프로필 카드 그리드 */}
+          {!membersLoading && members.length > 0 && (
+            <div className={`grid gap-4 ${
+              members.length === 1 ? 'grid-cols-1 max-w-[220px] mx-auto' : 'grid-cols-2'
+            }`}>
+              {members.map(member => {
+                const isLast = member.id === lastMemberId
+                return (
+                  <button
+                    key={member.id}
+                    type="button"
+                    onClick={() => handleSelectMember(member)}
+                    className={[
+                      'flex flex-col items-center gap-3 py-6 px-3',
+                      'border-4 transition-all duration-150 relative',
+                      'active:scale-95',
+                      'bg-panel-dark border-panel-border hover:border-gold hover:bg-gold/10',
+                      'shadow-[inset_2px_2px_0px_#ffffff15,inset_-2px_-2px_0px_#00000060]',
+                    ].join(' ')}
+                  >
+                    {/* 마지막 접속 배지 */}
+                    {isLast && (
+                      <span className="absolute top-2 right-2 font-pixel text-[9px] text-gold
+                                       bg-gold/10 border border-gold px-1 leading-none py-0.5">
+                        ★
+                      </span>
+                    )}
+
+                    {/* 캐릭터 스프라이트 — 크게 */}
+                    <div className="scale-125 mb-1">
+                      <CharacterSprite
+                        characterId={member.character.characterId}
+                        role={member.role}
+                        size="lg"
+                        variant="job"
+                      />
+                    </div>
+
+                    {/* 이름 */}
+                    <div className="text-center">
+                      <p className="font-korean text-cream text-base font-bold leading-tight">
+                        {member.name}
+                      </p>
+                      {member.realName && member.realName !== member.name && (
+                        <p className="font-korean text-cream/70 text-xs mt-0.5">({member.realName})</p>
+                      )}
+                      {member.role === 'CHILD' && (
+                        <p className="font-pixel text-xs text-gold/80 mt-1">Lv.{member.level}</p>
+                      )}
+                      {member.role === 'DAD' && (
+                        <p className="font-korean text-xs text-sky mt-1">👑 아빠</p>
+                      )}
+                      {member.role === 'MOM' && (
+                        <p className="font-korean text-xs text-pink mt-1">👑 엄마</p>
+                      )}
+                    </div>
+
+                    {/* 탭 힌트 */}
+                    <p className="font-korean text-xs text-gold/60 mt-1">탭해서 입장 →</p>
+                  </button>
+                )
+              })}
+            </div>
+          )}
+
+          {/* 새 기기 등록 링크 */}
+          {!membersLoading && (
+            <div className="mt-6 text-center">
+              <button type="button" onClick={() => setView('family-id-input')}
+                className="font-korean text-xs text-panel-sub underline hover:text-cream/70">
+                다른 기기로 오셨나요? → ID 입력
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  // VIEW 4: PIN-ENTRY — 숫자패드 PIN 입력 (프로필 포커스)
   // ════════════════════════════════════════════════════════════════
   return (
     <div className="min-h-screen flex flex-col bg-panel-darkest">
-      {/* 헤더 */}
-      <div className="flex items-center justify-between px-4 pt-6 pb-2">
+      {/* 헤더 — 다른 캐릭터 선택 */}
+      <div className="flex items-center px-4 pt-5 pb-3 border-b border-gold/20">
         <button type="button"
-          onClick={() => { setView(familyId ? 'landing' : 'family-id-input'); setSelected(null); setPin('') }}
+          onClick={() => {
+            setSelected(null); setPin(''); setPinError('')
+            setView(members.length > 0 ? 'characters' : 'landing')
+          }}
           className="flex items-center gap-1 px-3 py-1.5 bg-panel-dark border-2 border-panel-border
                      font-korean text-cream text-sm font-bold hover:border-gold transition-all active:scale-95">
-          ← 뒤로
+          ← 다른 캐릭터
         </button>
-        <div className="text-center">
-          <p className="font-pixel text-gold text-xs">FAMILY QUEST</p>
-          <p className="font-korean text-cream text-sm font-semibold">
-            {selected ? `${selected.name}, PIN 입력` : '누가 오셨나요?'}
-          </p>
-        </div>
-        <div className="w-12" />
       </div>
 
-      <div className="px-4 flex-1">
-
-        {/* 로딩 */}
-        {membersLoading && (
-          <div className="flex flex-col items-center justify-center h-48 gap-2">
-            <p className="font-korean text-cream/80 text-sm animate-pulse">구성원 불러오는 중...</p>
-            <p className="font-korean text-cream/60 text-xs">최대 5초 소요</p>
-          </div>
-        )}
-
-        {/* 실패 / 빈 상태 */}
-        {!membersLoading && (membersLoadFailed || members.length === 0) && (
-          <div className="flex flex-col items-center justify-center h-48 gap-3 text-center">
-            <p className="font-korean text-cream/80 text-sm">
-              구성원을 불러올 수 없어요.<br/>
-              가족 ID가 올바른지 확인해주세요.
-            </p>
-            <PixelButton variant="ghost" size="sm" onClick={() => setView('family-id-input')}>
-              가족 ID 다시 입력
-            </PixelButton>
-            {membersLoadFailed && (
-              <button type="button"
-                onClick={() => { setMembersLoading(true); setMembersLoadFailed(false) }}
-                className="font-korean text-cream/70 text-xs underline">
-                다시 불러오기
-              </button>
-            )}
-          </div>
-        )}
-
-        {/* 캐릭터 그리드 */}
-        {!membersLoading && members.length > 0 && (
-          <div className={`grid gap-3 py-4 ${
-            members.length === 1 ? 'grid-cols-1 max-w-[200px] mx-auto' : 'grid-cols-2'
-          }`}>
-            {members.map(member => {
-              const isSelected = selected?.id === member.id
-              const isLast     = member.id === lastMemberId && !isSelected
-              return (
-                <button
-                  key={member.id}
-                  type="button"
-                  onClick={() => handleSelectMember(member)}
-                  className={[
-                    'flex flex-col items-center gap-2 py-5 px-2',
-                    'border-4 transition-all duration-150',
-                    'hover:scale-[1.05] active:scale-95',
-                    isSelected
-                      ? 'bg-gold/20 border-gold scale-[1.03] shadow-pixel'
-                      : 'bg-panel-dark border-panel-border hover:border-gold hover:bg-gold/10',
-                  ].join(' ')}
-                >
-                  <CharacterSprite
-                    characterId={member.character.characterId}
-                    role={member.role}
-                    size="lg"
-                    variant="job"
-                  />
-                  <div className="text-center">
-                    <p className="font-korean text-cream text-sm font-bold leading-tight">
-                      {member.name}
-                    </p>
-                    {member.realName && member.realName !== member.name && (
-                      <p className="font-korean text-cream/80 text-xs">({member.realName})</p>
-                    )}
-                    {member.role === 'CHILD' && (
-                      <p className="font-pixel text-xs text-gold/70 mt-0.5">Lv.{member.level}</p>
-                    )}
-                    {isLast && (
-                      <p className="font-korean text-xs text-gold mt-0.5">마지막 접속</p>
-                    )}
-                  </div>
-                </button>
-              )
-            })}
-          </div>
-        )}
-
-        {/* PIN 입력 패널 */}
+      <div className="flex-1 flex flex-col items-center justify-center px-6 pb-8 gap-6">
         {selected && (
-          <div className="mt-1 animate-fade-slide-up">
-            <div className="card-pixel p-4">
-              <div className="flex items-center gap-3 mb-3">
+          <>
+            {/* 선택된 캐릭터 프로필 — 크게 */}
+            <div className="flex flex-col items-center gap-3">
+              <div className="scale-150 mb-2">
                 <CharacterSprite
                   characterId={selected.character.characterId}
                   role={selected.role}
-                  size="sm"
+                  size="lg"
                   variant="job"
                 />
-                <div>
-                  <p className="font-korean text-sm font-bold text-cream leading-tight">
-                    {selected.name}
-                    {selected.realName && selected.realName !== selected.name && (
-                      <span className="font-normal text-panel-sub text-xs ml-1">({selected.realName})</span>
-                    )}
-                  </p>
-                  <p className="font-korean text-xs text-panel-sub">PIN 번호를 입력해주세요</p>
-                </div>
               </div>
+              <div className="text-center">
+                <p className="font-korean text-cream text-xl font-bold t-pixel-shadow">
+                  {selected.name}
+                </p>
+                {selected.realName && selected.realName !== selected.name && (
+                  <p className="font-korean text-cream/60 text-sm mt-0.5">({selected.realName})</p>
+                )}
+              </div>
+            </div>
 
-              {/* PIN 도트 표시 */}
-              <div className="flex gap-2 justify-center mb-3">
+            {/* PIN 도트 표시 */}
+            <div className="flex flex-col items-center gap-3">
+              <p className="font-korean text-cream/70 text-sm">PIN 번호를 입력해요</p>
+              <div className="flex gap-3 justify-center">
                 {Array.from({ length: Math.max(pin.length, 4) }).map((_, i) => (
-                  <div key={i} className={`w-4 h-4 border-2 border-panel-border
-                    ${i < pin.length ? 'bg-gold' : 'bg-panel-darkest'}`} />
+                  <div key={i}
+                    className={`w-5 h-5 border-2 transition-all duration-100
+                      ${i < pin.length
+                        ? 'bg-gold border-gold shadow-[0_0_8px_#FFD700]'
+                        : 'bg-panel-darkest border-panel-border'}`}
+                  />
                 ))}
               </div>
-
-              <input
-                type="password"
-                value={pin}
-                onChange={e => { setPin(e.target.value.slice(0, 8)); setPinError('') }}
-                onKeyDown={e => e.key === 'Enter' && handleLogin()}
-                placeholder="PIN (숫자 또는 영문, 2~8자)"
-                maxLength={8}
-                className="input-pixel text-center mb-2 tracking-widest"
-                autoFocus
-              />
-
               {pinError && (
-                <p className="font-korean text-xs text-rejected font-bold text-center mb-2">
+                <p className="font-korean text-sm text-rejected font-bold animate-pulse">
                   {pinError}
                 </p>
               )}
-
-              <div className="flex gap-2">
-                <PixelButton
-                  variant="ghost"
-                  className="flex-1"
-                  onClick={() => { setSelected(null); setPin('') }}
-                >
-                  취소
-                </PixelButton>
-                <PixelButton
-                  variant="gold"
-                  size="lg"
-                  className="flex-[2]"
-                  disabled={loading || pin.length < 2}
-                  onClick={handleLogin}
-                >
-                  {loading ? '확인 중...' : '입장 (Enter)'}
-                </PixelButton>
-              </div>
+              {loading && (
+                <p className="font-korean text-sm text-sky animate-pulse">확인 중...</p>
+              )}
             </div>
-          </div>
+
+            {/* 숫자 키패드 */}
+            <NumPad onKey={handleNumKey} />
+
+            {/* 키보드 입력 지원 (숨김 input) */}
+            <input
+              type="password"
+              value={pin}
+              onChange={e => { setPin(e.target.value.slice(0, 8)); setPinError('') }}
+              onKeyDown={e => e.key === 'Enter' && handleLogin()}
+              className="sr-only"
+              tabIndex={-1}
+              aria-hidden
+            />
+          </>
         )}
       </div>
     </div>

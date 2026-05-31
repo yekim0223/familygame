@@ -126,6 +126,11 @@
   25%      { transform: translateY(-3px) scaleX(1); }
   75%      { transform: translateY(2px) scaleX(1); }
 }
+/* 펫 바운스 (2px 상하) */
+@keyframes petBounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-2px); }
+}
 /* 곡괭이 채굴 */
 @keyframes characterMine {
   0%   { transform: rotate(0deg); }
@@ -234,6 +239,24 @@
   0%, 100% { box-shadow: 0 0 20px #FFD700, 0 0 40px rgba(255,215,0,0.25); }
   50%      { box-shadow: 0 0 40px #FFD700, 0 0 80px rgba(255,215,0,0.45), inset 0 0 20px rgba(255,215,0,0.1); }
 }
+
+/* D. 특별 퀘스트 카드 황금 네온 테두리 펄스 */
+@keyframes cardSpecialGlow {
+  0%, 100% {
+    box-shadow:
+      0 0 0 0 rgba(255,215,0,0.1),
+      inset 2px 2px 0px rgba(255,255,255,0.08),
+      inset -2px -2px 0px rgba(0,0,0,0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 12px 4px rgba(255,215,0,0.55),
+      0 0 24px 2px rgba(255,200,0,0.25),
+      inset 2px 2px 0px rgba(255,255,255,0.08),
+      inset -2px -2px 0px rgba(0,0,0,0.5);
+  }
+}
+.card-special { animation: cardSpecialGlow 2s ease-in-out infinite; }
 
 /* ═══════════════════════════════════════════════════════════════
    ANIMATION UTILITY CLASSES

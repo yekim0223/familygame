@@ -161,3 +161,26 @@ export async function deleteMessage(
 ): Promise<{ error: string | null }> {
   return fsDelete(`${col(familyId)}/${messageId}`)
 }
+
+// 리액션 토글 — emoji를 memberId가 이미 눌렀으면 제거, 아니면 추가
+export async function toggleReaction(
+  familyId: string,
+  messageId: string,
+  emoji: string,
+  memberId: string,
+  currentReactions: Record<string, string[]>
+): Promise<{ error: string | null }> {
+  const updated: Record<string, string[]> = {}
+  for (const [e, ids] of Object.entries(currentReactions)) {
+    updated[e] = [...ids]
+  }
+  const existing = updated[emoji] ?? []
+  if (existing.includes(memberId)) {
+    const filtered = existing.filter(id => id !== memberId)
+    if (filtered.length === 0) delete updated[emoji]
+    else updated[emoji] = filtered
+  } else {
+    updated[emoji] = [...existing, memberId]
+  }
+  return fsUpdate(`${col(familyId)}/${messageId}`, { reactions: updated })
+}

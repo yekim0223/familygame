@@ -1,5 +1,6 @@
 // Tetris — Classic Block Puzzle (Canvas + Mobile Touch)
 import { useRef, useEffect, useState } from 'react'
+import { audioManager } from '@/infrastructure/audio/audioManager'
 
 // ── 캔버스 / 그리드 상수 ─────────────────────────────────────────────
 const CELL = 24
@@ -108,6 +109,9 @@ function drawPiece(ctx: CanvasRenderingContext2D, p: Piece, offsetY: number, alp
   }
 }
 
+// ── Lock Delay ──────────────────────────────────────────────────────
+const LOCK_DELAY = 500  // ms — 착지 후 0.5초 유예
+
 // ── 상태 ────────────────────────────────────────────────────────────
 interface TetrisState {
   board: (string | null)[][]
@@ -118,6 +122,7 @@ interface TetrisState {
   level: number
   phase: 'playing' | 'gameover'
   lastDrop: number
+  lockDelay: number | null  // 착지 유예 타이머 시작 시각 (null = 공중)
 }
 
 function initState(): TetrisState {
@@ -128,6 +133,7 @@ function initState(): TetrisState {
     score: 0, lines: 0, level: 1,
     phase: 'playing',
     lastDrop: 0,
+    lockDelay: null,
   }
 }
 
@@ -152,7 +158,10 @@ export function TetrisGame({ onGameOver, onBack }: TetrisProps) {
     const g = ts.current; if (g.phase !== 'playing') return false
     const p = g.current
     if (validPos(p.shape, p.x + dx, p.y + dy, g.board)) {
-      g.current = { ...p, x: p.x + dx, y: p.y + dy }; return true
+      g.current = { ...p, x: p.x + dx, y: p.y + dy }
+      // 수평 이동 성공 시 Lock Delay 리셋 (땅 위에서 이동할 여유 부여)
+      if (dx !== 0) g.lockDelay = null
+      return true
     }
     return false
   }
@@ -160,10 +169,13 @@ export function TetrisGame({ onGameOver, onBack }: TetrisProps) {
     const g = ts.current; if (g.phase !== 'playing') return
     const p = g.current
     const np = rotatePiece(p)
-    // Wall kick: try offsets
+    // Wall kick: 5오프셋 시도
     for (const dx of [0, -1, 1, -2, 2]) {
       if (validPos(np.shape, np.x + dx, np.y, g.board)) {
-        g.current = { ...np, x: np.x + dx }; return
+        g.current = { ...np, x: np.x + dx }
+        g.lockDelay = null   // 회전 성공 시 Lock Delay 리셋
+        audioManager.rotate()
+        return
       }
     }
   }
@@ -171,6 +183,7 @@ export function TetrisGame({ onGameOver, onBack }: TetrisProps) {
     const g = ts.current; if (g.phase !== 'playing') return
     const gy = ghostY(g.current, g.board)
     g.current = { ...g.current, y: gy }
+    audioManager.hardDrop()
     lockAndSpawn()
   }
   const lockAndSpawn = () => {
@@ -185,10 +198,13 @@ export function TetrisGame({ onGameOver, onBack }: TetrisProps) {
     g.current = { ...next, x: Math.floor(COLS / 2) - Math.floor(next.shape[0].length / 2), y: 0 }
     g.next = rndPiece()
     g.lastDrop = performance.now()
+    if (linesN > 0) audioManager.lineClear(linesN)
     setUiScore(g.score); setUiLines(g.lines); setUiLevel(g.level)
     // 게임 오버 체크
     if (!validPos(g.current.shape, g.current.x, g.current.y, g.board)) {
-      g.phase = 'gameover'; setUiPhase('gameover'); cbRef.current(g.score)
+      g.phase = 'gameover'; setUiPhase('gameover')
+      audioManager.gameOver()
+      cbRef.current(g.score)
     }
   }
 
@@ -198,6 +214,7 @@ export function TetrisGame({ onGameOver, onBack }: TetrisProps) {
     ts.current = initState()
     setUiScore(0); setUiLines(0); setUiLevel(1); setUiPhase('playing')
     ts.current.lastDrop = performance.now()
+    ts.current.lockDelay = null
 
     let rafId: number
     const REPEAT_DELAY = 160
@@ -215,8 +232,22 @@ export function TetrisGame({ onGameOver, onBack }: TetrisProps) {
       // ── 자동 낙하 ──
       const dropInterval = Math.max(100, 1000 - (g.level - 1) * 100)
       if (now - g.lastDrop > dropInterval) {
-        if (!tryMove(0, 1)) lockAndSpawn()
-        else g.lastDrop = now
+        if (tryMove(0, 1)) {
+          g.lastDrop = now
+          g.lockDelay = null
+        } else {
+          // 내려갈 수 없음 → Lock Delay 시작
+          if (g.lockDelay === null) g.lockDelay = now
+          g.lastDrop = now  // 드롭 타이머 리셋 (중복 체크 방지)
+        }
+      }
+
+      // ── Lock Delay 독립 체크 (매 프레임) ──
+      if (g.lockDelay !== null && now - g.lockDelay >= LOCK_DELAY) {
+        if (!validPos(g.current.shape, g.current.x, g.current.y + 1, g.board)) {
+          lockAndSpawn()
+        }
+        g.lockDelay = null
       }
 
       // ── 좌우 반복 이동 ──
@@ -276,9 +307,9 @@ export function TetrisGame({ onGameOver, onBack }: TetrisProps) {
     return () => { cancelAnimationFrame(rafId); window.removeEventListener('keydown', onKD); window.removeEventListener('keyup', onKU) }
   }, [])
 
-  const pressLeft  = () => { keys.current.left  = true;  keyTimer.current.left  = 0 }
-  const pressRight = () => { keys.current.right = true;  keyTimer.current.right = 0 }
-  const pressDown  = () => { keys.current.down  = true;  keyTimer.current.down  = 0 }
+  const pressLeft  = () => { audioManager.resume(); keys.current.left  = true;  keyTimer.current.left  = 0 }
+  const pressRight = () => { audioManager.resume(); keys.current.right = true;  keyTimer.current.right = 0 }
+  const pressDown  = () => { audioManager.resume(); keys.current.down  = true;  keyTimer.current.down  = 0 }
   const relLeft    = () => { keys.current.left  = false; keyTimer.current.left  = 0 }
   const relRight   = () => { keys.current.right = false; keyTimer.current.right = 0 }
   const relDown    = () => { keys.current.down  = false; keyTimer.current.down  = 0 }

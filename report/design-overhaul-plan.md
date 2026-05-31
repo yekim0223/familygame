@@ -1,8 +1,9 @@
 # Family Quest — 디자인 전면 재개편 기획서 v3.0
 
-> 작성일: 2026-05-30  
+> 최초 작성: 2026-05-30 | **마지막 업데이트: 2026-05-31 (v2.2.0 배포 완료)**  
 > 이전 기획: docs/design-overhaul-v2.md (Plan A v2.1) → 이 문서로 통합·확장  
-> 목표: **프로 게임 기획자 수준의 통일된 디자인 시스템 구축**
+> 목표: **프로 게임 기획자 수준의 통일된 디자인 시스템 구축**  
+> **현재 상태: Phase 1~4 전체 완료 ✅ — 총 15개 페이지 다크 MC 테마 적용 완료**
 
 ---
 
@@ -557,52 +558,71 @@ childAccepted     — 사용 안 함, 쿼리에서 제외
 
 ## 8. 구현 로드맵 (Implementation Roadmap)
 
-### Phase 0 — 버그 수정 (즉시 완료)
+### Phase 0 — 버그 수정 ✅ 완료
 - [x] MasterPanel 키보드 사라짐 버그 수정 (인라인 JSX 변환)
 
-### Phase 1 — 디자인 토큰 기반 작업 (1~2시간)
+### Phase 1 — 디자인 토큰 기반 작업 ✅ 완료
 ```
-1. tailwind.config.js — panel-* 색상 토큰 추가
-2. globals.css / index.css — bg-panel-dark 앱 기본 배경 적용
-3. PixelButton.tsx — hold variant 추가, size md 터치 높이 40px → py-2.5
-4. PixelCard.tsx — dark(default), special, highlight, light variant 재정의
-5. PixelModal.tsx — 신규 공통 모달 컴포넌트 생성
-```
-
-### Phase 2 — 레이아웃 공통 (1~2시간)
-```
-6. AppLayout.tsx — bg-panel-dark 적용
-7. Header.tsx — bg-panel-darkest + border-gold/30
-8. BottomNav.tsx — bg-panel-darkest + border-t-gold/30 + 활성 상단 라인
-9. useMembers.ts 훅 신설 — getMemberName 공통화
-10. Mission.ts — STATUS_INFO, formatRewards 단일 소스화
+1. [x] tailwind.config.js — panel-* 색상 토큰 추가
+2. [x] globals.css / index.css — bg-panel-dark 앱 기본 배경 적용
+3. [x] PixelButton.tsx — hold variant 추가, size md 터치 높이 40px → py-2.5
+4. [x] PixelCard.tsx — dark(default), special, highlight, light variant 재정의
+5. [x] PixelModal.tsx — 신규 공통 모달 컴포넌트 생성 (open: boolean 필수 prop)
 ```
 
-### Phase 3 — 핵심 페이지 (3~4시간)
+### Phase 2 — 레이아웃 공통 ✅ 완료
 ```
-11. HomePage — 다크 카드, subscribeMembers 적용
-12. MissionListPage — 탭 다크화, MissionCard 다크 패널
-13. MissionDetailPage — Daily Slot G/B/H 버튼 PixelButton화
-14. MissionFormPage — 다크 입력 필드
-15. StatusBadge — Mission.ts 단일 소스 연동
-```
-
-### Phase 4 — 보조 페이지 (2~3시간)
-```
-16. MessagesPage — 채팅 버블 다크화
-17. RewardStatusPage — 다크 카드
-18. CalendarPage — 다크 그리드
-19. ProfilePage — 다크 패널
-20. Settings 군 — 다크 패널 통일
-21. BeggingPage 군 — 다크 패널 + PixelButton 통일
+6.  [x] AppLayout.tsx — bg-panel-dark 적용 + BGM 자동재생 startAfterLogin()
+7.  [x] Header.tsx — bg-panel-darkest + border-gold/30 + 미니 오디오 플레이어 UI
+8.  [x] BottomNav.tsx — bg-panel-darkest + border-t-gold/30 + 활성 상단 라인 + 🎮 탭
+9.  [x] useMembers.ts 훅 신설 — getMemberName 공통화
+10. [x] Mission.ts — STATUS_INFO 단일 소스화
 ```
 
-### Phase 5 — 코드 정리 (1~2시간)
+### Phase 3 — 핵심 페이지 ✅ 완료
 ```
-22. TS6133 미사용 import 전면 정리
-23. 레거시 필드 쿼리 제외
-24. 중복 팝업 → PixelModal 교체
-25. raw <button> → PixelButton 교체 (스타일 일치하는 것만)
+11. [x] HomePage — 다크 카드, subscribeMembers 적용, 패밀리 늬우스, CheerOverlay, PraiseWhiteboard
+12. [x] MissionListPage — 탭 다크화, MissionCard 다크 패널
+13. [x] MissionDetailPage — Daily Slot G/B/H 버튼 PixelButton화
+14. [x] MissionFormPage — 다크 입력 필드 (INPUT_CLS/TEXTAREA_CLS/SELECT_CLS 상수 통일)
+15. [x] StatusBadge — CHILD_REJECTED 추가, Tailwind 직접 클래스
+```
+
+### Phase 4 — 보조 페이지 ✅ 완료 (A~N 14단계)
+```
+16. [x] MessagesPage — speech-bubble + getBubbleBorderCls + 역할별 border, ReactionPicker
+17. [x] RewardStatusPage — card-highlight 총합 + PixelButton 탭 + 슬림화
+18. [x] CalendarPage — inventory-slot 그리드 + PixelModal 바텀시트 교체 + 타임라인
+19. [x] ProfilePage — 다크 패널 + PIN 변경 + XP 상점 4탭 슬롯 + handleEquip 전역 세션 동기화
+20. [x] SettingsPage — PixelButton 전면 교체 + 응원·칭찬 스티커 발송 패널
+21. [x] BeggingPage 군 — PixelModal + PixelButton 전면 교체
+22. [x] MasterSettingsPage — PixelModal 교체 + 대회 제어판 + 엔진 새로고침 버튼
+23. [x] NotificationsPage — 다크 텍스트 토큰 전환
+24. [x] LoginPage — PixelButton gold + input-pixel + 대형 캐릭터 카드 PIN 뷰
+25. [x] MessagesPage 2차 — 픽셀 입체감 인셋 섀도우 + DM 파트너 앵커 헤더
+26. [x] NoticesPage — card-pixel 아코디언 + PixelModal 삭제 확인
+27. [x] InventoryGrid — SLOT_SELECTED/UNLOCKED/LOCKED 상수 + inventory-slot CSS 연계
+28. [x] RewardSendPage — input-pixel + PixelButton gold
+```
+
+### Phase 5 — 코드 정리 (일부 진행 중)
+```
+29. [ ] TS6133 미사용 import 전면 정리 (ProfilePage 내 saving 변수 해결 완료)
+30. [ ] TetrisGame.tsx, SnakeGame.tsx 파일 자체 삭제 (import만 제거된 상태)
+31. [ ] RewardStatusPage.tsx PixelModal open prop 주입 (TS2741 잔존)
+32. [ ] NotificationsPage MISSION_EXPIRED / MOM_CHEER 타입 추가 (TS2739 잔존)
+33. [x] ProfilePage TS2741 (PixelModal open prop) 완전 해소 — Session 29
+34. [x] ProfilePage TS6133 (saving 변수) 완전 해소 — Session 29
+```
+
+### 마일스톤 추가 완료 항목 (Phase 개편 이후)
+```
+[마일스톤 2-1] Web Audio 8비트 레트로 사운드 시스템 ✅ (v1.9.0)
+[마일스톤 2-2] 게임 개편 + userInventoryStore + 주간 대회 ✅
+[마일스톤 2-3] 로그인 개편 + 메신저 강화 + 레거시 숙청 ✅
+[마일스톤 3-1] 메인화면 + 응원 시스템 + 패밀리 늬우스 + 달력 타임라인 ✅
+[대개정판 Session 28] 게임 대개편(지뢰찾기 신규·뱀·테트리스 삭제) + 오디오 파이프라인 ✅ (v2.0.0)
+[마일스톤 2-3 종착지 Session 29] XP 재화 단일화 + 인벤토리 슬롯 상점 + 특퀘 UX + 이모지 안전장치 ✅ (v2.1.0→2.2.0)
 ```
 
 ---
@@ -662,4 +682,4 @@ BEFORE (현재 v1.4.0):              AFTER (v2.0 목표):
 ---
 
 *Family Quest Design Overhaul v3.0*  
-*작성: 2026-05-30 | 목표 완료: v2.0 배포*
+*최초 작성: 2026-05-30 | 마지막 업데이트: 2026-05-31 | 현재 배포 버전: v2.2.0*

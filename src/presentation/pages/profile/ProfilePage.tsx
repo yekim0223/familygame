@@ -6,19 +6,24 @@ import { useAuthStore } from '@/infrastructure/stores/authStore'
 import { updateMember } from '@/infrastructure/firebase/collections/members'
 import { hashPin } from '@/infrastructure/firebase/auth'
 import {
-  selectCharacter, selectPet, selectWorldBanner,
   getUnlockedCharacters, getUnlockedPets, getUnlockedBanners,
-  ALL_CHARACTERS, BASE_CHARACTERS, LEVEL_CHARACTERS, CHARACTER_EMOJI, CHARACTER_LABELS,
+  ALL_CHARACTERS, LEVEL_CHARACTERS, CHARACTER_EMOJI, CHARACTER_LABELS,
   PET_UNLOCKS, BANNER_UNLOCKS, BANNER_BG,
 } from '@/application/use-cases/characters/selectCharacter'
 import { CharacterSprite, PetSprite } from '@/presentation/components/character/CharacterSprite'
 import { InventoryGrid } from '@/presentation/components/character/InventoryGrid'
 import { PixelButton } from '@/presentation/components/pixel/PixelButton'
+import { PixelModal } from '@/presentation/components/pixel/PixelModal'
 import { ExpBar } from '@/presentation/components/pixel/ExpBar'
-import { formatNameWithAge } from '@/domain/services/KoreanAge'
-import { getLevelProgress } from '@/domain/services/ExpCalc'
+import {
+  useInventoryStore,
+  SKIN_CATALOG, BG_CATALOG, PET_SHOP_CATALOG, WEAPON_CATALOG,
+  getXPLevel,
+  type ShopItem, type BgType, type WeaponType,
+} from '@/infrastructure/stores/userInventoryStore'
 
-type Panel = 'none' | 'character' | 'pet' | 'banner'
+type Panel    = 'none' | 'character' | 'pet' | 'banner'
+type ShopTab  = 'skin' | 'bg' | 'pet' | 'weapon'
 
 const ROLE_LABELS: Record<string, string> = {
   DAD: '아빠 (Master)',
@@ -38,8 +43,8 @@ export default function ProfilePage() {
     const p = (location.state as any)?.panel as Panel | undefined
     return (p && ['character', 'pet', 'banner'].includes(p)) ? p : 'none'
   })
-  const [saving, setSaving] = useState(false)
-  const [msg, setMsg] = useState('')
+  const [saving,  setSaving] = useState(false)
+  const [msg,     setMsg]    = useState('')
   const [editingNickname, setEditingNickname] = useState(false)
   const [newNickname, setNewNickname] = useState('')
 
@@ -62,6 +67,88 @@ export default function ProfilePage() {
   const [previewCharId, setPreviewCharId] = useState('')
   const [previewPetId,  setPreviewPetId]  = useState('')
   const [previewBanner, setPreviewBanner] = useState('')
+
+  // ── XP 상점 상태 ────────────────────────────────────────────────
+  const [shopTab,    setShopTab]    = useState<ShopTab>('skin')
+  const [buyTarget,  setBuyTarget]  = useState<ShopItem | null>(null)
+  const [buyMsg,     setBuyMsg]     = useState<string | null>(null)
+
+  // XP 인벤토리 스토어
+  const {
+    currentSkin, currentWeapon, currentPet: invPet, currentBg,
+    ownedSkins, ownedBgs, ownedPetShop, ownedWeapons,
+    gameXP, totalEarnedXP,
+    setSkin, setWeapon, setPet: setInvPet, setBg,
+    spendXP, unlockItem,
+  } = useInventoryStore()
+
+  const xpLevel = getXPLevel(totalEarnedXP)
+
+  const handleBuyConfirm = () => {
+    if (!buyTarget) return
+    const ok = spendXP(buyTarget.cost)
+    if (!ok) { setBuyMsg('XP가 부족해요! 🎮 게임을 플레이해서 XP를 모아보세요'); return }
+    unlockItem(shopTab, buyTarget.id)
+    setBuyMsg(`${buyTarget.emoji} ${buyTarget.label} 해금 완료! ✅`)
+    setTimeout(() => { setBuyTarget(null); setBuyMsg(null) }, 1800)
+  }
+
+  const handleEquip = async (type: ShopTab, id: string) => {
+    if (!currentMember || !familyId) return
+
+    // 1. 로컬 인벤토리 스토어 상태 변경
+    if (type === 'skin')   setSkin(id)
+    if (type === 'bg')     setBg(id as BgType)
+    if (type === 'pet')    setInvPet(id)
+    if (type === 'weapon') setWeapon(id as WeaponType)
+
+    // 2. 현재 메모리에 들고 있는 최신 장착본으로 객체 재구성
+    const updatedCharacter = {
+      characterId: type === 'skin'   ? id : (currentSkin   || currentMember.character.characterId),
+      petId:       type === 'pet'    ? id : (invPet        || currentMember.character.petId),
+      worldBanner: type === 'bg'     ? id : (currentBg     || currentMember.character.worldBanner),
+      equipment:   type === 'weapon' ? [id] : (currentMember.character.equipment || []),
+    }
+
+    // 3. Firebase Firestore 원격 동기화
+    await updateMember(familyId, currentMember.id, { character: updatedCharacter } as any)
+
+    // 4. 전역 Auth 세션 강제 덮어씌기 → 패밀리뉴스·화면 전체 리렌더링 유도
+    setCurrentMember({ ...currentMember, character: updatedCharacter })
+  }
+
+  const isOwned = (type: ShopTab, id: string): boolean => {
+    if (type === 'skin') {
+      // XP 구매 보유 OR Firebase 레벨 언락 합집합
+      const lvlUnlocked = currentMember
+        ? getUnlockedCharacters(currentMember.role, currentMember.level)
+        : []
+      return ownedSkins.includes(id) || lvlUnlocked.includes(id)
+    }
+    if (type === 'bg') return ownedBgs.includes(id)
+    if (type === 'pet') {
+      // XP 구매 보유 OR Firebase 레벨 언락 합집합
+      const lvlUnlocked = currentMember ? getUnlockedPets(currentMember.level) : []
+      return ownedPetShop.includes(id) || lvlUnlocked.includes(id)
+    }
+    if (type === 'weapon') return ownedWeapons.includes(id)
+    return false
+  }
+
+  const isEquipped = (type: ShopTab, id: string): boolean => {
+    if (type === 'skin')   return currentSkin   === id
+    if (type === 'bg')     return currentBg     === id
+    if (type === 'pet')    return invPet         === id
+    if (type === 'weapon') return currentWeapon === id
+    return false
+  }
+
+  const shopCatalog: Record<ShopTab, ShopItem[]> = {
+    skin:   SKIN_CATALOG,
+    bg:     BG_CATALOG,
+    pet:    PET_SHOP_CATALOG,
+    weapon: WEAPON_CATALOG,
+  }
 
   useEffect(() => {
     if (!currentMember) return
@@ -100,7 +187,6 @@ export default function ProfilePage() {
   }
 
   const { level, exp, role } = currentMember
-  const { current: expCurrent, needed: expNeeded } = getLevelProgress(exp)
 
   const unlockedCharacters = getUnlockedCharacters(role, level)
   const unlockedPets       = getUnlockedPets(level)
@@ -132,6 +218,7 @@ export default function ProfilePage() {
     }
     const newChar = { ...currentMember.character, characterId }
     setPreviewCharId(characterId)
+    setSkin(characterId)  // 인벤토리 스토어와 동기화
     setSaving(true)
     const error = await saveCharacter(newChar)
     setSaving(false)
@@ -145,6 +232,7 @@ export default function ProfilePage() {
       if (!unlocked.includes(petId)) { setMsg('아직 오픈되지 않은 펫이에요 🔒'); return }
     }
     setPreviewPetId(petId)
+    setInvPet(petId)  // 인벤토리 스토어와 동기화
     setSaving(true)
     const { error } = await updateMember(familyId, currentMember.id, {
       'character.petId': petId,
@@ -173,8 +261,9 @@ export default function ProfilePage() {
     setMsg('')
   }
 
-  const displayCharId = previewCharId || currentMember.character.characterId
-  const displayPetId  = previewPetId  || currentMember.character.petId
+  // 우선순위: 스토어 장착값 > 로컬 프리뷰 > Firebase 기본값
+  const displayCharId = currentSkin   || previewCharId || currentMember.character.characterId
+  const displayPetId  = invPet        || previewPetId  || currentMember.character.petId
   const displayBanner = previewBanner || currentMember.character.worldBanner
 
   const currentBanner  = BANNER_UNLOCKS.find(b => b.id === displayBanner)
@@ -188,10 +277,11 @@ export default function ProfilePage() {
         <div className="flex items-end gap-3">
           <div className="relative">
             <CharacterSprite
-              characterId={displayCharId}
+              characterId={currentSkin || currentMember.character.characterId}
               role={role}
               size="xl"
               animate="bob"
+              weapon={currentWeapon || (currentMember.character.equipment?.[0] as any)}
             />
             <div className="absolute -bottom-1 -right-1">
               <PetSprite petId={displayPetId} size="sm" />
@@ -294,6 +384,173 @@ export default function ProfilePage() {
         )}
       </div>
 
+      {/* ── XP 상점 (마인크래프트 인벤토리 슬롯 체계) ─────────────── */}
+      <div className="card-pixel p-3 space-y-3">
+        {/* XP 잔액 헤더 */}
+        <div className="flex items-center justify-between">
+          <p className="t-sub font-bold text-gold">🎒 아이템 상점</p>
+          <div className="flex items-center gap-2">
+            <span className="font-pixel text-xs text-gold t-pixel-shadow">Lv.{xpLevel}</span>
+            <span className="font-korean text-xs text-panel-sub">|</span>
+            <span className="font-pixel text-xs text-yellow-400 t-pixel-shadow">{gameXP.toLocaleString()} XP</span>
+          </div>
+        </div>
+
+        {/* 4탭 + 아바타 프리뷰 분할 레이아웃 */}
+        <div className="flex gap-3">
+          {/* 좌측 — 실시간 아바타 프리뷰 */}
+          <div className="flex-shrink-0 flex flex-col items-center gap-2">
+            <CharacterSprite
+              characterId={displayCharId}
+              role={role}
+              size="lg"
+              animate="bob"
+              variant="job"
+              weapon={currentWeapon}
+              className=""
+            />
+            {/* 장착 정보 미니 뱃지 */}
+            <div className="flex flex-col items-center gap-0.5">
+              <span className="font-pixel text-[9px] text-yellow-400 t-pixel-shadow text-center">
+                {SKIN_CATALOG.find(s => s.id === currentSkin)?.emoji} {SKIN_CATALOG.find(s => s.id === currentSkin)?.label ?? '전사'}
+              </span>
+              <span className="font-pixel text-[9px] text-sky text-center">
+                {BG_CATALOG.find(b => b.id === currentBg)?.emoji} {BG_CATALOG.find(b => b.id === currentBg)?.label ?? '기본방'}
+              </span>
+            </div>
+          </div>
+
+          {/* 우측 — 탭 + 슬롯 그리드 */}
+          <div className="flex-1 min-w-0">
+            {/* 4탭 선택 */}
+            <div className="grid grid-cols-4 gap-1 mb-2">
+              {([
+                { key: 'skin'  , icon: '👕', label: '직업' },
+                { key: 'bg'    , icon: '🖼️', label: '배경' },
+                { key: 'pet'   , icon: '🐱', label: '펫' },
+                { key: 'weapon', icon: '⚔️', label: '무기' },
+              ] as const).map(({ key, icon, label }) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setShopTab(key)}
+                  className={[
+                    'flex flex-col items-center py-1.5 border-4 text-center',
+                    'active:scale-95 transition-transform duration-75',
+                    shopTab === key
+                      ? 'bg-gold border-gold text-pixel-dark shadow-[inset_2px_2px_0px_#ffffff40]'
+                      : 'bg-panel-mid border-panel-border text-panel-sub hover:border-gold/50',
+                  ].join(' ')}
+                >
+                  <span className="text-base leading-none">{icon}</span>
+                  <span className="font-korean text-[10px] font-bold mt-0.5">{label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* 아이템 슬롯 그리드 (4열) */}
+            <div className="grid grid-cols-4 gap-1">
+              {shopCatalog[shopTab].map(item => {
+                const owned    = isOwned(shopTab, item.id)
+                const equipped = isEquipped(shopTab, item.id)
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => {
+                      if (equipped) return
+                      if (owned) { handleEquip(shopTab, item.id) } else { setBuyTarget(item) }
+                    }}
+                    className={[
+                      'relative flex flex-col items-center justify-center gap-0.5',
+                      'border-4 py-1.5 px-1 min-h-[56px]',
+                      'active:scale-95 transition-transform duration-75',
+                      equipped
+                        ? 'bg-gold/20 border-yellow-400 card-special'
+                        : owned
+                        ? 'bg-panel-dark border-panel-border hover:border-gold/60 shadow-[inset_2px_2px_0px_#ffffff10]'
+                        : 'bg-panel-darkest border-black opacity-70',
+                    ].join(' ')}
+                    title={owned ? (equipped ? '장착 중' : '장착하기') : `해금: ${item.cost} XP`}
+                  >
+                    <span className="text-xl leading-none">{item.emoji}</span>
+                    <span className={`font-korean text-[9px] leading-tight text-center ${equipped ? 'text-yellow-400 font-bold' : owned ? 'text-panel-sub' : 'text-stone/60'}`}>
+                      {item.label}
+                    </span>
+                    {/* 장착 중 표시 */}
+                    {equipped && (
+                      <span className="absolute top-0.5 right-0.5 font-pixel text-[7px] text-yellow-400 leading-none">ON</span>
+                    )}
+                    {/* 자물쇠 오버레이 */}
+                    {!owned && (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/55">
+                        <span className="text-base leading-none">🔒</span>
+                        <span className="font-pixel text-[7px] text-yellow-400 mt-0.5">{item.cost}</span>
+                      </div>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── 구매 확인 모달 ─────────────────────────────────────────── */}
+      {buyTarget && (
+        <PixelModal
+          open={!!buyTarget}
+          title={`${buyTarget.emoji} ${buyTarget.label} 해금`}
+          onClose={() => { setBuyTarget(null); setBuyMsg(null) }}
+        >
+          <div className="space-y-3">
+            {buyMsg ? (
+              <p className={`font-korean text-sm text-center font-bold ${buyMsg.includes('✅') ? 'text-approved' : 'text-rejected'}`}>
+                {buyMsg}
+              </p>
+            ) : (
+              <>
+                <div className="flex items-center justify-center gap-3 py-2">
+                  <span className="text-4xl">{buyTarget.emoji}</span>
+                  <div>
+                    <p className="font-korean text-sm font-bold text-cream">{buyTarget.label}</p>
+                    <p className="font-pixel text-xs text-yellow-400 mt-0.5">
+                      {buyTarget.cost.toLocaleString()} XP 필요
+                    </p>
+                    <p className="font-pixel text-xs text-panel-sub">
+                      보유: {gameXP.toLocaleString()} XP
+                    </p>
+                  </div>
+                </div>
+                {gameXP < buyTarget.cost && (
+                  <p className="font-korean text-xs text-rejected text-center">
+                    XP 부족 (필요: {(buyTarget.cost - gameXP).toLocaleString()} XP 더 필요)
+                  </p>
+                )}
+                <div className="flex gap-2">
+                  <PixelButton
+                    variant="gold"
+                    size="md"
+                    fullWidth
+                    disabled={gameXP < buyTarget.cost}
+                    onClick={handleBuyConfirm}
+                  >
+                    🔓 해금하기
+                  </PixelButton>
+                  <PixelButton
+                    variant="ghost"
+                    size="md"
+                    onClick={() => { setBuyTarget(null); setBuyMsg(null) }}
+                  >
+                    취소
+                  </PixelButton>
+                </div>
+              </>
+            )}
+          </div>
+        </PixelModal>
+      )}
+
       {/* ── 패널 전환 버튼 ──────────────────────────────────────── */}
       <div ref={panelRef} className="grid grid-cols-3 gap-2">
         {([
@@ -305,6 +562,7 @@ export default function ProfilePage() {
             key={key}
             variant={activePanel === key ? 'purple' : 'ghost'}
             size="md"
+            disabled={saving}
             onClick={() => setActivePanel(activePanel === key ? 'none' : key)}
           >
             {icon} {label}

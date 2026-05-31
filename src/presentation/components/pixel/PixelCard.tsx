@@ -14,8 +14,8 @@ export interface PixelCardProps extends HTMLAttributes<HTMLDivElement> {
 const variantStyles: Record<Variant, string> = {
   // 기본 — 다크 마인크래프트 패널
   dark:      'bg-panel-mid border-4 border-panel-border shadow-pixel',
-  // 특별 퀘스트 — 황금탄 배경 + gold 테두리
-  special:   'bg-[#D4A843] border-4 border-gold shadow-pixel-gold',
+  // 특별 퀘스트 — 다크 패널 + 황금 네온 테두리 펄스 (bg-[#D4A843] 시각피로 폐기)
+  special:   'bg-panel-dark border-4 border-yellow-400 card-special',
   // 홈 섹션 강조 — panel-surface 배경 + 옅은 gold 테두리
   highlight: 'bg-panel-surface border-2 border-gold/40',
   // 밝은 배경이 필요한 경우 (로그인 등)

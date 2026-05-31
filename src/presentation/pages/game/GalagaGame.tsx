@@ -1,15 +1,17 @@
-// Galaga — Space Shooter (Canvas + Mobile Touch)
+// Galaga — 우주 슈터 (Canvas + 자동 연사 + 장착 무기 투영)
 import { useRef, useEffect, useState } from 'react'
+import { audioManager } from '@/infrastructure/audio/audioManager'
+import { useInventoryStore } from '@/infrastructure/stores/userInventoryStore'
+import type { WeaponType } from '@/infrastructure/stores/userInventoryStore'
 
 // ── 캔버스 논리 크기 ────────────────────────────────────────────────
 const CW = 320, CH = 480
 
 // ── 상수 ────────────────────────────────────────────────────────────
-const PW = 28, PH = 22         // player width/height
+const PW = 28, PH = 22
 const PSPEED = 3.5
-const BW = 3, BH = 12          // player bullet
+const BW = 3, BH = 12
 const BSPEED = 8
-const SHOOT_MS = 380
 const ROWS = 4, COLS = 8
 const EW = 26, EH = 20
 const EGAPX = 34, EGAPY = 30
@@ -25,6 +27,13 @@ const C = {
   bullet: '#FFD700', eBullet: '#FF4444',
   e: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#A8E6CF'],
 } as const
+
+// ── 무기별 발사 설정 ─────────────────────────────────────────────────
+const WEAPON_CFG: Record<WeaponType, { shootMs: number; maxBullets: number }> = {
+  basic:  { shootMs: 380, maxBullets: 2 },
+  laser:  { shootMs: 180, maxBullets: 3 },
+  double: { shootMs: 300, maxBullets: 4 },
+}
 
 // ── 타입 ────────────────────────────────────────────────────────────
 interface Enemy {
@@ -87,7 +96,7 @@ function hit(ax: number, ay: number, aw: number, ah: number,
   return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by
 }
 
-// ── 드로우 함수 ──────────────────────────────────────────────────────
+// ── 플레이어 드로우 ──────────────────────────────────────────────────
 function drawPlayer(ctx: CanvasRenderingContext2D, px: number, py: number, inv: number) {
   if (inv > 0 && Math.floor(inv / 6) % 2 === 0) return
   ctx.save(); ctx.translate(px, py)
@@ -98,6 +107,7 @@ function drawPlayer(ctx: CanvasRenderingContext2D, px: number, py: number, inv: 
   ctx.restore()
 }
 
+// ── 적 드로우 ────────────────────────────────────────────────────────
 function drawEnemy(ctx: CanvasRenderingContext2D, e: Enemy, frame: number) {
   if (!e.alive) return
   const col = e.flash > 0 ? '#FFFFFF' : C.e[e.row]
@@ -112,6 +122,7 @@ function drawEnemy(ctx: CanvasRenderingContext2D, e: Enemy, frame: number) {
   ctx.restore()
 }
 
+// ── HUD 드로우 ───────────────────────────────────────────────────────
 function drawHUD(ctx: CanvasRenderingContext2D, score: number, lives: number, wave: number) {
   ctx.fillStyle = C.pAccent; ctx.font = '11px monospace'
   ctx.fillText(`SCORE ${score}`, 6, 16)
@@ -123,19 +134,51 @@ function drawHUD(ctx: CanvasRenderingContext2D, score: number, lives: number, wa
   }
 }
 
+// ── 총알 드로우 (무기별 형태·색상) ──────────────────────────────────
+function drawBullets(
+  ctx: CanvasRenderingContext2D,
+  bullets: Bullet[],
+  weapon: WeaponType,
+) {
+  bullets.forEach(b => {
+    switch (weapon) {
+      case 'laser':
+        ctx.fillStyle = '#4ECDC4'
+        ctx.shadowBlur = 10; ctx.shadowColor = '#4ECDC4'
+        ctx.fillRect(b.x - 1, b.y - 20, 2, 26)   // 얇고 긴 레이저
+        break
+      case 'double':
+        ctx.fillStyle = '#FF6B9D'
+        ctx.shadowBlur = 5; ctx.shadowColor = '#FF6B9D'
+        ctx.fillRect(b.x - 2, b.y - BH / 2, 4, BH)  // 핑크 더블샷
+        break
+      default:                                         // basic: 금색 미사일
+        ctx.fillStyle = C.bullet
+        ctx.shadowBlur = 6; ctx.shadowColor = C.bullet
+        ctx.fillRect(b.x - 1.5, b.y - BH / 2, BW, BH)
+    }
+    ctx.shadowBlur = 0
+  })
+}
+
 // ── 컴포넌트 ────────────────────────────────────────────────────────
 export interface GalagaProps { onGameOver: (score: number) => void; onBack: () => void }
 
 export function GalagaGame({ onGameOver, onBack }: GalagaProps) {
-  const canvasRef    = useRef<HTMLCanvasElement>(null)
-  const gs           = useRef<GS>(initGS())
-  const keys         = useRef({ left: false, right: false, fire: false })
-  const cbRef        = useRef(onGameOver)
-  cbRef.current      = onGameOver
-  const [uiScore,    setUiScore]  = useState(0)
-  const [uiLives,    setUiLives]  = useState(3)
-  const [uiPhase,    setUiPhase]  = useState<'playing' | 'gameover'>('playing')
-  const [uiWave,     setUiWave]   = useState(1)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const gs        = useRef<GS>(initGS())
+  // 좌우 이동만 — 발사는 자동
+  const keys      = useRef({ left: false, right: false })
+  const cbRef     = useRef(onGameOver)
+  cbRef.current   = onGameOver
+
+  const [uiScore, setUiScore] = useState(0)
+  const [uiLives, setUiLives] = useState(3)
+  const [uiPhase, setUiPhase] = useState<'playing' | 'gameover'>('playing')
+  const [uiWave,  setUiWave]  = useState(1)
+
+  // 장착 무기 표시용 (React 상태 — UI 전용)
+  const currentWeapon = useInventoryStore(state => state.currentWeapon)
 
   useEffect(() => {
     const canvas = canvasRef.current; if (!canvas) return
@@ -144,7 +187,6 @@ export function GalagaGame({ onGameOver, onBack }: GalagaProps) {
     setUiScore(0); setUiLives(3); setUiPhase('playing'); setUiWave(1)
 
     let rafId: number
-    let lastTime = performance.now()
 
     const tick = (now: number) => {
       rafId = requestAnimationFrame(tick)
@@ -152,22 +194,33 @@ export function GalagaGame({ onGameOver, onBack }: GalagaProps) {
       if (g.phase !== 'playing') return
       g.frame++
 
+      // 현재 장착 무기 (RAF 루프에서 직접 조회)
+      const weapon = useInventoryStore.getState().currentWeapon
+      const { shootMs, maxBullets } = WEAPON_CFG[weapon]
+
       // 플레이어 이동
       if (keys.current.left)  g.px = Math.max(PW / 2, g.px - PSPEED)
       if (keys.current.right) g.px = Math.min(CW - PW / 2, g.px + PSPEED)
 
-      // 발사
-      if (keys.current.fire && now - g.lastShot > SHOOT_MS && g.bullets.length < 2) {
-        g.bullets.push({ id: g.nextId++, x: g.px, y: g.py - PH / 2 }); g.lastShot = now
+      // ── 자동 연사 (무기별 쿨타임 + 최대 수) ─────────────────────
+      if (now - g.lastShot > shootMs && g.bullets.length < maxBullets) {
+        if (weapon === 'double') {
+          g.bullets.push({ id: g.nextId++, x: g.px - 7, y: g.py - PH / 2 })
+          g.bullets.push({ id: g.nextId++, x: g.px + 7, y: g.py - PH / 2 })
+        } else {
+          g.bullets.push({ id: g.nextId++, x: g.px, y: g.py - PH / 2 })
+        }
+        g.lastShot = now
+        audioManager.shoot()
       }
-      lastTime = now
 
       // 플레이어 총알 이동
       g.bullets = g.bullets.filter(b => { b.y -= BSPEED; return b.y > -20 })
 
-      // 적 포메이션 이동
+      // 적 포메이션 이동 — 웨이브마다 1.25x 누적 가속
       const alive = g.enemies.filter(e => e.alive && !e.diving)
-      const fSpd = 1.0 + (ROWS * COLS - alive.length) * 0.06 + (g.wave - 1) * 0.3
+      const waveMul = Math.pow(1.25, g.wave - 1)
+      const fSpd = Math.min(6, (1.0 + (ROWS * COLS - alive.length) * 0.06) * waveMul)
       g.fOX += g.fDir * fSpd
       const minHX = ESTARTX + EW / 2 + g.fOX
       const maxHX = ESTARTX + (COLS - 1) * EGAPX + EW / 2 + g.fOX
@@ -196,19 +249,19 @@ export function GalagaGame({ onGameOver, onBack }: GalagaProps) {
           const e = cands[Math.floor(Math.random() * cands.length)]
           e.diving = true; e.returning = false
           const angle = Math.atan2(g.py - e.y, g.px - e.x)
-          const spd = DIVE_SPEED + (g.wave - 1) * 0.4
+          const spd = Math.min(7, DIVE_SPEED * waveMul)
           e.dvx = Math.cos(angle) * spd; e.dvy = Math.sin(angle) * spd
         }
-        g.nextDive = g.frame + 130 + Math.floor(Math.random() * 80)
+        g.nextDive = g.frame + Math.max(60, 130 - (g.wave - 1) * 10)
       }
 
-      // 적 총알
+      // 적 총알 발사 — 웨이브마다 빈도·속도 1.25x
       if (g.eBullets.length < MAX_EBULLETS) {
         g.enemies.forEach(e => {
           if (!e.alive) return
-          if (Math.random() < 0.0012 + (g.wave - 1) * 0.0003) {
+          if (Math.random() < Math.min(0.006, 0.0012 * waveMul)) {
             const angle = Math.atan2(g.py - e.y, g.px - e.x)
-            const spd = 2.5 + (g.wave - 1) * 0.3
+            const spd = Math.min(6, 2.5 * waveMul)
             g.eBullets.push({ id: g.nextId++, x: e.x, y: e.y, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd })
           }
         })
@@ -218,26 +271,31 @@ export function GalagaGame({ onGameOver, onBack }: GalagaProps) {
       // 총알 vs 적 충돌
       for (let bi = g.bullets.length - 1; bi >= 0; bi--) {
         const b = g.bullets[bi]
-        let hit_ = false
+        let hitEnemy = false
         for (const e of g.enemies) {
           if (!e.alive) continue
           if (hit(b.x - 1.5, b.y - BH / 2, BW, BH, e.x - EW / 2, e.y - EH / 2, EW, EH)) {
             e.alive = false
             g.explosions.push({ id: g.nextId++, x: e.x, y: e.y, t: 0 })
             g.score += e.row === 0 ? 200 : 100
-            hit_ = true; break
+            audioManager.explosion()
+            hitEnemy = true; break
           }
         }
-        if (hit_) { g.bullets.splice(bi, 1); setUiScore(g.score) }
+        if (hitEnemy) { g.bullets.splice(bi, 1); setUiScore(g.score) }
       }
 
-      // 적 총알 vs 플레이어 충돌
+      // 적 총알 vs 플레이어
       if (g.pInv === 0) {
         for (let bi = g.eBullets.length - 1; bi >= 0; bi--) {
           const b = g.eBullets[bi]
           if (hit(b.x - 3, b.y - 3, 6, 6, g.px - PW / 2, g.py - PH / 2, PW, PH)) {
             g.lives--; g.pInv = INV_FRAMES; g.eBullets.splice(bi, 1)
-            if (g.lives <= 0) { g.phase = 'gameover'; setUiScore(g.score); setUiLives(0); setUiPhase('gameover'); cbRef.current(g.score); return }
+            audioManager.playerHit()
+            if (g.lives <= 0) {
+              g.phase = 'gameover'; setUiScore(g.score); setUiLives(0); setUiPhase('gameover')
+              audioManager.gameOver(); cbRef.current(g.score); return
+            }
             setUiLives(g.lives); break
           }
         }
@@ -250,7 +308,11 @@ export function GalagaGame({ onGameOver, onBack }: GalagaProps) {
           if (hit(e.x - EW / 2, e.y - EH / 2, EW, EH, g.px - PW / 2, g.py - PH / 2, PW, PH)) {
             g.lives--; g.pInv = INV_FRAMES; e.alive = false
             g.explosions.push({ id: g.nextId++, x: e.x, y: e.y, t: 0 })
-            if (g.lives <= 0) { g.phase = 'gameover'; setUiScore(g.score); setUiLives(0); setUiPhase('gameover'); cbRef.current(g.score); return }
+            audioManager.playerHit()
+            if (g.lives <= 0) {
+              g.phase = 'gameover'; setUiScore(g.score); setUiLives(0); setUiPhase('gameover')
+              audioManager.gameOver(); cbRef.current(g.score); return
+            }
             setUiLives(g.lives); break
           }
         }
@@ -264,21 +326,18 @@ export function GalagaGame({ onGameOver, onBack }: GalagaProps) {
         setUiWave(nw); return
       }
 
-      // 폭발 업데이트
+      // 폭발
       g.explosions = g.explosions.filter(ex => { ex.t++; return ex.t < 20 })
 
       // 별 이동
       g.stars.forEach(s => { s.y += s.spd; if (s.y > CH) { s.y = 0; s.x = Math.random() * CW } })
 
-      // ── 렌더 ──
+      // ── 렌더 ──────────────────────────────────────────────────────
       ctx.fillStyle = C.bg; ctx.fillRect(0, 0, CW, CH)
       g.stars.forEach(s => { ctx.fillStyle = `rgba(255,255,255,${0.4 + s.s * 0.3})`; ctx.fillRect(s.x, s.y, s.s, s.s) })
       g.enemies.forEach(e => drawEnemy(ctx, e, g.frame))
       drawPlayer(ctx, g.px, g.py, g.pInv)
-      g.bullets.forEach(b => {
-        ctx.fillStyle = C.bullet; ctx.shadowBlur = 6; ctx.shadowColor = C.bullet
-        ctx.fillRect(b.x - 1.5, b.y - BH / 2, BW, BH); ctx.shadowBlur = 0
-      })
+      drawBullets(ctx, g.bullets, weapon)
       g.eBullets.forEach(b => {
         ctx.fillStyle = C.eBullet; ctx.shadowBlur = 4; ctx.shadowColor = C.eBullet
         ctx.beginPath(); ctx.arc(b.x, b.y, 3, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0
@@ -300,21 +359,26 @@ export function GalagaGame({ onGameOver, onBack }: GalagaProps) {
     const onKD = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft')  { keys.current.left  = true; e.preventDefault() }
       if (e.key === 'ArrowRight') { keys.current.right = true; e.preventDefault() }
-      if (e.key === ' ' || e.key === 'z' || e.key === 'Z') { keys.current.fire = true; e.preventDefault() }
     }
     const onKU = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft')  keys.current.left  = false
       if (e.key === 'ArrowRight') keys.current.right = false
-      if (e.key === ' ' || e.key === 'z' || e.key === 'Z') keys.current.fire = false
     }
     window.addEventListener('keydown', onKD)
     window.addEventListener('keyup', onKU)
-    return () => { cancelAnimationFrame(rafId); window.removeEventListener('keydown', onKD); window.removeEventListener('keyup', onKU) }
+    return () => {
+      cancelAnimationFrame(rafId)
+      window.removeEventListener('keydown', onKD)
+      window.removeEventListener('keyup', onKU)
+    }
   }, [])
 
-  // ── 터치 핸들러 (RAF 루프에서 keysRef 읽기) ─────────────────────
-  const press   = (k: keyof typeof keys.current) => () => { keys.current[k] = true }
+  const press   = (k: keyof typeof keys.current) => () => { audioManager.resume(); keys.current[k] = true }
   const release = (k: keyof typeof keys.current) => () => { keys.current[k] = false }
+
+  // 무기 아이콘 표시
+  const WEAPON_ICON: Record<WeaponType, string> = { basic: '🔫', laser: '⚡', double: '💥' }
+  const WEAPON_LABEL: Record<WeaponType, string> = { basic: '기본', laser: '레이저', double: '더블' }
 
   return (
     <div className="flex flex-col h-full bg-[#0F0A04]" style={{ touchAction: 'none', userSelect: 'none' }}>
@@ -330,10 +394,10 @@ export function GalagaGame({ onGameOver, onBack }: GalagaProps) {
           style={{ maxWidth: '100%', maxHeight: '100%', imageRendering: 'pixelated' }} />
       </div>
 
-      {/* ── 모바일 터치 패드 ───────────────────────────────────────── */}
+      {/* ── 모바일 터치 패드 ─────────────────────────────────────────── */}
       <div className="flex-shrink-0 h-[130px] bg-panel-darkest border-t-4 border-black
                       flex items-center justify-between px-3 gap-2">
-        {/* 이동 버튼 */}
+        {/* 좌우 이동 버튼 */}
         <div className="flex gap-2">
           <button type="button"
             onTouchStart={press('left')} onTouchEnd={release('left')}
@@ -360,15 +424,12 @@ export function GalagaGame({ onGameOver, onBack }: GalagaProps) {
           나가기
         </button>
 
-        {/* 발사 버튼 */}
-        <button type="button"
-          onTouchStart={press('fire')} onTouchEnd={release('fire')}
-          onMouseDown={press('fire')}  onMouseUp={release('fire')} onMouseLeave={release('fire')}
-          className="w-[72px] h-[72px] bg-purple border-4 border-black
-                     flex items-center justify-center text-3xl
-                     active:bg-gold active:border-gold select-none">
-          🔫
-        </button>
+        {/* 장착 무기 표시 (자동 연사 중) */}
+        <div className="flex flex-col items-center gap-1 flex-shrink-0">
+          <span className="text-2xl">{WEAPON_ICON[currentWeapon]}</span>
+          <span className="font-pixel text-[10px] text-gold">{WEAPON_LABEL[currentWeapon]}</span>
+          <span className="font-korean text-[10px] text-approved">AUTO</span>
+        </div>
       </div>
 
       {/* HUD 보조 정보 */}

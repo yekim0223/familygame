@@ -11,6 +11,8 @@ export type NotificationType =
   | 'CHEER'
   | 'NEW_MISSION'        // 부모 퀘스트 생성 → 아이에게 + 부모에게
   | 'NEW_MESSAGE'
+  | 'MISSION_EXPIRED'   // 퀘스트 기간 만료 → 부모에게 (패밀리 늬우스 표시)
+  | 'MOM_CHEER'         // 엄마/아빠 원터치 격려 발송 로그 (cheerMessages 컬렉션 사용)
 
 export interface Message {
   id: string
@@ -22,6 +24,7 @@ export interface Message {
   cheerEmoji?: string
   targetMissionId?: string
   readBy: string[]
+  reactions?: Record<string, string[]>  // emoji → [memberId, ...]
   createdAt: Date
 }
 

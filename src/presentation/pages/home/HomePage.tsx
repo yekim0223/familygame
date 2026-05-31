@@ -1,10 +1,11 @@
-// Design Ref: §5-2 HomePage — 다크 마인크래프트 인벤토리 컨셉 (v3.0)
-import { useState, useEffect } from 'react'
+// Design Ref: §5-2 HomePage — 마일스톤 3-1 전면 개편 (v3.1)
+import { useState, useEffect, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/presentation/hooks/useAuth'
 import { useAuthStore } from '@/infrastructure/stores/authStore'
 import { useNotificationStore } from '@/infrastructure/stores/notificationStore'
 import { useMembers } from '@/presentation/hooks/useMembers'
+import { useInventoryStore } from '@/infrastructure/stores/userInventoryStore'
 import { LoginAnimation } from '@/presentation/components/animations/LoginAnimation'
 import { CharacterSprite, PetSprite } from '@/presentation/components/character/CharacterSprite'
 import { PixelCard } from '@/presentation/components/pixel/PixelCard'
@@ -17,8 +18,65 @@ import {
 import { useMissionStore } from '@/infrastructure/stores/missionStore'
 import { QuestionBalloonButton } from '@/presentation/pages/home/QuestionBalloon'
 import { subscribeNotices, type Notice } from '@/infrastructure/firebase/collections/notices'
+import { PraiseWhiteboard } from '@/presentation/components/home/PraiseWhiteboard'
+import { CheerOverlay } from '@/presentation/components/home/CheerOverlay'
+import type { Member } from '@/domain/entities/Member'
+import { subscribeMembers } from '@/infrastructure/firebase/collections/members'
 
-// ── 공지사항 아코디언 아이템 ───────────────────────────────────────
+// ── 무기 아이콘 매핑 ──────────────────────────────────────────────
+const WEAPON_ICON: Record<string, string> = {
+  basic:  '🗡️',
+  laser:  '⚡',
+  double: '🔫',
+}
+const WEAPON_LABEL: Record<string, string> = {
+  basic:  '단검',
+  laser:  '레이저',
+  double: '더블건',
+}
+
+// ── 피드 타입별 아이콘 ────────────────────────────────────────────
+const NOTIF_ICON: Record<string, string> = {
+  NEW_MISSION:      '⚔️',
+  MISSION_CONFIRMED:'✅',
+  MISSION_PENDING:  '⏳',
+  MISSION_APPROVED: '🎉',
+  MISSION_REJECTED: '❌',
+  MISSION_HOLD:     '⏸️',
+  MISSION_EXPIRED:  '💀',
+  BEGGING_REQUEST:  '🙏',
+  BEG_RESULT:       '🎁',
+  LEVEL_UP:         '⬆️',
+  NEW_MESSAGE:      '💬',
+  CHEER:            '📣',
+  MOM_CHEER:        '💖',
+}
+
+// ── 랜덤 가족 응원 문구 풀 ────────────────────────────────────────
+const CHEER_POOL: Record<string, string[]> = {
+  DAD: [
+    '포기하지 마! 아빠가 뒤에서 응원해! 🔥',
+    '할 수 있어! 아빠도 어렸을 때 힘들었어. 근데 해냈어! 💪',
+    '오늘도 최선을 다하는 거야! 아빠가 자랑스러워 ⭐',
+    '파이팅! 어려울 때일수록 더 빛나는 거야 ✨',
+  ],
+  MOM: [
+    '엄마가 항상 응원해! 넌 뭐든 잘 할 수 있어 💖',
+    '힘내! 힘들면 쉬어도 돼, 하지만 포기는 금지야 🌈',
+    '우리 아가 최고야! 오늘도 파이팅 🌟',
+    '엄마가 사랑해~ 잘 할 수 있어! 🥰',
+  ],
+}
+
+function pickCheer(members: Member[]): { member: Member; text: string } | null {
+  const parents = members.filter(m => m.role === 'DAD' || m.role === 'MOM' && m.isActive)
+  if (parents.length === 0) return null
+  const m = parents[Math.floor(Math.random() * parents.length)]
+  const pool = CHEER_POOL[m.role] ?? CHEER_POOL.DAD
+  return { member: m, text: pool[Math.floor(Math.random() * pool.length)] }
+}
+
+// ── 공지사항 아코디언 아이템 ──────────────────────────────────────
 function NoticeItem({ notice }: { notice: Notice }) {
   const [open, setOpen] = useState(false)
   const dateStr = notice.createdAt.toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' })
@@ -41,32 +99,90 @@ function NoticeItem({ notice }: { notice: Notice }) {
   )
 }
 
+// ── 랜덤 응원 말풍선 ─────────────────────────────────────────────
+function RandomCheerBubble({ members }: { members: Member[] }) {
+  const [cheer, setCheer] = useState<{ member: Member; text: string } | null>(null)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const show = () => {
+      const c = pickCheer(members)
+      if (c) { setCheer(c); setVisible(true) }
+    }
+    // 4초 후 첫 출현
+    const t1 = setTimeout(show, 4_000)
+    // 이후 35초마다 반복
+    const t2 = setInterval(show, 35_000)
+    return () => { clearTimeout(t1); clearInterval(t2) }
+  }, [members])
+
+  if (!visible || !cheer) return null
+
+  const role = cheer.member.role
+  return (
+    <div className="relative flex items-start gap-2 animate-fade-in">
+      <CharacterSprite
+        characterId={cheer.member.character.characterId}
+        role={role}
+        size="sm"
+        variant="job"
+      />
+      <div className="flex-1 min-w-0">
+        <div className="speech-bubble border-gold relative">
+          <p className="font-korean text-xs font-bold text-gold mb-0.5 t-pixel-shadow">
+            [{role === 'DAD' ? '아빠' : '엄마'}]
+          </p>
+          <p className="font-korean text-sm text-cream leading-snug">&ldquo;{cheer.text}&rdquo;</p>
+        </div>
+      </div>
+      <button
+        type="button"
+        onClick={() => setVisible(false)}
+        className="flex-shrink-0 text-panel-sub hover:text-cream text-xs mt-1"
+        aria-label="닫기"
+      >
+        ✕
+      </button>
+    </div>
+  )
+}
+
+// ════════════════════════════════════════════════════════════════
+
 export default function HomePage() {
   const { currentMember } = useAuth()
   const { familyId } = useAuthStore()
   const { getMissionById } = useMissionStore()
   const { notifications } = useNotificationStore()
-  // CLAUDE.md 규칙 11번: localStorage 직접 접근 금지 → useMembers 훅으로 실시간 구독
   const { getMemberName } = useMembers()
   const navigate = useNavigate()
+
+  // 인벤토리 — 장착 무기
+  const currentWeapon = useInventoryStore(s => s.currentWeapon)
 
   const [showAnim, setShowAnim] = useState(true)
   const [animDone, setAnimDone] = useState(false)
   const [notices, setNotices]   = useState<Notice[]>([])
+  const [members, setMembers]   = useState<Member[]>([])
 
   useEffect(() => {
     if (!familyId) return
     return subscribeNotices(familyId, setNotices)
   }, [familyId])
 
+  useEffect(() => {
+    if (!familyId) return
+    return subscribeMembers(familyId, setMembers)
+  }, [familyId])
+
   if (!currentMember) return null
 
-  const isParent = currentMember.role === 'DAD' || currentMember.role === 'MOM'
-  const isChild  = currentMember.role === 'CHILD'
-  const jobLabel = CHARACTER_LABELS[currentMember.character.characterId] ?? ''
+  const isParent  = currentMember.role === 'DAD' || currentMember.role === 'MOM'
+  const isChild   = currentMember.role === 'CHILD'
+  const jobLabel  = CHARACTER_LABELS[currentMember.character.characterId] ?? ''
 
-  // 피드: 부모/아이 모두 최근 활동 (NEW_MESSAGE 제외, 아이는 BEGGING_REQUEST 제외), 최대 10개
-  const feedItems = (() => {
+  // 패밀리 늬우스 피드 (MISSION_EXPIRED 포함, 최대 10개)
+  const feedItems = useMemo(() => {
     const seen = new Set<string>()
     return notifications
       .filter(n => {
@@ -78,10 +194,11 @@ export default function HomePage() {
         return true
       })
       .slice(0, 10)
-  })()
+  }, [notifications, isParent])
 
   return (
     <>
+      {/* 로그인 애니메이션 */}
       {showAnim && !animDone && (
         <div onClick={() => { setShowAnim(false); setAnimDone(true) }}>
           <LoginAnimation
@@ -92,9 +209,14 @@ export default function HomePage() {
         </div>
       )}
 
+      {/* 실시간 격려 팝업 (자녀 전용) */}
+      {isChild && familyId && (
+        <CheerOverlay familyId={familyId} memberId={currentMember.id} />
+      )}
+
       <div className="p-3 pb-4 space-y-3">
 
-        {/* ① 프로필 카드 — PixelCard highlight + 배너 그라디언트 */}
+        {/* ① 프로필 카드 — 무기·펫 풀셋 UI */}
         {(() => {
           const bannerId   = currentMember.character.worldBanner ?? 'overworld'
           const gradient   = BANNER_BG[bannerId] ?? 'from-grass to-green-700'
@@ -106,21 +228,34 @@ export default function HomePage() {
               className={`bg-gradient-to-b ${gradient}`}
             >
               <div className="flex items-start gap-3">
-                {/* 좌: 캐릭터 클릭 → 프로필 캐릭터 탭 */}
-                <button
-                  type="button"
-                  onClick={() => navigate('/profile', { state: { panel: 'character' } })}
-                  className="flex-shrink-0 relative active:scale-95 transition-transform"
-                  title="캐릭터 변경"
-                >
-                  <CharacterSprite
-                    characterId={currentMember.character.characterId}
-                    role={currentMember.role}
-                    size="lg"
-                    variant="job"
-                    animate={animDone ? 'bob' : 'none'}
-                  />
-                </button>
+                {/* 좌: 캐릭터 + 무기 배지 */}
+                <div className="flex-shrink-0 relative">
+                  <button
+                    type="button"
+                    onClick={() => navigate('/profile', { state: { panel: 'character' } })}
+                    className="relative active:scale-95 transition-transform block"
+                    title="캐릭터 변경"
+                  >
+                    <CharacterSprite
+                      characterId={currentMember.character.characterId}
+                      role={currentMember.role}
+                      size="lg"
+                      variant="job"
+                      animate={animDone ? 'bob' : 'none'}
+                    />
+                  </button>
+                  {/* 무기 배지 — 하단 좌측 */}
+                  <div
+                    className="absolute -bottom-1 -left-1 bg-panel-darkest border-2 border-gold
+                                px-1.5 py-0.5 flex items-center gap-0.5"
+                    title={WEAPON_LABEL[currentWeapon]}
+                  >
+                    <span className="text-sm leading-none">{WEAPON_ICON[currentWeapon] ?? '🗡️'}</span>
+                    <span className="font-pixel text-xs text-gold leading-none hidden sm:inline">
+                      {WEAPON_LABEL[currentWeapon]}
+                    </span>
+                  </div>
+                </div>
 
                 {/* 중: 이름·정보 */}
                 <div className="flex-1 min-w-0 py-1">
@@ -151,10 +286,11 @@ export default function HomePage() {
                     {isChild && familyId && (
                       <QuestionBalloonButton member={currentMember} familyId={familyId} />
                     )}
+                    {/* 펫 스프라이트 */}
                     <button
                       type="button"
                       onClick={() => navigate('/profile', { state: { panel: 'pet' } })}
-                      className="relative active:scale-95 transition-transform"
+                      className="relative active:scale-95 transition-transform flex flex-col items-center"
                       title="마이펫 변경"
                     >
                       <PetSprite petId={currentMember.character.petId} size="sm" />
@@ -180,13 +316,23 @@ export default function HomePage() {
           )
         })()}
 
-        {/* ② 부모 관리자 퀵 메뉴 */}
+        {/* ② 랜덤 가족 응원 말풍선 (자녀 전용) */}
+        {isChild && members.length > 0 && (
+          <RandomCheerBubble members={members} />
+        )}
+
+        {/* ③ 칭찬 화이트보드 (자녀 전용) */}
+        {isChild && familyId && (
+          <PraiseWhiteboard familyId={familyId} memberId={currentMember.id} />
+        )}
+
+        {/* ④ 부모 관리자 퀵 메뉴 */}
         {isParent && (
           <div className="grid grid-cols-3 gap-2">
             {[
               { to: '/missions/new',   icon: '⚔️', label: '퀘스트 생성' },
               { to: '/begging/manage', icon: '🙏', label: '조르기 관리' },
-              { to: '/rewards',        icon: '🏆', label: '보상 현황' },
+              { to: '/rewards',        icon: '🏆', label: '보상 현황'   },
             ].map(item => (
               <Link key={item.to} to={item.to}
                 className="card-pixel flex flex-col items-center gap-1 py-3
@@ -200,11 +346,11 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* ③ 최근 활동 피드 */}
+        {/* ⑤ 패밀리 늬우스 피드 */}
         {feedItems.length > 0 && (
           <PixelCard variant="dark" padding="sm">
             <div className="flex items-center justify-between mb-2">
-              <p className="t-heading text-gold">최근 활동</p>
+              <p className="t-heading text-gold">📰 패밀리 늬우스</p>
               <Link to="/notifications" className="font-korean text-xs text-panel-sub underline">
                 전체 보기
               </Link>
@@ -220,13 +366,15 @@ export default function HomePage() {
                       hour: '2-digit', minute: '2-digit', hour12: false,
                     })
                   : ''
+                const icon = NOTIF_ICON[notif.type] ?? '📌'
 
                 const getNavPath = () => {
                   switch (notif.type) {
-                    case 'NEW_MESSAGE': case 'CHEER': return '/messages'
+                    case 'NEW_MESSAGE': case 'CHEER': case 'MOM_CHEER': return '/messages'
                     case 'BEG_RESULT': case 'BEGGING_REQUEST':
                       return isParent ? '/begging/manage' : '/begging'
                     case 'LEVEL_UP': return '/profile'
+                    case 'MISSION_EXPIRED': return '/missions'
                     default:
                       if (!notif.relatedId) return '/missions'
                       return getMissionById(notif.relatedId) ? `/missions/${notif.relatedId}` : '/missions'
@@ -241,16 +389,19 @@ export default function HomePage() {
                                transition-colors"
                     onClick={() => navigate(getNavPath())}
                   >
+                    <span className="flex-shrink-0 text-base mt-0.5">{icon}</span>
                     {!notif.isRead && (
                       <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-rejected mt-2" />
                     )}
                     <div className="flex-1 min-w-0">
-                      {relatedMission && (
+                      {relatedMission && notif.type !== 'MISSION_EXPIRED' && (
                         <p className="font-korean text-xs font-bold text-gold truncate">
-                          📌 {relatedMission.title}
+                          {relatedMission.title}
                         </p>
                       )}
-                      <p className="font-korean text-xs text-cream leading-snug mt-0.5">
+                      <p className={`font-korean text-xs leading-snug mt-0.5 ${
+                        notif.type === 'MISSION_EXPIRED' ? 'text-panel-sub line-through' : 'text-cream'
+                      }`}>
                         {notif.content}
                       </p>
                       <div className="flex items-center gap-2 mt-0.5 flex-wrap">
@@ -269,7 +420,7 @@ export default function HomePage() {
           </PixelCard>
         )}
 
-        {/* ④ 공지사항 아코디언 */}
+        {/* ⑥ 공지사항 아코디언 */}
         {notices.length > 0 && (
           <PixelCard variant="dark" padding="sm">
             <div className="flex items-center justify-between mb-2">
@@ -281,7 +432,7 @@ export default function HomePage() {
           </PixelCard>
         )}
 
-        {/* ⑤ 조르기 플로팅 버튼 (자녀) */}
+        {/* ⑦ 조르기 플로팅 버튼 (자녀) */}
         {isChild && (
           <Link
             to="/begging"

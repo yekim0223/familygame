@@ -1,12 +1,10 @@
-// Design Ref: §5.3 SCR-12 RewardStatusPage — 보상 현황 (v3.0 MC Dark)
+// Design Ref: §5.3 SCR-12 RewardStatusPage — 보상 현황 (v4.0 슬림화)
 import { useState, useMemo } from 'react'
-import { Link } from 'react-router-dom'
 import { useRewards, filterRewardsByYearMonth } from '@/presentation/hooks/useRewards'
 import { useAuthStore } from '@/infrastructure/stores/authStore'
 import { useMissionStore } from '@/infrastructure/stores/missionStore'
 import { PixelButton } from '@/presentation/components/pixel/PixelButton'
-import { calcKoreanAge } from '@/domain/services/KoreanAge'
-import type { MissionStatus } from '@/domain/entities/Mission'
+import { PixelModal } from '@/presentation/components/pixel/PixelModal'
 
 const REWARD_ICONS: Record<string, string> = {
   MONEY: '💰', GAME_TIME: '🎮', PHONE_TIME: '📱',
@@ -14,15 +12,6 @@ const REWARD_ICONS: Record<string, string> = {
 }
 
 const MONTH_LABELS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월']
-
-const MISSION_STATUS_LABEL: Record<MissionStatus, { label: string; color: string }> = {
-  ACTIVE:           { label: '진행중',   color: 'text-sky' },
-  PENDING_APPROVAL: { label: '완료신청', color: 'text-hold' },
-  APPROVED:         { label: '승인됨',   color: 'text-approved' },
-  ON_HOLD:          { label: '보류중',   color: 'text-hold' },
-  REJECTED:         { label: '미승인',   color: 'text-rejected' },
-  EXPIRED:          { label: '종료됨',   color: 'text-rejected' },
-}
 
 function getMembersFromCache(): Array<{ id: string; name: string; realName: string; role: string }> {
   try {
@@ -32,8 +21,8 @@ function getMembersFromCache(): Array<{ id: string; name: string; realName: stri
   } catch { return [] }
 }
 
-function getMemberDisplayName(memberId: string, cacheMembers: ReturnType<typeof getMembersFromCache>): string {
-  const m = cacheMembers.find(m => m.id === memberId)
+function getDisplayName(memberId: string, cache: ReturnType<typeof getMembersFromCache>): string {
+  const m = cache.find(m => m.id === memberId)
   if (!m) return ''
   return m.name !== m.realName ? `${m.name} (${m.realName})` : m.name
 }
@@ -46,44 +35,87 @@ function formatDateTime(date: Date | undefined): string {
   })
 }
 
+function rewardLabel(r: any): string {
+  if (r.rewardType === 'MONEY')      return `💰 ${(r.amount || 0).toLocaleString('ko-KR')}원`
+  if (r.rewardType === 'GAME_TIME')  return `🎮 게임시간 ${r.amount}분`
+  if (r.rewardType === 'PHONE_TIME') return `📱 핸드폰 ${r.amount}분`
+  if (r.rewardType === 'GIFT')       return `🎁 ${r.customLabel || '선물'}`
+  if (r.rewardType === 'DINING')     return `🍕 ${r.customLabel || '외식'}`
+  return r.customLabel ? `⭐ ${r.customLabel}` : '⭐ 특별 보상'
+}
+
+function sourceBadge(r: any, mission: any) {
+  if (mission?.title) return null
+  if (r.source === 'begging' || (r.customLabel as string)?.startsWith('[조르기]'))
+    return <span className="font-korean text-xs text-sky border border-sky px-1">🙏 조르기 승인</span>
+  return <span className="font-korean text-xs text-hold border border-hold px-1">🎁 수동 발송</span>
+}
+
+// ── 상세 모달 ──────────────────────────────────────────────────────
+function DetailModal({ reward, mission, cache, onClose }: {
+  reward: any; mission: any; cache: ReturnType<typeof getMembersFromCache>; onClose: () => void
+}) {
+  const approverName  = getDisplayName(reward.approvedBy, cache)
+  const performerName = getDisplayName(reward.memberId, cache)
+  const submittedAt   = mission?.statusHistory?.find((h: any) => h.to === 'PENDING_APPROVAL')?.changedAt
+
+  return (
+    <PixelModal title="📋 보상 상세" onClose={onClose}>
+      <div className="space-y-3 pb-2">
+        {/* 보상 내용 */}
+        <div className="card-pixel p-3 text-center">
+          <p className="text-3xl mb-1">{REWARD_ICONS[reward.rewardType] ?? '⭐'}</p>
+          <p className="t-heading text-gold">{rewardLabel(reward)}</p>
+          {mission?.title && (
+            <p className="font-korean text-sm text-cream mt-1">📜 {mission.title}</p>
+          )}
+          {sourceBadge(reward, mission) && (
+            <div className="flex justify-center mt-1">{sourceBadge(reward, mission)}</div>
+          )}
+        </div>
+        {/* 메타 */}
+        <div className="space-y-1.5">
+          {approverName  && <p className="t-micro text-panel-sub">📋 등록: <span className="text-cream">{approverName}</span></p>}
+          {performerName && <p className="t-micro text-panel-sub">⚔️ 수행: <span className="text-cream">{performerName}</span></p>}
+          {submittedAt   && <p className="t-micro text-panel-sub">📩 접수: <span className="text-cream">{formatDateTime(submittedAt)}</span></p>}
+          <p className="t-micro text-panel-sub">✅ 승인: <span className="text-cream">{formatDateTime(reward.approvedAt)}</span></p>
+        </div>
+        <PixelButton variant="ghost" fullWidth onClick={onClose}>닫기</PixelButton>
+      </div>
+    </PixelModal>
+  )
+}
+
+// ════════════════════════════════════════════════════════════════════
 export default function RewardStatusPage() {
   const { rewards, isParent } = useRewards()
   const { currentMember }    = useAuthStore()
   const { getMissionById }   = useMissionStore()
+
   const now = new Date()
-  const [selectedYear,   setSelectedYear]   = useState(now.getFullYear())
-  const [selectedMonth,  setSelectedMonth]  = useState(now.getMonth())
-  const [selectedMember, setSelectedMember] = useState<string | null>(null)
+  const [year,  setYear]  = useState(now.getFullYear())
+  const [month, setMonth] = useState(now.getMonth())   // 0-based
+  const [memberId, setMemberId] = useState<string | null>(null)
+  const [detail, setDetail]     = useState<any | null>(null)
 
   const cacheMembers = useMemo(() => getMembersFromCache(), [])
 
   if (!currentMember) return null
 
-  const korAge = currentMember.birthDate ? calcKoreanAge(currentMember.birthDate) : null
-
-  const years = useMemo(() => {
-    const ys = new Set(rewards.map(r => r.approvedAt.getFullYear()))
-    ys.add(now.getFullYear())
-    return Array.from(ys).sort((a, b) => b - a)
-  }, [rewards])
-
-  const byYearMonth = useMemo(
-    () => filterRewardsByYearMonth(rewards, selectedYear, selectedMonth),
-    [rewards, selectedYear, selectedMonth]
+  // 아이 멤버 목록 (부모 전용 탭)
+  const childMembers = useMemo(
+    () => cacheMembers.filter(m => m.role === 'CHILD'),
+    [cacheMembers]
   )
 
-  const memberTabs = useMemo(() => {
-    if (!isParent) return []
-    const ids = [...new Set(byYearMonth.map(r => r.memberId))]
-    return ids.map(id => ({
-      id,
-      label: getMemberDisplayName(id, cacheMembers) || id,
-    }))
-  }, [byYearMonth, isParent, cacheMembers])
+  const byYearMonth = useMemo(
+    () => filterRewardsByYearMonth(rewards, year, month),
+    [rewards, year, month]
+  )
 
   const filtered = useMemo(
-    () => selectedMember ? byYearMonth.filter(r => r.memberId === selectedMember) : byYearMonth,
-    [byYearMonth, selectedMember]
+    () => memberId ? byYearMonth.filter(r => r.memberId === memberId) : byYearMonth,
+    [byYearMonth, memberId]
   )
 
   const totals = useMemo(
@@ -98,23 +130,64 @@ export default function RewardStatusPage() {
     .filter(r => r.rewardType === 'MONEY')
     .reduce((sum, r) => sum + (r.amount || 0), 0)
 
+  // ── 연/월 네비게이션 ─────────────────────────────────────────────
+  const prevMonth = () => {
+    if (month === 0) { setYear(y => y - 1); setMonth(11) }
+    else setMonth(m => m - 1)
+  }
+  const nextMonth = () => {
+    if (month === 11) { setYear(y => y + 1); setMonth(0) }
+    else setMonth(m => m + 1)
+  }
+
+  const isCurrentMonth = year === now.getFullYear() && month === now.getMonth()
+
   return (
     <div className="p-3 pb-4 space-y-3">
 
-      {/* 헤더 */}
-      <div className="flex items-center justify-between">
-        <h1 className="t-heading text-gold t-pixel-shadow">🏆 보상 현황</h1>
-        <Link to="/history" className="font-korean text-xs text-sky underline">히스토리 →</Link>
-      </div>
+      {/* 상단 타이틀 */}
+      <h1 className="t-heading text-gold t-pixel-shadow">🏆 보상 현황</h1>
 
-      {korAge && (
-        <p className="t-micro text-panel-sub">{currentMember.name} · {korAge}살 기록</p>
+      {/* 아이 멤버 탭 (부모 전용) */}
+      {isParent && childMembers.length > 0 && (
+        <div className="flex gap-1.5">
+          <PixelButton size="sm"
+            variant={memberId === null ? 'gold' : 'ghost'}
+            onClick={() => setMemberId(null)}>
+            전체
+          </PixelButton>
+          {childMembers.map(m => (
+            <PixelButton key={m.id} size="sm"
+              variant={memberId === m.id ? 'purple' : 'ghost'}
+              onClick={() => setMemberId(m.id)}>
+              {m.name}
+            </PixelButton>
+          ))}
+        </div>
       )}
 
-      {/* 당월 총합 — card-highlight 금빛 강조 */}
+      {/* ◀ 연/월 ▶ 미니 패널 */}
+      <div className="flex items-center justify-between card-pixel px-3 py-2">
+        <button type="button" onClick={prevMonth}
+          className="font-pixel text-gold text-sm active:scale-90 transition-transform px-2 py-1">
+          ◀
+        </button>
+        <div className="text-center">
+          <p className="font-pixel text-xs text-gold">{year}년 {MONTH_LABELS[month]}</p>
+          {isCurrentMonth && (
+            <p className="font-korean text-xs text-approved mt-0.5">● 이번 달</p>
+          )}
+        </div>
+        <button type="button" onClick={nextMonth}
+          className="font-pixel text-gold text-sm active:scale-90 transition-transform px-2 py-1">
+          ▶
+        </button>
+      </div>
+
+      {/* 당월 총합 */}
       {filtered.length > 0 && (
         <div className="card-highlight px-4 py-3 flex items-center justify-between">
-          <p className="t-sub font-bold text-cream">{MONTH_LABELS[selectedMonth]} 총합</p>
+          <p className="t-sub font-bold text-cream">{MONTH_LABELS[month]} 총합</p>
           <div className="text-right">
             {monthTotal > 0 && (
               <p className="t-heading text-gold">💰{monthTotal.toLocaleString('ko-KR')}원</p>
@@ -124,49 +197,7 @@ export default function RewardStatusPage() {
         </div>
       )}
 
-      {/* 연도 탭 */}
-      <div className="flex gap-1 overflow-x-auto pb-1">
-        {years.map(y => (
-          <PixelButton key={y} size="sm"
-            variant={selectedYear === y ? 'purple' : 'ghost'}
-            className="flex-shrink-0"
-            onClick={() => setSelectedYear(y)}>
-            {y}년
-          </PixelButton>
-        ))}
-      </div>
-
-      {/* 월 탭 */}
-      <div className="flex gap-1 overflow-x-auto pb-1 scrollbar-none">
-        {MONTH_LABELS.map((m, i) => (
-          <PixelButton key={i} size="sm"
-            variant={selectedMonth === i ? 'sky' : 'ghost'}
-            className="flex-shrink-0"
-            onClick={() => setSelectedMonth(i)}>
-            {m}
-          </PixelButton>
-        ))}
-      </div>
-
-      {/* 대상자 필터 탭 — 부모 전용 */}
-      {isParent && memberTabs.length > 0 && (
-        <div className="flex gap-1.5 flex-wrap">
-          <PixelButton size="sm"
-            variant={selectedMember === null ? 'gold' : 'ghost'}
-            onClick={() => setSelectedMember(null)}>
-            전체
-          </PixelButton>
-          {memberTabs.map(tab => (
-            <PixelButton key={tab.id} size="sm"
-              variant={selectedMember === tab.id ? 'purple' : 'ghost'}
-              onClick={() => setSelectedMember(tab.id)}>
-              {tab.label}
-            </PixelButton>
-          ))}
-        </div>
-      )}
-
-      {/* 보상 종류별 합계 — card-pixel 소형 뱃지 */}
+      {/* 보상 종류별 합계 */}
       {Object.keys(totals).length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {Object.entries(totals).map(([type, amount]) => (
@@ -185,75 +216,56 @@ export default function RewardStatusPage() {
         </div>
       )}
 
-      {/* 보상 목록 */}
+      {/* 보상 목록 — 탭하면 상세 모달 */}
       {filtered.length === 0 ? (
         <div className="card-pixel p-4 text-center">
           <p className="t-sub text-panel-sub">
-            {selectedYear}년 {MONTH_LABELS[selectedMonth]}에{' '}
-            {selectedMember ? `${getMemberDisplayName(selectedMember, cacheMembers)}의 ` : ''}
-            받은 보상이 없어요
+            {year}년 {MONTH_LABELS[month]}에 받은 보상이 없어요
           </p>
         </div>
       ) : (
         <div className="space-y-1.5">
           {filtered.map(r => {
-            const mission      = getMissionById(r.missionId)
-            const missionStatus = mission?.status as MissionStatus | undefined
-            const statusInfo   = missionStatus
-              ? MISSION_STATUS_LABEL[missionStatus]
-              : { label: '승인됨', color: 'text-approved' }
-
-            const performerName = getMemberDisplayName(r.memberId, cacheMembers)
-            const approverName  = getMemberDisplayName(r.approvedBy, cacheMembers)
-
-            const submittedAt = mission?.statusHistory
-              ?.find(h => h.to === 'PENDING_APPROVAL')
-              ?.changedAt
-
+            const mission = getMissionById(r.missionId)
             return (
-              <div key={r.id} className="card-pixel p-3">
-                <div className="flex items-start gap-2">
-                  <span className="text-lg flex-shrink-0 mt-0.5">
+              <button
+                key={r.id}
+                type="button"
+                className="card-pixel p-3 w-full text-left active:opacity-70 transition-opacity"
+                onClick={() => setDetail({ reward: r, mission })}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-lg flex-shrink-0">
                     {REWARD_ICONS[r.rewardType] ?? '⭐'}
                   </span>
                   <div className="flex-1 min-w-0">
-                    {/* 출처 배지 */}
-                    <div className="flex items-center gap-1 mb-0.5 flex-wrap">
-                      {mission?.title ? (
-                        <p className="t-sub font-bold text-gold truncate">
-                          {(mission as any).emoji} {mission.title}
+                    <p className="t-body font-bold text-cream truncate">{rewardLabel(r)}</p>
+                    {mission?.title
+                      ? <p className="t-micro text-panel-sub truncate">📜 {mission.title}</p>
+                      : <p className="t-micro text-panel-sub">
+                          {r.source === 'begging' ? '🙏 조르기 승인' : '🎁 수동 발송'}
                         </p>
-                      ) : (r as any).source === 'begging' || ((r as any).customLabel as string)?.startsWith('[조르기]') ? (
-                        <span className="font-korean text-xs text-sky border border-sky px-1">🙏 조르기 승인</span>
-                      ) : (
-                        <span className="font-korean text-xs text-hold border border-hold px-1">🎁 수동 발송</span>
-                      )}
-                    </div>
-                    {/* 보상 내용 */}
-                    <p className="t-body font-bold text-cream">
-                      {r.rewardType === 'MONEY'      ? `${(r.amount || 0).toLocaleString('ko-KR')}원` :
-                       r.rewardType === 'GAME_TIME'  ? `게임시간 ${r.amount}분` :
-                       r.rewardType === 'PHONE_TIME' ? `핸드폰 ${r.amount}분` :
-                       r.rewardType === 'GIFT'       ? `🎁 ${(r as any).customLabel || '선물'}` :
-                       r.rewardType === 'DINING'     ? `🍕 ${(r as any).customLabel || '외식'}` :
-                       (r as any).customLabel        ? `⭐ ${(r as any).customLabel}` : '⭐ 특별 보상'}
-                    </p>
-                    {/* 메타 정보 */}
-                    <div className="mt-1 space-y-0.5">
-                      {approverName  && <p className="t-micro text-panel-sub">📋 등록: {approverName}</p>}
-                      {performerName && <p className="t-micro text-panel-sub">⚔️ 수행: {performerName}</p>}
-                      {submittedAt   && <p className="t-micro text-panel-sub">📩 접수: {formatDateTime(submittedAt)}</p>}
-                      <p className="t-micro text-panel-sub">✅ 승인: {formatDateTime(r.approvedAt)}</p>
-                    </div>
+                    }
                   </div>
-                  <span className={`t-micro font-bold flex-shrink-0 mt-0.5 ${statusInfo.color}`}>
-                    {statusInfo.label}
-                  </span>
+                  <div className="flex-shrink-0 text-right">
+                    <p className="t-micro text-panel-sub">{formatDateTime(r.approvedAt).slice(5, 16)}</p>
+                    <p className="font-pixel text-[9px] text-gold/60 mt-0.5">▶ 상세</p>
+                  </div>
                 </div>
-              </div>
+              </button>
             )
           })}
         </div>
+      )}
+
+      {/* 상세 모달 */}
+      {detail && (
+        <DetailModal
+          reward={detail.reward}
+          mission={detail.mission}
+          cache={cacheMembers}
+          onClose={() => setDetail(null)}
+        />
       )}
     </div>
   )

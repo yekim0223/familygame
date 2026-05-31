@@ -7,6 +7,10 @@ import { fsGet, fsSet, fsUpdate, fsQuery, fsDelete } from '@/infrastructure/fire
 import { hashPin, signOut, clearAllLocalData } from '@/infrastructure/firebase/auth'
 import { getPendingObservers, approveObserver, rejectObserver, OBSERVER_TYPE_LABELS, type ObserverSession } from '@/application/use-cases/auth/observerLogin'
 import { subscribeNotices, addNotice, deleteNotice, type Notice } from '@/infrastructure/firebase/collections/notices'
+import {
+  subscribeTournamentSettings, saveTournamentSettings, subscribeTournamentScores,
+  type TournamentSettings, type TournamentScore,
+} from '@/infrastructure/firebase/collections/tournament'
 import { PixelButton } from '@/presentation/components/pixel/PixelButton'
 import { PixelModal } from '@/presentation/components/pixel/PixelModal'
 import { CharacterSprite } from '@/presentation/components/character/CharacterSprite'
@@ -39,13 +43,6 @@ export default function MasterSettingsPage() {
   const [currentSettings, setCurrentSettings] = useState<{ familyCodeHash?: string; joinCode?: string } | null>(null)
   const [observers,       setObservers]       = useState<ObserverSession[]>([])
   const [observerLoading, setObserverLoading] = useState(false)
-
-  // ── 인증키 변경 ──────────────────────────────────────────────────
-  const [newCode,        setNewCode]        = useState('')
-  const [newCodeConfirm, setNewCodeConfirm] = useState('')
-  const [showCode,       setShowCode]       = useState(false)
-  const [showCodeConfirm, setShowCodeConfirm] = useState(false)
-  const codeMatch = newCode.trim().length >= 4 && newCode === newCodeConfirm
 
   // ── 닉네임 + loginId 수정 ────────────────────────────────────────
   const [editingId,    setEditingId]    = useState<string | null>(null)
@@ -95,6 +92,56 @@ export default function MasterSettingsPage() {
     const { error } = await deleteNotice(familyId, noticeId)
     if (error) { showToast('삭제 실패', 'error'); return }
     showToast('삭제됐어요', 'success')
+  }
+
+  // ── 천하제일 주간 대회 ───────────────────────────────────────────
+  const defaultTS = (): TournamentSettings => ({
+    active: false, title: '천하제일 가족 게임 대회', roundNumber: 1,
+    startDate: new Date().toISOString().slice(0, 10),
+    endDate:   new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10),
+    difficulty: 3,
+  })
+  const [tournament,    setTournament]    = useState<TournamentSettings>(defaultTS())
+  const [tournamentScs, setTournamentScs] = useState<TournamentScore[]>([])
+  const [tSaving,       setTSaving]       = useState(false)
+
+  useEffect(() => {
+    if (!familyId) return
+    const u1 = subscribeTournamentSettings(familyId, s => { if (s) setTournament(s) })
+    const u2 = subscribeTournamentScores(familyId, setTournamentScs)
+    return () => { u1(); u2() }
+  }, [familyId])
+
+  const handleTournamentSave = async () => {
+    if (!familyId) return
+    setTSaving(true)
+    const { error } = await saveTournamentSettings(familyId, tournament)
+    setTSaving(false)
+    if (error) showToast('대회 설정 저장 실패: ' + error, 'error')
+    else showToast('대회 설정이 저장됐어요', 'success')
+  }
+
+  const handleTournamentToggle = async () => {
+    if (!familyId) return
+    const next = { ...tournament, active: !tournament.active }
+    setTournament(next)
+    const { error } = await saveTournamentSettings(familyId, next)
+    if (error) { showToast('토글 실패', 'error'); setTournament(tournament) }
+    else showToast(next.active ? '🏆 대회가 시작됐어요!' : '대회가 종료됐어요', 'success')
+  }
+
+  const handleNewRound = async () => {
+    if (!familyId) return
+    const next: TournamentSettings = {
+      ...tournament,
+      active:      true,
+      roundNumber: tournament.roundNumber + 1,
+      startDate:   new Date().toISOString().slice(0, 10),
+      endDate:     new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10),
+    }
+    setTournament(next)
+    await saveTournamentSettings(familyId, next)
+    showToast(`제${next.roundNumber}회 대회가 시작됐어요!`, 'success')
   }
 
   // ── 경쟁 시스템 ON/OFF ───────────────────────────────────────────
@@ -174,17 +221,6 @@ export default function MasterSettingsPage() {
     loadObservers()
     return unsub
   }, [familyId])
-
-  // ── 가족 인증키 변경 ─────────────────────────────────────────────
-  const handleChangeCode = async () => {
-    if (!familyId) return
-    if (!codeMatch) { showToast('인증키를 올바르게 입력해주세요 (4자 이상, 두 칸 일치)', 'error'); return }
-    const codeHash = await hashFamilyCode(newCode.trim())
-    const { error } = await fsUpdate(`families/${familyId}/config/settings`, { familyCodeHash: codeHash })
-    if (error) { showToast('변경에 실패했어요', 'error'); return }
-    showToast('인증키가 변경되었어요', 'success')
-    setNewCode(''); setNewCodeConfirm('')
-  }
 
   // ── 구성원 내보내기 (PixelModal confirm) ─────────────────────────
   const handleExpelConfirmed = async () => {
@@ -339,51 +375,50 @@ export default function MasterSettingsPage() {
 
       <div className="p-3 pb-8 space-y-4 max-w-lg mx-auto">
 
-        {/* ── 1. 가족 인증키 변경 ─────────────────────────────────── */}
-        <div className="card-pixel p-4">
-          <SectionHeader icon="🔑" title="가족 인증키 변경" />
-          <p className="t-micro text-panel-sub mb-3">새 인증키를 두 번 입력해서 확인해요. (4자 이상)</p>
-
-          <div className="relative mb-2">
-            <input
-              type={showCode ? 'text' : 'password'}
-              value={newCode}
-              onChange={e => setNewCode(e.target.value)}
-              placeholder="새 가족 인증키"
-              className={`${INPUT_CLS} pr-12 ${newCode && newCodeConfirm && !codeMatch ? '!border-rejected' : ''}`}
-            />
-            <button type="button" onClick={() => setShowCode(p => !p)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gold text-base">
-              {showCode ? '🙈' : '👁️'}
-            </button>
-          </div>
-
-          <div className="relative mb-2">
-            <input
-              type={showCodeConfirm ? 'text' : 'password'}
-              value={newCodeConfirm}
-              onChange={e => setNewCodeConfirm(e.target.value)}
-              placeholder="인증키 확인"
-              className={`${INPUT_CLS} pr-12 ${newCodeConfirm && !codeMatch ? '!border-rejected' : ''}`}
-            />
-            <button type="button" onClick={() => setShowCodeConfirm(p => !p)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gold text-base">
-              {showCodeConfirm ? '🙈' : '👁️'}
-            </button>
-          </div>
-
-          {newCode && newCodeConfirm && (
-            <p className={`t-sub mb-2 ${codeMatch ? 'text-approved' : 'text-rejected'}`}>
-              {codeMatch ? '✓ 인증키가 일치해요' : '✗ 인증키가 일치하지 않아요'}
-            </p>
-          )}
-
-          <PixelButton variant="purple" size="md" fullWidth disabled={!codeMatch} onClick={handleChangeCode}>
-            인증키 변경
+        {/* ── ⚡ 엔진 완전 새로고침 버튼 ──────────────────────────── */}
+        <div className="card-pixel p-3">
+          <SectionHeader icon="⚡" title="엔진 완전 새로고침" />
+          <p className="font-korean text-xs text-panel-sub mb-3">
+            바탕화면 바로가기 캐시 꼬임 문제 해결용.<br />
+            서비스 워커 캐시 + LocalStorage + SessionStorage를 강제 초기화하고 앱을 재시작합니다.
+          </p>
+          <PixelButton
+            variant="danger"
+            size="lg"
+            fullWidth
+            onClick={async () => {
+              // 1. 서비스 워커 캐시 전체 삭제
+              if ('caches' in window) {
+                const keys = await window.caches.keys()
+                await Promise.all(keys.map(k => window.caches.delete(k)))
+              }
+              // 2. 서비스 워커 등록 해제
+              if ('serviceWorker' in navigator) {
+                const regs = await navigator.serviceWorker.getRegistrations()
+                await Promise.all(regs.map(r => r.unregister()))
+              }
+              // 3. SessionStorage 초기화
+              sessionStorage.clear()
+              // 4. 게임 관련 임시 키 정리 (fq_inv_* 등 유지, 꼬인 캐시만 제거)
+              const preserveKeys = [
+                'familyId', 'fq_last_login', 'fq_login_at', 'fq_member_cache',
+                'fq_fav_order', 'fq_weekly_comp', 'fq_monthly_comp',
+                'fq_bgm_theme', 'fq_inv_weapon', 'fq_inv_skin', 'fq_inv_pet', 'fq_inv_xp',
+                'fq_snapshots',
+              ]
+              const allKeys = Object.keys(localStorage)
+              allKeys
+                .filter(k => !preserveKeys.includes(k))
+                .forEach(k => localStorage.removeItem(k))
+              // 5. 하드 리로드
+              window.location.reload()
+            }}
+          >
+            ⚡ 캐시 강제 초기화 + 재시작
           </PixelButton>
         </div>
 
-        {/* ── 2. 구성원 관리 ──────────────────────────────────────── */}
+        {/* ── 1. 구성원 관리 ──────────────────────────────────────── */}
         <div className="card-pixel p-4">
           <SectionHeader icon="👥" title={`구성원 관리 (${members.length}/4명)`} />
 
@@ -562,6 +597,172 @@ export default function MasterSettingsPage() {
           <PixelButton variant="gold" size="md" fullWidth onClick={() => navigate('/settings/special-days')}>
             기념일·생일 관리 →
           </PixelButton>
+        </div>
+
+        {/* ── 5-c. 천하제일 주간 대회 제어판 ─────────────────────────── */}
+        <div className="card-pixel p-4">
+          <div className="flex items-center justify-between mb-3">
+            <SectionHeader icon="🏆" title="천하제일 주간 대회 제어판" />
+            <PixelButton
+              size="sm"
+              variant={tournament.active ? 'danger' : 'success'}
+              onClick={handleTournamentToggle}
+            >
+              {tournament.active ? '⏹ 대회 종료' : '▶ 대회 시작'}
+            </PixelButton>
+          </div>
+
+          {/* 현재 대회 상태 배지 */}
+          <div className={`px-3 py-2 mb-4 border-2 ${tournament.active ? 'border-gold bg-gold/10' : 'border-panel-border bg-panel-darkest'}`}>
+            <p className="font-pixel text-xs text-gold">
+              {tournament.active ? '🔴 LIVE' : '⚪ 대기'} — 제{tournament.roundNumber}회
+            </p>
+            <p className="font-korean text-sm font-bold text-cream mt-0.5">{tournament.title}</p>
+            <p className="font-korean text-xs text-panel-sub">{tournament.startDate} ~ {tournament.endDate}</p>
+          </div>
+
+          {/* 대회 설정 폼 */}
+          <div className="space-y-3 mb-4">
+            <div>
+              <p className="t-micro text-panel-sub mb-1">대회 이름</p>
+              <input
+                value={tournament.title}
+                onChange={e => setTournament(p => ({ ...p, title: e.target.value }))}
+                maxLength={30}
+                placeholder="대회 이름"
+                className={INPUT_CLS}
+              />
+            </div>
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <p className="t-micro text-panel-sub mb-1">시작일</p>
+                <input
+                  type="date"
+                  value={tournament.startDate}
+                  onChange={e => setTournament(p => ({ ...p, startDate: e.target.value }))}
+                  className={INPUT_CLS}
+                />
+              </div>
+              <div className="flex-1">
+                <p className="t-micro text-panel-sub mb-1">종료일</p>
+                <input
+                  type="date"
+                  value={tournament.endDate}
+                  onChange={e => setTournament(p => ({ ...p, endDate: e.target.value }))}
+                  className={INPUT_CLS}
+                />
+              </div>
+            </div>
+
+            {/* ── 난이도 슬라이더 ──────────────────────────────────── */}
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <p className="t-micro text-panel-sub">게임 기본 난이도</p>
+                <p className="font-pixel text-xs text-gold">
+                  {'★'.repeat(tournament.difficulty)}{'☆'.repeat(5 - tournament.difficulty)}
+                  {' '}Lv.{tournament.difficulty}
+                </p>
+              </div>
+              <input
+                type="range"
+                min={1}
+                max={5}
+                step={1}
+                value={tournament.difficulty}
+                onChange={e => setTournament(p => ({ ...p, difficulty: Number(e.target.value) }))}
+                className="w-full h-2 accent-gold cursor-pointer"
+                style={{
+                  background: `linear-gradient(to right, #FFD700 0%, #FFD700 ${(tournament.difficulty - 1) / 4 * 100}%, #1A1A1A ${(tournament.difficulty - 1) / 4 * 100}%, #1A1A1A 100%)`,
+                }}
+              />
+              <div className="flex justify-between mt-1">
+                {['쉬움', '보통', '중간', '어려움', '지옥'].map((l, i) => (
+                  <span key={l}
+                    className={`font-korean text-[10px] ${tournament.difficulty === i + 1 ? 'text-gold font-bold' : 'text-panel-sub'}`}>
+                    {l}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex gap-2 mb-4">
+            <PixelButton
+              variant="gold" size="md" className="flex-1"
+              disabled={tSaving}
+              onClick={handleTournamentSave}
+            >
+              {tSaving ? '저장 중...' : '💾 설정 저장'}
+            </PixelButton>
+            <PixelButton
+              variant="sky" size="md" className="flex-1"
+              onClick={() => confirm('새 회차를 시작할까요? 기존 대회는 유지되고 새 랭킹이 시작돼요.', handleNewRound)}
+            >
+              ⏭ 다음 회차
+            </PixelButton>
+          </div>
+
+          {/* ── 대회 점수 히스토리 ────────────────────────────────── */}
+          {tournamentScs.length > 0 && (
+            <div>
+              <p className="t-micro text-panel-sub font-bold mb-2">
+                📊 제{tournament.roundNumber}회 대회 랭킹
+              </p>
+              {(() => {
+                const roundScores = tournamentScs
+                  .filter(s => s.roundNumber === tournament.roundNumber)
+                  .slice(0, 5)
+                if (roundScores.length === 0) return (
+                  <p className="t-micro text-panel-sub text-center py-2">아직 기록 없음</p>
+                )
+                const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'] as const
+                return (
+                  <div className="space-y-1">
+                    {roundScores.map((s, i) => (
+                      <div key={s.id} className="flex items-center gap-2 px-2 py-1 card-pixel">
+                        <span className="text-base">{medals[i]}</span>
+                        <span className="font-korean text-xs text-cream flex-1 truncate">
+                          {s.memberName}
+                          <span className="text-panel-sub ml-1">
+                            ({s.gameId === 'galaga' ? '갤러그' : s.gameId === 'tetris' ? '테트리스' : s.gameId === 'ponpoko' ? '너구리' : '뱀꼬리'})
+                          </span>
+                        </span>
+                        <span className="font-pixel text-xs text-gold">{s.score.toLocaleString()}</span>
+                      </div>
+                    ))}
+                  </div>
+                )
+              })()}
+
+              {/* 회차 선택 히스토리 */}
+              {tournament.roundNumber > 1 && (
+                <div className="mt-3">
+                  <p className="t-micro text-panel-sub font-bold mb-1">📜 전 회차 결과</p>
+                  <div className="flex gap-1 flex-wrap">
+                    {Array.from({ length: tournament.roundNumber - 1 }, (_, i) => i + 1).reverse().map(round => {
+                      const top = tournamentScs
+                        .filter(s => s.roundNumber === round)
+                        .slice(0, 1)[0]
+                      return (
+                        <div key={round}
+                          className="card-pixel px-2 py-1 text-center min-w-[80px]">
+                          <p className="font-pixel text-[9px] text-gold">제{round}회</p>
+                          {top ? (
+                            <>
+                              <p className="font-korean text-[10px] text-cream truncate">{top.memberName}</p>
+                              <p className="font-pixel text-[9px] text-approved">{top.score.toLocaleString()}</p>
+                            </>
+                          ) : (
+                            <p className="font-korean text-[10px] text-panel-sub">기록없음</p>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* ── 6. 경쟁 시스템 설정 ─────────────────────────────────── */}

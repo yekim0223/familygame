@@ -9,6 +9,7 @@ import { useAuthStore } from '@/infrastructure/stores/authStore'
 import { signOut, clearAllLocalData } from '@/infrastructure/firebase/auth'
 import { useMissions } from '@/presentation/hooks/useMissions'
 import { useNotifications } from '@/presentation/hooks/useNotifications'
+import { audioManager } from '@/infrastructure/audio/audioManager'
 
 const IDLE_MS = 30 * 60 * 1000  // 30분
 
@@ -30,6 +31,14 @@ export function AppLayout() {
       navigate('/login', { replace: true })
     }, IDLE_MS)
   }
+
+  // BGM 자동 시작 — 로그인 직후 (startAfterLogin이 이미 호출됐으면 중복 방지됨)
+  useEffect(() => {
+    if (!currentMember) return
+    if (!audioManager.isPlaying()) {
+      audioManager.startAfterLogin()
+    }
+  }, [currentMember?.id])
 
   useEffect(() => {
     if (!currentMember) return  // 로그인 상태일 때만 감시

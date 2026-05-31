@@ -33,12 +33,10 @@ export function MissionCard({ mission, onFavoriteToggle }: MissionCardProps) {
   const diffInfo = DIFFICULTY_INFO[mission.difficulty]
   const daysLeft = getDaysLeft(mission.endDate)
 
-  // 특별 퀘스트(#D4A843 황금탄 배경): 어두운 계열로 대비 확보
-  // 일반(dark 패널): 기존 cream/panel-sub 유지
+  // 특별 퀘스트: 배경 → bg-panel-dark (황금탄 #D4A843 폐기). 텍스트 색상 일반과 동일
   const isSpecial = !!mission.isSpecial
-  const textMain  = isSpecial ? 'text-[#1C1917]'   : 'text-cream'
-  // text-stone(#9E9E9E)는 황금 배경 대비율 ~1.3:1로 WCAG 미달 → amber-900(#78350f)으로 교체
-  const textSub   = isSpecial ? 'text-amber-900'   : 'text-panel-sub'
+  const textMain  = 'text-cream'
+  const textSub   = 'text-panel-sub'
 
   return (
     <Link to={`/missions/${mission.id}`}>
@@ -48,10 +46,9 @@ export function MissionCard({ mission, onFavoriteToggle }: MissionCardProps) {
         className="active:opacity-80"
       >
         {isSpecial && (
-          <div className="flex items-center gap-1 mb-1.5 -mt-0.5">
-            {/* 황금 배경 위: text-gold(#FFD700) 불가 → text-pixel-dark 대체 */}
-            <span className="font-korean text-xs font-bold text-[#1C1917] bg-black/15 px-1.5 py-0.5 border border-[#1C1917]/40">
-              ✨ 특별 퀘스트
+          <div className="mb-1.5 -mt-0.5">
+            <span className="font-pixel text-xs text-yellow-400 t-pixel-shadow">
+              ⭐ SPECIAL
             </span>
           </div>
         )}
@@ -95,8 +92,7 @@ export function MissionCard({ mission, onFavoriteToggle }: MissionCardProps) {
             </p>
             {/* 퀘스트 내용 */}
             {mission.description && (
-              // isSpecial: opacity-80 제거 (황금 배경 + opacity 이중 희석 방지)
-              <p className={`font-korean text-xs ${textSub} mt-0.5 line-clamp-2 leading-snug ${isSpecial ? '' : 'opacity-80'}`}>
+              <p className={`font-korean text-xs ${textSub} mt-0.5 line-clamp-2 leading-snug opacity-80`}>
                 {mission.description}
               </p>
             )}

@@ -1,7 +1,7 @@
 import { orderBy } from 'firebase/firestore'
 import { fsAdd, fsSubscribe } from '../firestore'
 
-export type GameId = 'galaga' | 'tetris' | 'ponpoko'
+export type GameId = 'galaga' | 'ponpoko' | 'minesweeper'
 
 export interface GameScore {
   id: string

@@ -19,7 +19,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | **디자인** | 마인크래프트 오마주 픽셀 아트 + 여아 감성 퍼플/핑크 |
 | **Firebase 프로젝트** | `family-quest-8b41b` |
 | **배포 URL** | `family-quest-8b41b.web.app` |
-| **현재 버전** | 1.8.0 |
+| **현재 버전** | 2.1.0 |
 
 ---
 
@@ -250,8 +250,12 @@ families/{familyId}/
   begging/{id}        submitterId, type, content, status, dadApproved, momApproved
   special_days/{id}   name, type, month, day, isLunar, emoji, deleted
   question_answers/{id} memberId, question, answer, emotion, reward, dateKey
-  game_scores/{id}    memberId, memberName, gameId('galaga'|'tetris'|'ponpoko'),
+  game_scores/{id}    memberId, memberName, gameId('galaga'|'tetris'|'ponpoko'|'snake'),
                       score, playedAt                ← 게임 점수 기록
+  config/tournament   active, title, roundNumber, startDate, endDate, difficulty(1-5)
+                                                     ← 천하제일 주간 대회 설정 (단일 문서)
+  tournament_scores/{id} roundNumber, memberId, memberName, gameId, score, playedAt
+                                                     ← 대회 전용 점수 (일반 game_scores와 별도)
 
 family_codes/{code}          familyId, active       ← 루트 레벨 (가족 찾기)
 member_login_ids/{loginId}   familyId, memberId     ← 루트 레벨 (개인 ID 로그인)
@@ -422,13 +426,70 @@ CHILD → border-approved | border-gold (id 해시로 자녀별 고유 배정)
 | `/settings/question-answers` | 두근두근 답변 목록 | 부모 전용 |
 | `/settings/questions` | 질문 전체 목록 | |
 | `/settings/reward-types` | 보상 종류 관리 | |
-| `/game` | 레트로 게임 허브 | 갤러그·테트리스·너구리 + 가족 랭킹 |
+| `/game` | 레트로 게임 허브 | 갤러그·테트리스·너구리·뱀꼬리잡기 + 가족 랭킹 + 주간 대회 HUD |
 
 ---
 
-## 12. 현재 상태 (2026-05-31 Session 23 완료 기준 — v1.8.0)
+## 12. 현재 상태 (2026-05-31 Session 30 완료 기준 — v2.1.0, 미배포)
 
-### 구현 완료
+### 구현 완료 (Session 30 추가 — v2.1.0, 미배포)
+
+- **[인벤토리·캐릭터 연동 완전 통합]** — 전역 인벤토리 스토어와 ProfilePage·CharacterSprite의 이중 장부 현상 해결:
+  - **CharacterSprite.tsx**: `useInventoryStore` 구독 추가. `weapon` prop이 `undefined`(미전달)이면 `currentWeapon` 자동 폴백 오버레이. `null` 전달 시 무기 없음, 값 전달 시 해당 무기. `variant="person"`은 L4 조건으로 영향 없음
+  - **ProfilePage.tsx — displayCharId/displayPetId 우선순위 재정립**: `currentSkin || previewCharId || Firebase값`, `invPet || previewPetId || Firebase값` — 스토어 장착값이 항상 최우선 렌더링
+  - **ProfilePage.tsx — isOwned 합집합 판정**: skin 탭에 `unlockedCharacters` 합집합, pet 탭에 `unlockedPets` 합집합 — Firebase 레벨 언락 아이템도 "보유 중"으로 인정
+  - **ProfilePage.tsx — handleEquip Firebase 동기화**: async로 변경. skin 장착 → `character` 전체 교체(`saveCharacter` 패턴), pet 장착 → dot notation `character.petId`, weapon 장착 → `character.equipment:[id]`, bg는 localStorage 전용(Firebase 필드 없음)
+  - **ProfilePage.tsx — 단방향 동기화 트리거**: `handleSelectCharacter`에서 `setSkin(characterId)` 추가, `handleSelectPet`에서 `setInvPet(petId)` 추가 — 인벤토리 패널 선택 시 스토어도 즉시 갱신
+
+### 구현 완료 (Session 29 추가 — v2.1.0, 배포 완료)
+
+- **[통합 마일스톤 2-3 종착지] 재화 단일화 + 인벤토리 슬롯화 + 특별 퀘스트 UX + 오디오 최종화 + 안전장치**:
+  - **특별 퀘스트 카드 UX 완화**: `PixelCard variant="special"` — `bg-[#D4A843]` 황금탄 폐기 → `bg-panel-dark + border-yellow-400 + card-special(황금 네온 글로우 펄스 2s)`. 배지 `✨ 특별 퀘스트` → `⭐ SPECIAL` 픽셀 텍스트
+  - **XP 재화 시스템 단일화** (`userInventoryStore.ts`): `SKIN_CATALOG`(8종) / `BG_CATALOG`(8종) / `PET_SHOP_CATALOG`(8종) / `WEAPON_CATALOG`(3종) 명세화. `spendXP(cost)` 차감 함수 추가. `unlockItem(type, id)` / `hasItem(type, id)` / `ownedSkins/ownedBgs/ownedPetShop/ownedWeapons` 보유 목록 localStorage 영속. `totalEarnedXP`(누적, 레벨 산출용)와 `gameXP`(잔액, 소비용) 분리. `getXPLevel(totalXP)` 1000 XP = Lv.1 스케일
+  - **프로필 XP 상점 인벤토리 슬롯화** (`ProfilePage.tsx`): PIN 패널 아래 "🎒 아이템 상점" 섹션 삽입. 좌측=실시간 아바타 프리뷰(CharacterSprite + 장착 배지) / 우측=4탭(👕직업·🖼️배경·🐱펫·⚔️무기)+슬롯 그리드. 보유 시 `장착하기`, 미보유 시 🔒 자물쇠 오버레이+XP 가격. 구매 확인 `PixelModal` — `spendXP` 차감 후 `unlockItem` 호출
+  - **오디오 파이프라인 최종화**: `keyClick()` — suspended 상태에서도 `ctx.resume().then(→ schedNote)` 패턴으로 밀림 없는 즉시 반응. `startAfterLogin()` — suspended 시 `ctx.resume().then(→ startBGM)` Autoplay Policy 완전 우회
+  - **이모지 레거시 안전장치 이식** (`CharacterSprite.tsx`): `LEGACY_EMOJI_TO_CHAR_ID` / `LEGACY_EMOJI_TO_WEAPON` / `LEGACY_EMOJI_TO_PET` 역방향 딕셔너리 매핑. `normalizeCharId()` / `normalizeWeapon()` / `normalizePetId()` 정규화 함수. DB에 이모지 문자열(`"🗡️"`, `"🐱"`)이 남아있어도 폴백(기본 전사/단검/고양이)으로 화면 뻗음 방지. `normalizePetId` export하여 외부 호출 가능
+
+### 구현 완료 (Session 28 추가 — v2.0.0, 배포 완료)
+
+- **[통합 마일스톤 대개정판] 게임 대개편 + 오디오 파이프라인 + UI 수술**:
+  - **테트리스·뱀꼬리잡기 완전 삭제**: GamePage import 제거. `GameId` → `'galaga' | 'ponpoko' | 'minesweeper'`
+  - **지뢰찾기 신규** (`MinesweeperGame.tsx`): DOM Grid, ⛏/🚩 모드 토글, BFS 연쇄 오픈, 스테이지 무한 루프, SFX 연동
+  - **공통 GamePad** (`GamePad.tsx`): `DPad`(좌우+액션) / `JumpPad` — `w-12 h-12` 정사각형 대칭 피스톤 모션
+  - **갤러그 난이도**: `Math.pow(1.25, wave-1)` 누적 곱셈 (포메이션·다이브·총알 모두)
+  - **너구리 난이도**: `Math.pow(1.25, stage-1)` 누적 곱셈 (최대 12)
+  - **오디오 SFX**: `loginIntro` / `keyClick` / `loginFanfare` / `startAfterLogin` / `mineOpen/Flag/Boom/Win`
+  - **LoginPage 오디오**: FAMILY LOGIN→intro, 카드탭→keyClick, 숫자키→keyClick, PIN성공→fanfare+BGM자동시작
+  - **AppLayout BGM 자동 재생**: currentMember 변경 시 isPlaying() 체크 후 startAfterLogin()
+  - **RewardStatusPage 슬림화**: 상단 아이탭 [전체|하윤|서윤] + [ ◀ 2026년 05월 ▶ ] 화살표 패널 + 탭 시 DetailModal
+  - **CharacterSprite 레이어드**: 녹색 모눈 폐기 → 역할별 픽셀 배경(⭐🌸💎🪨), L4 무기 오버레이 prop, PetSprite bounce prop
+  - `GameId` 타입: `'galaga' | 'ponpoko' | 'minesweeper'` (Firestore gameScores 컬렉션 공유)
+
+### 구현 완료 (Session 27 추가 — v1.9.2)
+
+- **[마일스톤 3-1] 메인화면 캐릭터 상태창 개편 + 가족 응원 시스템 + 패밀리 늬우스 + 달력 타임라인**:
+  - **HomePage.tsx 전면 개편**: 프로필카드에 장착 무기 배지(🗡️/⚡/🔫) + 무기 라벨 표시. `userInventoryStore.currentWeapon` 연동
+  - **가족 랜덤 응원 말풍선**: 자녀 홈 화면에 4초 후 첫 출현, 35초 간격 반복. 아빠/엄마 캐릭터 스프라이트 + 역할별 격려 문구 풀(4종×2역할)
+  - **CheerOverlay 컴포넌트** (`src/presentation/components/home/CheerOverlay.tsx`): 엄마/아빠가 발송한 격려가 자녀 화면에 전체 오버레이 팝업으로 노출. `cheer_messages` 컬렉션 실시간 구독. 읽음 처리(`markCheerRead`) 후 자동 소멸
+  - **PraiseWhiteboard 컴포넌트** (`src/presentation/components/home/PraiseWhiteboard.tsx`): 칭찬 스티커 화이트보드. 8종 스티커(🌟⭐💖🏆🌈🔥👑✨) 포스트잇 형태로 비틀리게 배치. 9개 초과 시 '더보기' → PixelModal 팝업
+  - **패밀리 늬우스 📰**: '최근 활동' → '📰 패밀리 늬우스' 리브랜드. 알림 타입별 아이콘(⚔️✅⏳🎉❌⏸️💀🙏🎁⬆️💬📣💖). MISSION_EXPIRED 항목 취소선 표시
+  - **praise_stickers 컬렉션** (`src/infrastructure/firebase/collections/praiseStickers.ts`): StickerType 8종, `subscribePraiseStickers()`, `sendPraiseSticker()` 헬퍼
+  - **cheer_messages 컬렉션** (`src/infrastructure/firebase/collections/cheerMessages.ts`): `subscribeUnreadCheers()`, `sendCheerMessage()`, `markCheerRead()` 헬퍼
+  - **SettingsPage.tsx**: 📌 칭찬 스티커 발송 패널(대상 선택 + 8종 스티커 선택 + 메모) + 💖 원터치 응원 발송 패널(프리셋 4종 + 직접 입력) — DAD/MOM 공통 접근
+  - **MasterSettingsPage.tsx**: ⚡ 엔진 완전 새로고침 버튼 — SW 캐시 삭제 + SW 등록 해제 + sessionStorage.clear() + localStorage 꼬인 키 제거(보존 키 13개 유지) + `window.location.reload()`
+  - **Message.ts**: `NotificationType`에 `MISSION_EXPIRED`, `MOM_CHEER` 추가
+  - **useMissions.ts**: `autoExpire()` 실행 시 부모 전원에게 `MISSION_EXPIRED` 알림 자동 발송
+  - **CalendarPage.tsx**: 달력 하단 하이브리드 타임라인 리스트 추가. 월간=이번 달 특별일(D-Day 카운터), 주간=이번 주 특별일. 4개 초과 시 `[➕ 더보기]` 버튼 → PixelModal. 다음 달 미리보기 섹션(3건 preview)
+
+### 구현 완료 (Session 26 추가 — v1.9.1)
+
+- **[마일스톤 2-3] 로그인 프로필 선택형 개편**: `LoginPage.tsx` — 대형 캐릭터 카드 그리드(2×2) → 탭 시 PIN 전용 화면 전환(view='pin-entry'). 숫자 키패드(NumPad 컴포넌트, 1-9·0·⌫·✓) 추가. `family-id-input` 뷰는 "다른 기기 등록" 링크로 격하(아이들 탈락 방지)
+- **가족 인증키 변경 UI 숙청**: `MasterSettingsPage.tsx` — 레거시 `가족 인증키 변경` 섹션 완전 제거. 관련 state(`newCode` 등) + `handleChangeCode` 삭제
+- **메시지 리액션 시스템**: `Message.ts`에 `reactions?: Record<string, string[]>` 추가. `messages.ts`에 `toggleReaction()` 헬퍼 추가. `MessagesPage.tsx`에 `ReactionPicker`(롱프레스/우클릭 팝업, 5종 이모지) + `ReactionChips`(카운트 표시 + 호버 툴팁 + 토글) 컴포넌트 추가
+- **메신저 색상 대비 수술**: 탭바 `bg-purple` → 그룹채팅 `bg-sky text-pixel-dark` / 1:1채팅 `bg-pink text-pixel-dark` (내 말풍선 `bg-purple`와 명도 3:1+ 대비 확보)
+- **1:1 채팅 상대방 앵커 헤더**: 상대방 CharacterSprite(scale-125) + t-heading 이름 + 역할 배지를 DM 헤더 상단에 크고 직관적으로 고정 노출
+
+### 이전 구현 완료
 
 - **인증 간소화**: 초대코드('family') 완전 제거. 기존 기기 바로 PIN, 새 기기 개인ID 또는 가족코드 입력
 - **개인 loginId 시스템**: member_login_ids/{id} 컬렉션. 마스터 패널에서 각 구성원 ID 설정. fsSet으로 저장(문서 없어도 생성)
@@ -469,6 +530,42 @@ CHILD → border-approved | border-gold (id 해시로 자녀별 고유 배정)
 - **특별 퀘스트 카드 텍스트 대비 수정 (v1.8.0)**:
   - `MissionCard.tsx`: `text-stone`(#9E9E9E, 대비 1.3:1) → `text-amber-900`(#78350f, WCAG AA 달성)
   - 배지 `text-gold` → `text-[#1C1917]`, `opacity-80` 황금 배경 이중 희석 제거
+- **🎮 [마일스톤 2-2] 게임 4종 개편 + 전역 인벤토리 + 주간 대회 (Session 25 — 미배포)**:
+  - **userInventoryStore** (`src/infrastructure/stores/userInventoryStore.ts`):
+    - `WeaponType('basic'|'laser'|'double')`, `SkinType`, `currentPet`, `gameXP` Zustand 스토어
+    - localStorage 영속. `addGameXP(pts)`: 100점당 1XP 적립 (1,000점 = 10XP)
+    - RAF 루프에서 `useInventoryStore.getState().currentWeapon` 직접 접근 패턴
+  - **GalagaGame.tsx** 개편: 🔫 수동 발사 버튼 제거 → 자동 연사. 무기별 Canvas 투영:
+    - `basic`: 금색 BH=12 rect (쿨타임 380ms), `laser`: 청록 BH=24 tall rect (180ms), `double`: 핑크 2발 동시 발사 (300ms)
+    - `drawBullets(ctx, bullets, weapon)` 함수로 분리. `WEAPON_CFG` 상수 테이블
+  - **TetrisGame.tsx** 개편: `lockDelay: number|null` 상태 추가 — 착지 후 0.5초(500ms) 유예
+    - 수평이동/회전 성공 시 `g.lockDelay = null` 리셋. 매 프레임 독립 체크
+  - **PonpokoGame.tsx** 개편: 목숨 3개(`MAX_LIVES`), 피격→`pInv=60`(1초 깜빡임 무적)
+    - 히트박스 70% (`HB_W=RACCOON_W*0.70`, `HB_H=RACCOON_H*0.70`)
+    - 코인 N개 스테이지 루프: `stageTarget(stage)=stage*5+5` 달성 시 스테이지 UP + 플래시 이펙트
+    - 무기별 픽셀 오브젝트 드로우: 단검(basic) / 레이저건(laser) / 더블총(double)
+  - **SnakeGame.tsx** 신규 (`src/presentation/pages/game/`):
+    - Canvas 21×26 그리드(CELL=15px), Grid_OX/Grid_OY 중앙 정렬 + 30px 상단 HUD 여백
+    - 180도 반전 방지 `nextDir` 버퍼. 자기몸통+벽 충돌 → 게임오버
+    - 속도 가변: `moveMs = max(80, 200 - floor(score/300)*10)`
+    - 음식 먹기: `score+=100`, `growing+=2`, 다음 음식 랜덤 스폰
+    - D-Pad 십자키 터치 컨트롤 (◄▲►▼ + 중앙 🐍 마스코트)
+  - **GamePage.tsx** 개편:
+    - SnakeGame 연동 (`GameId: 'snake'` 추가), GAME_META 4종
+    - 대회 활성 시 상단 `🏆 주간 가족 매치 가동 중!` HUD 오버레이 (플레이 중에도 표시)
+    - `addGameXP(score)` 게임오버 시 호출 — 인벤토리 XP 적립
+    - `saveTournamentScore()` 대회 활성 시 별도 점수 저장
+    - `TournamentRankWidget`: 현 회차 Top5 랭킹 (선택 화면 대회 배너 안에 표시)
+  - **tournament.ts** 신규 (`src/infrastructure/firebase/collections/`):
+    - `TournamentSettings { active, title, roundNumber, startDate, endDate, difficulty(1-5) }`
+    - `TournamentScore { id, roundNumber, memberId, memberName, gameId, score, playedAt }`
+    - `subscribeTournamentSettings()`: `onSnapshot(doc(...))` 단일 문서 실시간 구독
+    - `saveTournamentScore()`, `subscribeTournamentScores()` (orderBy score desc)
+  - **MasterSettingsPage.tsx** — 천하제일 주간 대회 제어판 섹션 추가 (섹션 5-c):
+    - 대회 토글(▶ 시작/⏹ 종료), 제목 입력, 시작·종료일 date picker
+    - **난이도 슬라이더** `<input type="range" min=1 max=5>` + 그라데이션 배경 + ★ 텍스트 표시
+    - "다음 회차 ⏭" → roundNumber+1 자동 증가 + 날짜 자동 갱신
+    - 현 회차 Top5 랭킹 + 전 회차 히스토리 카드 (`subscribeTournamentScores` 구독)
 
 ---
 
@@ -680,6 +777,31 @@ CHILD → border-approved | border-gold (id 해시로 자녀별 고유 배정)
   - `!w-full !h-auto`로 `.inventory-slot`의 `w-16 h-16` 고정 치수 오버라이드 → 반응형 격자 유지
   - `SLOT_SELECTED = inventory-slot !w-full !h-auto ... selected` (금테두리 CSS 클래스 연계)
 
+#### [마일스톤 2-1] Web Audio 8비트 레트로 사운드 시스템 완료 ✓ (Session 24 — v1.9.0)
+- **audioManager.ts** (`src/infrastructure/audio/audioManager.ts`) 신규 생성 — 싱글톤
+  - Web Audio API 전용 (외부 MP3 파일 없음). `OscillatorNode` + `GainNode` 주파수 합성.
+  - **BGM 4테마** lookahead 스케줄러(25ms interval, 120ms lookahead) 기반 무한루프:
+    - `DEFAULT`: C 장조 120BPM, square wave, 32박 아르페지오 메인 테마
+    - `JOYFUL`: G 장조 160BPM, square wave, 8분음표 주도 세가 감성 모험가풍
+    - `CALM`: A 단조 68BPM, triangle wave, 느린 플러크 야간 휴식곡
+    - `MUTE`: BGM·SFX 전체 음소거
+  - ASR 엔벨로프(attack-sustain-release) 자동 적용 → 각 음표 자연스러운 분리
+  - `localStorage.fq_bgm_theme` 으로 선택 테마 영속 저장
+  - bgmGain(BGM) / sfxGain(SFX) 분리 → 테마 전환 시 BGM만 80ms 페이드아웃
+  - **SFX 함수 목록**: `shoot`, `explosion`, `playerHit`, `rotate`, `hardDrop`, `lineClear(n)`, `jump`, `coinCollect`, `gameOver`, `missionConfirm`, `slotApproval`, `rewardPayout`
+  - MUTE 상태 시 모든 SFX 즉시 리턴 (`if (this.theme === 'MUTE') return`)
+  - `resume()` — 유저 인터랙션 핸들러에서 호출, suspended AudioContext 해제
+- **Header.tsx** — 미니 오디오 플레이어 UI 내장 (우측, 알림 종 앞)
+  - 3버튼 컴팩트 그룹: `[▶/⏸]` 재생·일시정지 / `[▶▶]` 다음 무드 순환(DEFAULT→JOYFUL→CALM) / `[🎵/🎶/🌙/🔇]` 셀렉터 팝업
+  - 팝업: 4무드 선택 리스트 + 현재 활성 `▶` 인디케이터 (⚙️ 드롭다운과 동일 스타일)
+  - **모든 버튼 `active:scale-95 transition-transform duration-100`** 피스톤 모션 바인딩
+  - MUTE 상태에서 `[▶/⏸]` disabled 처리
+- **게임 3종 SFX 완전 연동**:
+  - `GalagaGame.tsx`: 발사(`shoot`), 적 파괴(`explosion`), 플레이어 피격(`playerHit`), 게임오버(`gameOver`)
+  - `TetrisGame.tsx`: 회전(`rotate`), 하드드롭(`hardDrop`), 라인 클리어(`lineClear(n)`), 게임오버(`gameOver`)
+  - `PonpokoGame.tsx`: 점프(`jump`), 코인 수집(`coinCollect`), 충돌 게임오버(`gameOver`)
+  - 각 게임 터치 핸들러(`press`, `pressLeft`, `doJump` 등) 첫 호출 시 `audioManager.resume()` 주입 (AutoPlay Policy 대응)
+
 #### [새 마일스톤] 게임 탭 + 레트로 게임 3종 완료 ✓ (Session 23 — v1.8.0)
 - **BottomNav.tsx**: 6번째 탭 `🎮 게임` → `/game` 추가. 아이콘 크기 active:26px / inactive:20px 조정
 - **App.tsx**: `<Route path="game" element={<GamePage />} />` 등록
@@ -736,7 +858,7 @@ font-pixel 10px        (Lv, EXP 픽셀 배지 전용)
 
 ---
 
-## 13. 다음 세션 시작 방법 (Phase 5 — 잔여 페이지 다크 개편 + 코드 정리)
+## 13. 다음 세션 시작 방법 (Phase 5 + 마일스톤 후속)
 
 ```bash
 # 1. 이 파일 읽기 (완료)
@@ -751,30 +873,45 @@ npm run deploy
 firebase deploy --only firestore:rules,firestore:indexes
 ```
 
-### 진행 현황 (Session 23 기준)
+### 진행 현황 (Session 30 기준 — v2.1.0)
 
 ```
 Phase 1 — 완료 ✓ (tailwind 토큰 + PixelButton/PixelCard/PixelModal)
 Phase 2 — 완료 ✓ (AppLayout/Header/BottomNav 다크화)
 Phase 3 — 완료 ✓ (미션 관련 페이지 전체)
 Phase 4 — 완료 ✓ (보조 페이지 15개 다크 개편 전체)
-[새 마일스톤] — 완료 ✓ (게임 탭 + 레트로 게임 3종 + 랭킹 + 채팅 알림)
+[마일스톤] 게임 탭 — 완료 ✓ (레트로 게임 3종 + 랭킹 + 채팅 알림, v1.8.0)
+[마일스톤 2-1] 사운드 시스템 — 완료 ✓ (Web Audio BGM 4테마 + 헤더 미니 플레이어 + 게임 SFX, v1.9.0)
+[마일스톤 2-2] 게임 개편 + 인벤토리 + 주간 대회 — 완료 ✓
+[마일스톤 2-3] 레거시 숙청 + 로그인 개편 + 메신저 강화 — 완료 ✓
+[마일스톤 3-1] 메인화면 개편 + 응원시스템 + 패밀리 늬우스 + 달력 타임라인 — 완료 ✓
+[대개정판 Session 28] 게임 대개편 + 오디오 파이프라인 + UI 수술 — 완료 ✓ (v2.0.0)
+[마일스톤 2-3 종착지 Session 29] 재화 단일화 + 슬롯 상점 + 특퀘 UX + 안전장치 — 완료 ✓ (v2.1.0)
+[Session 30] 인벤토리-Firebase 이중 장부 해결 — 완료 ✓ (CharacterSprite 폴백 + ProfilePage 완전 연동)
 
-Phase 5 — 다음 작업 ← (잔여 페이지 다크 개편 + 코드 정리)
+Phase 5 — 다음 작업 (우선순위 순)
+  Firestore 인덱스 배포 필요:
+  - praise_stickers: targetMemberId ASC + createdAt DESC
+  - cheer_messages: targetMemberId ASC + isRead ASC + createdAt DESC
+  - tournament_scores: roundNumber ASC + score DESC
   잔여 페이지 (다크 테마 미적용):
   - ApprovalListPage — 퀘스트 승인 목록
   - SpecialDaysPage — 기념일·생일 관리
   - QuestionAnswersPage, QuestionBoxPage — 두근두근 질문함
   - StatisticsPage — 통계
   - RegisterPage — 회원가입
-  게임 관련 후속 개선 (선택적):
-  - 게임 페이지 로딩 코드 스플리팅 (현재 번들 905KB → dynamic import 분리)
-  - 갤러그 적 스프라이트 다양화 (현재 사각형 → 곡선 형태)
-  - Firestore 게임 인덱스 배포 (firebase deploy --only firestore:indexes)
+  사운드 연동 확장 (선택적):
+  - MissionDetailPage: 아이 확인 버튼 → audioManager.missionConfirm()
+  - MissionDetailPage: 부모 GOOD 슬롯 → audioManager.slotApproval()
+  - RewardSendPage: 보상 발송 → audioManager.rewardPayout()
+  XP 상점 후속 개선 (선택적):
+  - GamePage 선택 화면: 현재 gameXP 잔액 + Lv 표시
+  - ProfilePage XP 상점: currentBg/currentSkin을 CharacterSprite 배경 테마와 연결
+  게임 후속 개선 (선택적):
+  - dynamic import로 게임 코드 스플리팅 (현재 번들 ~956KB)
   코드 정리:
+  - TetrisGame.tsx, SnakeGame.tsx 파일 자체 삭제 (현재 import만 제거된 상태)
   - TS6133 미사용 import 전면 정리
-  - 레거시 필드(memberStatuses, childAccepted) 쿼리 제외
-  - 남은 raw <button> → PixelButton 교체 최종 확인
 ```
 
 ### 앱 초기화 로직
@@ -805,6 +942,17 @@ Phase 5 — 다음 작업 ← (잔여 페이지 다크 개편 + 코드 정리)
 | `fq_fav_order` | 미션 즐겨찾기 순서 |
 | `fq_weekly_comp` | 주간 경쟁 ON/OFF (초기화 시 유지) |
 | `fq_monthly_comp` | 월간 경쟁 ON/OFF (초기화 시 유지) |
+| `fq_bgm_theme` | BGM 테마 ('DEFAULT'\|'JOYFUL'\|'CALM'\|'MUTE') — audioManager 영속값 |
+| `fq_inv_weapon` | 장착 무기 ('basic'\|'laser'\|'double') — userInventoryStore |
+| `fq_inv_skin` | 장착 직업 스킨 ID ('warrior'\|'archer'\|...'king') — userInventoryStore |
+| `fq_inv_pet` | 장착 펫 ID (XP 상점 계열) — userInventoryStore |
+| `fq_inv_bg` | 장착 배경 테마 ID ('room'\|'forest'\|...'storm') — userInventoryStore |
+| `fq_inv_xp` | 보유 XP 잔액 (구매 시 차감) — userInventoryStore |
+| `fq_inv_total_xp` | 누적 획득 XP (차감 없음, 레벨 산출용) — userInventoryStore |
+| `fq_inv_owned_skins` | 보유 직업 스킨 ID 배열 — userInventoryStore |
+| `fq_inv_owned_bgs` | 보유 배경 ID 배열 — userInventoryStore |
+| `fq_inv_owned_pet_shop` | 보유 XP펫 ID 배열 — userInventoryStore |
+| `fq_inv_owned_weapons` | 보유 무기 ID 배열 — userInventoryStore |
 
 ### 코딩 규칙
 
@@ -844,14 +992,54 @@ Phase 5 — 다음 작업 ← (잔여 페이지 다크 개편 + 코드 정리)
 //     React state(useState)는 UI 표시용 score/lives/phase만 사용
 //     keysRef 패턴: { left, right, fire, ... } → onTouchStart/End + keydown/keyup 모두 동일 ref 수정
 //     onGameOver 콜백은 cbRef.current = onGameOver 패턴으로 최신값 유지
-// 27. 특별 퀘스트(PixelCard variant="special", 배경 #D4A843) 내 텍스트 규칙:
-//     textMain → text-[#1C1917] (Tailwind stone-900에 해당, 대비 12:1 이상)
-//     textSub  → text-amber-900 (#78350f, WCAG AA 달성)
-//     배지류   → text-[#1C1917] (text-gold 절대 금지 — 황금 배경 위 대비 1:1)
-//     opacity-80 등 추가 희석 금지 (이중 가독성 저하)
+// 27. 특별 퀘스트(PixelCard variant="special") — Session 29 이후 다크 패널 기준:
+//     배경: bg-panel-dark (황금탄 #D4A843 폐기), 테두리: border-yellow-400 card-special(황금 네온 펄스)
+//     배지: font-pixel text-yellow-400 "⭐ SPECIAL", 본문 텍스트: text-cream / text-panel-sub (일반과 동일)
+//     (구 규칙 textMain=text-[#1C1917] / textSub=text-amber-900은 완전 폐기)
+// 28. 사운드 출력은 반드시 audioManager 싱글톤 경유 (src/infrastructure/audio/audioManager.ts)
+//     - keyClick()은 내부에서 suspended 감지 후 resume().then(schedNote) 자동 처리 — 호출부 resume() 불필요
+//     - startAfterLogin()은 내부에서 suspended → resume().then(startBGM) Autoplay 우회 완료
+//     - 새 SFX 추가 시 sfx/sfxSeq/sfxNoise 헬퍼 재사용, 직접 AudioContext 생성 금지
+//     - BGM 테마 변경: audioManager.setTheme(theme) 호출 후 Header state 동기화
+// 29. 인벤토리(무기·스킨·배경·펫·XP): useInventoryStore 훅 사용
+//     - RAF 루프에서 무기 읽기: useInventoryStore.getState().currentWeapon (동기 직접 접근)
+//     - XP 적립: 게임오버 핸들러에서 addGameXP(score) 1회 호출
+//     - XP 구매: spendXP(cost) → false 시 잔액 부족 안내 → true 시 unlockItem(type, id) 호출
+//     - 카탈로그 상수: SKIN_CATALOG / BG_CATALOG / PET_SHOP_CATALOG / WEAPON_CATALOG (userInventoryStore.ts)
+// 30. 주간 대회 점수: 대회 활성(tournament.active)일 때만 saveTournamentScore() 호출
+//     — game_scores(일반 랭킹)와 tournament_scores(대회 전용) 컬렉션 완전 분리
+// 31. 캔버스 게임 자동 연사 — 갤러그는 keys.current.fire 없음, tick 내부에서 자동 발사 판단
+//     무기별 설정은 WEAPON_CFG 상수 테이블(shootMs, maxBullets)로 관리
+// 32. 칭찬 스티커: sendPraiseSticker() / subscribePraiseStickers() (families/{id}/praise_stickers)
+//     격려 팝업: sendCheerMessage() / subscribeUnreadCheers() / markCheerRead() (families/{id}/cheer_messages)
+//     CheerOverlay는 자녀 홈화면(isChild)에서만 마운트 — 부모 화면 마운트 금지
+// 33. 이모지 레거시 안전장치 — CharacterSprite.tsx의 normalize 함수 필수 경유:
+//     normalizeCharId(raw)  → "🗡️" 같은 레거시 이모지 → characterId로 변환 + 폴백 'warrior'
+//     normalizeWeapon(raw)  → "⚡" 같은 이모지 → WeaponType으로 변환 + 폴백 'basic'
+//     normalizePetId(raw)   → "🐱" 같은 이모지 → petId로 변환 + 폴백 'cat'
+//     DB에 이모지 문자열이 직접 저장돼 있어도 화면 뻗음 방지 (삼항 연산자 안전고리)
+// 34. 메시지 리액션: Message.reactions?: Record<string, string[]> (emoji→memberIds)
+//     toggleReaction(familyId, messageId, emoji, myId, currentReactions) 사용
+//     롱프레스(480ms) + 우클릭으로 ReactionPicker 팝업 — 내 메시지는 🗑️ 삭제 포함
+// 35. 메신저 탭 색상 고정: 그룹채팅=bg-sky, 1:1채팅=bg-pink (내 말풍선 bg-purple와 대비)
+//     절대로 탭을 bg-purple로 변경하지 말 것 (인지 왜곡 재발 방지)
+// 36. CharacterSprite weapon prop 규칙 (Session 30):
+//     weapon 미전달(undefined) → 전역 useInventoryStore.currentWeapon 자동 폴백
+//     weapon={null} → 무기 없음 강제 (로그인 화면 person variant는 L4 조건으로 자동 차단)
+//     weapon="laser" 등 값 전달 → 해당 무기만 표시
+// 37. 인벤토리 장착 시 이중 동기화 필수 (Session 30):
+//     handleEquip(skin) → setSkin() + updateMember({ character: safeChar }) 동시 호출
+//     handleEquip(pet)  → setInvPet() + updateMember({ 'character.petId': id })
+//     handleEquip(weapon) → setWeapon() + updateMember({ 'character.equipment': [id] })
+//     handleSelectCharacter → setPreviewCharId() + setSkin() 모두 호출 (스토어 양방향)
+//     handleSelectPet       → setPreviewPetId() + setInvPet() 모두 호출 (스토어 양방향)
+// 38. ProfilePage displayCharId/displayPetId 우선순위:
+//     currentSkin || previewCharId || currentMember.character.characterId
+//     invPet      || previewPetId  || currentMember.character.petId
+//     (스토어 장착값 > 로컬 프리뷰 > Firebase 기본값)
 ```
 
 ---
 
 *패밀리 퀘스트 — 우리 가족만의 특별한 게임 세계 ⛏*  
-*최초 작성: 2026-04-23 | 마지막 업데이트: 2026-05-31 (Session 23 완료 — v1.8.0 배포: 🎮 게임 탭 + 레트로 게임 3종(갤러그/테트리스/너구리) + game_scores 컬렉션 + 가족 랭킹 + 채팅 알림 연동 + 특별 퀘스트 카드 텍스트 대비 WCAG AA 수정)*
+*최초 작성: 2026-04-23 | 마지막 업데이트: 2026-05-31 (Session 29 완료 — v2.1.0 배포: ⭐ 특퀘 UX 완화 + 🏪 XP 상점 4탭 슬롯 + 💰 재화 단일화 + 🎵 오디오 Autoplay 완전 우회 + 🛡️ 이모지 레거시 안전장치)*

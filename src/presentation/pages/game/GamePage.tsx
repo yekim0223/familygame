@@ -1,18 +1,23 @@
 // GamePage — 레트로 게임 허브 (선택 → 플레이 → 결과 → 랭킹)
 import { useState, useEffect, useCallback } from 'react'
 import { useAuthStore } from '@/infrastructure/stores/authStore'
+import { useInventoryStore } from '@/infrastructure/stores/userInventoryStore'
 import { saveGameScore, subscribeAllGameScores } from '@/infrastructure/firebase/collections/gameScores'
+import {
+  subscribeTournamentSettings, saveTournamentScore, subscribeTournamentScores,
+  type TournamentSettings, type TournamentScore,
+} from '@/infrastructure/firebase/collections/tournament'
 import { sendMessage } from '@/infrastructure/firebase/collections/messages'
 import type { GameScore, GameId } from '@/infrastructure/firebase/collections/gameScores'
 import { GalagaGame } from './GalagaGame'
-import { TetrisGame } from './TetrisGame'
 import { PonpokoGame } from './PonpokoGame'
+import { MinesweeperGame } from './MinesweeperGame'
 
 // ── 게임 메타 ────────────────────────────────────────────────────────
 const GAME_META: Record<GameId, { label: string; emoji: string; desc: string; color: string }> = {
-  galaga:  { label: '갤러그',    emoji: '🚀', desc: '우주 전투기! 적을 격파하라',     color: 'border-sky' },
-  tetris:  { label: '테트리스',  emoji: '🟦', desc: '블록을 쌓아 줄을 완성해라',      color: 'border-gold' },
-  ponpoko: { label: '너구리',    emoji: '🦝', desc: '장애물을 피하며 멀리 달려라',    color: 'border-approved' },
+  galaga:      { label: '갤러그',   emoji: '🚀', desc: '우주 전투기! 적을 격파하라',      color: 'border-sky' },
+  ponpoko:     { label: '너구리',   emoji: '🦝', desc: '장애물을 피하며 멀리 달려라',     color: 'border-approved' },
+  minesweeper: { label: '지뢰찾기', emoji: '💣', desc: '지뢰를 피하고 안전 구역을 열어라', color: 'border-gold' },
 }
 
 const RANK_MEDAL = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'] as const
@@ -61,10 +66,44 @@ function RankingWidget({ scores, gameId, myId }: {
   )
 }
 
+// ── 대회 랭킹 위젯 ───────────────────────────────────────────────────
+function TournamentRankWidget({ scores, roundNumber, myId }: {
+  scores: TournamentScore[]; roundNumber: number; myId: string
+}) {
+  const top5 = scores
+    .filter(s => s.roundNumber === roundNumber)
+    .reduce<TournamentScore[]>((acc, s) => {
+      if (!acc.find(x => x.memberId === s.memberId && x.gameId === s.gameId)) acc.push(s)
+      return acc
+    }, [])
+    .slice(0, 5)
+
+  if (top5.length === 0) {
+    return <p className="font-korean text-xs text-panel-sub text-center py-2">아직 대회 기록 없음</p>
+  }
+
+  return (
+    <div className="flex flex-col gap-1 mt-2">
+      {top5.map((s, idx) => (
+        <div key={s.id}
+          className={`flex items-center gap-2 px-2 py-1 border
+            ${s.memberId === myId ? 'border-gold bg-gold/10' : 'border-panel-border'}`}>
+          <span className="text-sm flex-shrink-0">{RANK_MEDAL[idx]}</span>
+          <span className={`font-korean text-xs flex-1 truncate ${s.memberId === myId ? 'text-gold font-bold' : 'text-cream'}`}>
+            {s.memberName} <span className="text-panel-sub">({GAME_META[s.gameId]?.emoji ?? '🎮'})</span>
+          </span>
+          <span className="font-pixel text-xs text-gold flex-shrink-0">{s.score.toLocaleString()}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 // ── 결과 화면 ───────────────────────────────────────────────────────
-function ResultScreen({ score, gameId, allScores, myId, onPlayAgain, onBack }: {
+function ResultScreen({ score, gameId, allScores, myId, onPlayAgain, onBack, tournament }: {
   score: number; gameId: GameId; allScores: GameScore[]
   myId: string; onPlayAgain: () => void; onBack: () => void
+  tournament: TournamentSettings | null
 }) {
   const meta = GAME_META[gameId]
   const gameScores = allScores
@@ -88,6 +127,12 @@ function ResultScreen({ score, gameId, allScores, myId, onPlayAgain, onBack }: {
           <p className="font-korean text-xs text-panel-sub mt-1">점</p>
           {myRank > 0 && (
             <p className="font-pixel text-sm text-approved mt-2">{RANK_MEDAL[myRank - 1]} {myRank}위</p>
+          )}
+          {tournament?.active && (
+            <div className="mt-3 border border-gold/50 bg-gold/10 px-3 py-1.5">
+              <p className="font-pixel text-xs text-gold">🏆 대회 점수로도 기록됨!</p>
+              <p className="font-korean text-xs text-panel-sub">{tournament.title} 제{tournament.roundNumber}회</p>
+            </div>
           )}
         </div>
 
@@ -114,12 +159,30 @@ function ResultScreen({ score, gameId, allScores, myId, onPlayAgain, onBack }: {
 }
 
 // ── 게임 선택 화면 ─────────────────────────────────────────────────
-function GameSelection({ allScores, myId, onSelect }: {
+function GameSelection({ allScores, myId, onSelect, tournament, tournamentScores }: {
   allScores: GameScore[]; myId: string; onSelect: (id: GameId) => void
+  tournament: TournamentSettings | null; tournamentScores: TournamentScore[]
 }) {
   return (
     <div className="flex flex-col h-full bg-panel-darkest overflow-y-auto">
-      <div className="px-4 pt-5 pb-2">
+      {/* 대회 HUD 배너 */}
+      {tournament?.active && (
+        <div className="mx-4 mt-4 border-4 border-gold bg-gold/10 px-3 py-2">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-xl">🏆</span>
+            <p className="font-pixel text-xs text-gold t-pixel-shadow">주간 가족 매치 가동 중!</p>
+            <span className="font-korean text-xs text-panel-sub ml-auto">제{tournament.roundNumber}회</span>
+          </div>
+          <p className="font-korean text-sm font-bold text-cream">{tournament.title}</p>
+          <p className="font-korean text-xs text-panel-sub">
+            {tournament.startDate} ~ {tournament.endDate}
+            {' · '}난이도 {'★'.repeat(tournament.difficulty)}{'☆'.repeat(5 - tournament.difficulty)}
+          </p>
+          <TournamentRankWidget scores={tournamentScores} roundNumber={tournament.roundNumber} myId={myId} />
+        </div>
+      )}
+
+      <div className="px-4 pt-4 pb-2">
         <p className="t-title text-gold">🎮 게임</p>
         <p className="font-korean text-sm text-panel-sub mt-1">가족과 함께 경쟁해봐요!</p>
       </div>
@@ -140,18 +203,13 @@ function GameSelection({ allScores, myId, onSelect }: {
             <button key={id} type="button" onClick={() => onSelect(id)}
               className={`card-pixel flex items-center gap-4 p-4 text-left
                          border-2 ${meta.color} active:opacity-80 transition-opacity`}>
-              {/* 아이콘 */}
               <div className="text-4xl flex-shrink-0">{meta.emoji}</div>
-
-              {/* 정보 */}
               <div className="flex-1 min-w-0">
                 <p className="font-korean text-base font-bold text-cream">{meta.label}</p>
                 <p className="font-korean text-xs text-panel-sub mt-0.5">{meta.desc}</p>
                 <div className="flex items-center gap-3 mt-2">
                   {myBest > 0 && (
-                    <span className="font-pixel text-xs text-gold">
-                      나: {myBest.toLocaleString()}
-                    </span>
+                    <span className="font-pixel text-xs text-gold">나: {myBest.toLocaleString()}</span>
                   )}
                   {leader && (
                     <span className="font-korean text-xs text-approved">
@@ -160,15 +218,13 @@ function GameSelection({ allScores, myId, onSelect }: {
                   )}
                 </div>
               </div>
-
-              {/* 플레이 화살표 */}
               <span className="font-pixel text-gold text-lg flex-shrink-0">▶</span>
             </button>
           )
         })}
       </div>
 
-      {/* 전체 랭킹 섹션 */}
+      {/* 전체 랭킹 */}
       {allScores.length > 0 && (
         <div className="px-4 pb-6 flex flex-col gap-4">
           <p className="t-heading text-gold">최근 기록</p>
@@ -191,13 +247,16 @@ type PageView = 'selection' | 'playing' | 'result'
 
 export default function GamePage() {
   const { familyId, currentMember } = useAuthStore()
+  const addGameXP = useInventoryStore(state => state.addGameXP)
   const myId   = currentMember?.id   ?? ''
   const myName = currentMember?.name ?? '가족'
 
-  const [view,        setView]        = useState<PageView>('selection')
-  const [selectedGame, setSelectedGame] = useState<GameId>('galaga')
-  const [finalScore,  setFinalScore]  = useState(0)
-  const [allScores,   setAllScores]   = useState<GameScore[]>([])
+  const [view,          setView]          = useState<PageView>('selection')
+  const [selectedGame,  setSelectedGame]  = useState<GameId>('galaga')
+  const [finalScore,    setFinalScore]    = useState(0)
+  const [allScores,     setAllScores]     = useState<GameScore[]>([])
+  const [tournament,    setTournament]    = useState<TournamentSettings | null>(null)
+  const [tournamentScs, setTournamentScs] = useState<TournamentScore[]>([])
 
   // 전체 게임 점수 구독
   useEffect(() => {
@@ -205,30 +264,47 @@ export default function GamePage() {
     return subscribeAllGameScores(familyId, setAllScores)
   }, [familyId])
 
-  // 게임 시작
+  // 대회 설정 구독
+  useEffect(() => {
+    if (!familyId) return
+    return subscribeTournamentSettings(familyId, setTournament)
+  }, [familyId])
+
+  // 대회 점수 구독
+  useEffect(() => {
+    if (!familyId) return
+    return subscribeTournamentScores(familyId, setTournamentScs)
+  }, [familyId])
+
   const handleSelect = (id: GameId) => {
     setSelectedGame(id)
     setView('playing')
   }
 
-  // 게임 종료 처리 (점수 저장 + 채팅 알림)
   const handleGameOver = useCallback(async (score: number) => {
     setFinalScore(score)
     setView('result')
 
+    // XP 적립 (1,000점당 10XP)
+    addGameXP(score)
+
     if (!familyId || !myId) return
 
-    // 1. 점수 저장
+    // 점수 저장
     await saveGameScore(familyId, myId, myName, selectedGame, score)
 
-    // 2. 개인 최고 기록 확인
+    // 대회 점수 별도 저장
+    if (tournament?.active) {
+      await saveTournamentScore(familyId, tournament.roundNumber, myId, myName, selectedGame, score)
+    }
+
+    // 개인 최고 기록 확인
     const prevBest = allScores
       .filter(s => s.gameId === selectedGame && s.memberId === myId)
       .reduce((max, s) => Math.max(max, s.score), 0)
-
     const isNewPersonalBest = score > prevBest
 
-    // 3. 1위 추월 여부 확인
+    // 1위 추월 여부
     const topScoresForGame = allScores
       .filter(s => s.gameId === selectedGame)
       .reduce<GameScore[]>((acc, s) => {
@@ -236,10 +312,10 @@ export default function GamePage() {
         return acc
       }, [])
     const currentTop = topScoresForGame[0]
-    const isNewTop = !currentTop || score > currentTop.score
-    const dethroned = currentTop && currentTop.memberId !== myId && isNewTop
+    const isNewTop   = !currentTop || score > currentTop.score
+    const dethroned  = currentTop && currentTop.memberId !== myId && isNewTop
 
-    // 4. 채팅 알림 발송 조건
+    // 채팅 알림
     const meta = GAME_META[selectedGame]
     if (isNewPersonalBest || isNewTop) {
       let msg = ''
@@ -250,30 +326,33 @@ export default function GamePage() {
       } else if (isNewPersonalBest) {
         msg = `[🎮 게임 알림] ✨ ${myName}이(가) ${meta.label} 게임에서 개인 최고 기록 ${score.toLocaleString()}점을 경신했습니다!`
       }
-      if (msg) {
-        await sendMessage(familyId, myId, msg, null)
-      }
+      if (msg) await sendMessage(familyId, myId, msg, null)
     }
-  }, [familyId, myId, myName, selectedGame, allScores])
+  }, [familyId, myId, myName, selectedGame, allScores, tournament, addGameXP])
 
-  // 다시 플레이
-  const handlePlayAgain = () => {
-    setView('playing')
-  }
+  const handlePlayAgain = () => setView('playing')
+  const handleBack      = () => setView('selection')
 
-  // 선택 화면으로
-  const handleBack = () => {
-    setView('selection')
-  }
+  // ── 플레이 중 대회 HUD 오버레이 ────────────────────────────────────
+  const TournamentHUD = tournament?.active ? (
+    <div className="absolute top-0 left-0 right-0 z-20 pointer-events-none">
+      <div className="flex items-center justify-center gap-2 bg-gold/20 border-b-2 border-gold px-3 py-1">
+        <span className="font-pixel text-[10px] text-gold t-pixel-shadow">
+          🏆 주간 가족 매치 가동 중! — {tournament.title} 제{tournament.roundNumber}회
+        </span>
+      </div>
+    </div>
+  ) : null
 
   // ── 렌더 ──────────────────────────────────────────────────────────
   if (view === 'playing') {
     const commonProps = { onGameOver: handleGameOver, onBack: handleBack }
     return (
-      <div className="h-[calc(100vh-112px)] overflow-hidden">
-        {selectedGame === 'galaga'  && <GalagaGame  {...commonProps} />}
-        {selectedGame === 'tetris'  && <TetrisGame  {...commonProps} />}
-        {selectedGame === 'ponpoko' && <PonpokoGame {...commonProps} />}
+      <div className="h-[calc(100vh-112px)] overflow-hidden relative">
+        {TournamentHUD}
+        {selectedGame === 'galaga'      && <GalagaGame      {...commonProps} />}
+        {selectedGame === 'ponpoko'     && <PonpokoGame     {...commonProps} />}
+        {selectedGame === 'minesweeper' && <MinesweeperGame {...commonProps} />}
       </div>
     )
   }
@@ -288,6 +367,7 @@ export default function GamePage() {
           myId={myId}
           onPlayAgain={handlePlayAgain}
           onBack={handleBack}
+          tournament={tournament}
         />
       </div>
     )
@@ -299,6 +379,8 @@ export default function GamePage() {
         allScores={allScores}
         myId={myId}
         onSelect={handleSelect}
+        tournament={tournament}
+        tournamentScores={tournamentScs}
       />
     </div>
   )

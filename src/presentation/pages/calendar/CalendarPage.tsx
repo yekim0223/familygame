@@ -1,4 +1,4 @@
-// Design Ref: §5.3 SCR-09,10,11 CalendarPage — 월간/주간/일간 뷰 (v3.0 MC Dark)
+// Design Ref: §5.3 SCR-09,10,11 CalendarPage — 마일스톤 3-1 하단 타임라인 추가 (v3.1)
 import { useState, useMemo, useEffect } from 'react'
 import { useAuthStore } from '@/infrastructure/stores/authStore'
 import { PixelButton } from '@/presentation/components/pixel/PixelButton'
@@ -10,6 +10,12 @@ type CalView = 'month' | 'week' | 'day'
 
 const DAYS_KO   = ['일','월','화','수','목','금','토']
 const MONTHS_KO = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월']
+
+// 일정 타입별 아이콘 (확장 가능)
+const SPECIAL_DAY_ICON: Record<string, string> = {
+  birthday:    '🎂',
+  anniversary: '🎉',
+}
 
 function isSameDay(a: Date, b: Date) {
   return a.getFullYear() === b.getFullYear() &&
@@ -27,6 +33,20 @@ function getWeekDays(base: Date): Date[] {
 
 function getSpecialDaysForDate(date: Date, docs: SpecialDayDoc[]): SpecialDayDoc[] {
   return docs.filter(d => d.month === date.getMonth() + 1 && d.day === date.getDate())
+}
+
+// 해당 월의 모든 특별일 (날짜순 정렬)
+function getSpecialDaysForMonth(year: number, month0: number, docs: SpecialDayDoc[]): (SpecialDayDoc & { day: number })[] {
+  return docs
+    .filter(d => d.month === month0 + 1)
+    .sort((a, b) => a.day - b.day)
+}
+
+// 해당 주간의 모든 특별일
+function getSpecialDaysForWeek(weekDays: Date[], docs: SpecialDayDoc[]): { date: Date; specials: SpecialDayDoc[] }[] {
+  return weekDays
+    .map(d => ({ date: d, specials: getSpecialDaysForDate(d, docs) }))
+    .filter(x => x.specials.length > 0)
 }
 
 // ── 특별일 아이템 — speech-bubble 표지판 컨셉 ──────────────────────
@@ -56,6 +76,61 @@ function EmptyDay() {
   )
 }
 
+// ── 타임라인 리스트 아이템 ────────────────────────────────────────
+function TimelineItem({ day, month, doc }: { day: number; month: number; doc: SpecialDayDoc }) {
+  const icon = SPECIAL_DAY_ICON[doc.type] ?? doc.emoji
+  const today = new Date()
+  const isPast = today.getMonth() + 1 > month ||
+    (today.getMonth() + 1 === month && today.getDate() > day)
+  return (
+    <div className={`flex items-center gap-3 py-2 border-b border-panel-border last:border-0
+                     ${isPast ? 'opacity-50' : ''}`}>
+      <span className="text-xl flex-shrink-0">{icon}</span>
+      <div className="flex-1 min-w-0">
+        <p className="font-korean text-sm font-bold text-cream truncate">{doc.name}</p>
+        <p className="font-korean text-xs text-panel-sub">
+          {doc.month}월 {doc.day}일{doc.isLunar ? ' (음력)' : ''}
+          {doc.type === 'birthday' ? ' · 생일' : ' · 기념일'}
+        </p>
+      </div>
+      <span className="font-pixel text-xs text-gold flex-shrink-0">D-{(() => {
+        const thisYear = today.getFullYear()
+        const target = new Date(thisYear, doc.month - 1, doc.day)
+        if (target < today) target.setFullYear(thisYear + 1)
+        const diff = Math.ceil((target.getTime() - today.getTime()) / 86400000)
+        return diff === 0 ? 'Day' : diff
+      })()}</span>
+    </div>
+  )
+}
+
+// ── 다음 달 미리보기 섹션 ────────────────────────────────────────
+function NextMonthPreview({ year, month0, docs }: { year: number; month0: number; docs: SpecialDayDoc[] }) {
+  const nextMonth0 = (month0 + 1) % 12
+  const nextYear   = month0 === 11 ? year + 1 : year
+  const items = getSpecialDaysForMonth(nextYear, nextMonth0, docs)
+  if (items.length === 0) return null
+  return (
+    <div className="card-pixel p-3 mt-3">
+      <p className="t-sub text-gold t-pixel-shadow mb-2">
+        📅 {nextYear}년 {MONTHS_KO[nextMonth0]} 예고
+      </p>
+      <div className="space-y-0">
+        {items.slice(0, 3).map(s => (
+          <TimelineItem key={s.id} day={s.day} month={s.month} doc={s} />
+        ))}
+        {items.length > 3 && (
+          <p className="font-korean text-xs text-panel-sub text-center pt-1">
+            ...외 {items.length - 3}건
+          </p>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ════════════════════════════════════════════════════════════════
+
 export default function CalendarPage() {
   const { currentMember, familyId }             = useAuthStore()
   const [view,          setView]                = useState<CalView>('month')
@@ -63,6 +138,7 @@ export default function CalendarPage() {
   const [selectedDate,  setSelectedDate]        = useState<Date | null>(null)
   const [sheetOpen,     setSheetOpen]           = useState(false)
   const [specialDayDocs, setSpecialDayDocs]     = useState<SpecialDayDoc[]>([])
+  const [showMoreList,  setShowMoreList]        = useState(false)
 
   useEffect(() => {
     if (!familyId) return
@@ -77,6 +153,18 @@ export default function CalendarPage() {
 
   const calendarDays = useMemo(() => buildCalendarGrid(year, month), [year, month])
   const weekDays     = useMemo(() => getWeekDays(baseDate), [baseDate])
+
+  // 타임라인용 이번 달/주차 일정
+  const monthTimeline = useMemo(
+    () => getSpecialDaysForMonth(year, month, specialDayDocs),
+    [year, month, specialDayDocs]
+  )
+  const weekTimeline = useMemo(
+    () => getSpecialDaysForWeek(weekDays, specialDayDocs),
+    [weekDays, specialDayDocs]
+  )
+
+  const TIMELINE_LIMIT = 4
 
   const handlePrev = () => {
     if (view === 'month') setBaseDate(new Date(year, month - 1, 1))
@@ -105,7 +193,6 @@ export default function CalendarPage() {
   // ── 월간 뷰 ──────────────────────────────────────────────────────
   const MonthView = () => (
     <div>
-      {/* 요일 헤더 */}
       <div className="grid grid-cols-7 text-center mb-1">
         {DAYS_KO.map((d, i) => (
           <div key={d} className={`font-korean text-xs font-bold py-1.5
@@ -114,8 +201,6 @@ export default function CalendarPage() {
           </div>
         ))}
       </div>
-
-      {/* 날짜 그리드 — inventory-slot / card-highlight 조건부 바인딩 */}
       <div className="grid grid-cols-7 gap-1">
         {calendarDays.map((date, idx) => {
           const isCurrentMonth = date.getMonth() === month
@@ -124,7 +209,6 @@ export default function CalendarPage() {
           const isSun          = date.getDay() === 0
           const daySpecials    = getSpecialDaysForDate(date, specialDayDocs)
           const hasSpecial     = daySpecials.length > 0
-
           return (
             <button
               key={idx}
@@ -165,7 +249,6 @@ export default function CalendarPage() {
         const isToday     = isSameDay(date, today)
         const daySpecials = getSpecialDaysForDate(date, specialDayDocs)
         const hasSpecial  = daySpecials.length > 0
-
         return (
           <button
             key={idx}
@@ -211,6 +294,75 @@ export default function CalendarPage() {
     )
   }
 
+  // ── 타임라인 렌더 (월간/주간 공통) ──────────────────────────────
+  const renderTimeline = () => {
+    if (view === 'day') return null
+
+    if (view === 'month') {
+      if (monthTimeline.length === 0) return null
+      const visible = monthTimeline.slice(0, TIMELINE_LIMIT)
+      const extra   = monthTimeline.length - TIMELINE_LIMIT
+      return (
+        <div className="card-pixel p-3">
+          <p className="t-sub text-gold t-pixel-shadow mb-2">
+            📅 {year}년 {MONTHS_KO[month]} 일정 ({monthTimeline.length}건)
+          </p>
+          <div>
+            {visible.map(s => (
+              <TimelineItem key={s.id} day={s.day} month={s.month} doc={s} />
+            ))}
+          </div>
+          {extra > 0 && (
+            <div className="mt-2">
+              <PixelButton variant="ghost" size="sm" fullWidth onClick={() => setShowMoreList(true)}>
+                ➕ 더보기 ({extra}건)
+              </PixelButton>
+            </div>
+          )}
+        </div>
+      )
+    }
+
+    // 주간 뷰
+    if (view === 'week') {
+      if (weekTimeline.length === 0) return null
+      const flatItems = weekTimeline.flatMap(w =>
+        w.specials.map(s => ({ date: w.date, doc: s }))
+      )
+      const visible = flatItems.slice(0, TIMELINE_LIMIT)
+      const extra   = flatItems.length - TIMELINE_LIMIT
+      return (
+        <div className="card-pixel p-3">
+          <p className="t-sub text-gold t-pixel-shadow mb-2">
+            🗓️ 이번 주 일정 ({flatItems.length}건)
+          </p>
+          <div>
+            {visible.map(({ date, doc }, i) => (
+              <div key={`${doc.id}-${i}`} className="flex items-center gap-3 py-2 border-b border-panel-border last:border-0">
+                <span className="text-xl flex-shrink-0">{doc.emoji}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="font-korean text-sm font-bold text-cream truncate">{doc.name}</p>
+                  <p className="font-korean text-xs text-panel-sub">
+                    {date.getMonth() + 1}월 {date.getDate()}일 ({DAYS_KO[date.getDay()]})
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+          {extra > 0 && (
+            <div className="mt-2">
+              <PixelButton variant="ghost" size="sm" fullWidth onClick={() => setShowMoreList(true)}>
+                ➕ 더보기 ({extra}건)
+              </PixelButton>
+            </div>
+          )}
+        </div>
+      )
+    }
+
+    return null
+  }
+
   // ════════════════════════════════════════════════════════════════
   return (
     <div className="p-3 pb-4 space-y-3">
@@ -218,7 +370,6 @@ export default function CalendarPage() {
       {/* ── 헤더 네비 ─────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <PixelButton variant="ghost" size="sm" onClick={handlePrev}>‹</PixelButton>
-
         <h2 className="t-title t-pixel-shadow">
           {view === 'month'
             ? `${year}년 ${MONTHS_KO[month]}`
@@ -226,7 +377,6 @@ export default function CalendarPage() {
             ? `${weekDays[0].getMonth()+1}/${weekDays[0].getDate()} ~ ${weekDays[6].getMonth()+1}/${weekDays[6].getDate()}`
             : `${baseDate.getMonth()+1}월 ${baseDate.getDate()}일`}
         </h2>
-
         <PixelButton variant="ghost" size="sm" onClick={handleNext}>›</PixelButton>
       </div>
 
@@ -252,6 +402,14 @@ export default function CalendarPage() {
         {view === 'day'   && <DayView />}
       </div>
 
+      {/* ── 하단 타임라인 리스트 ──────────────────────────────── */}
+      {renderTimeline()}
+
+      {/* ── 다음 달 미리보기 (월간 뷰만) ──────────────────────── */}
+      {view === 'month' && (
+        <NextMonthPreview year={year} month0={month} docs={specialDayDocs} />
+      )}
+
       {/* ── 날짜 상세 팝업 (규칙 3: PixelModal) ──────────────── */}
       <PixelModal
         open={sheetOpen}
@@ -263,6 +421,35 @@ export default function CalendarPage() {
           {selectedSpecialDays.length === 0
             ? <EmptyDay />
             : selectedSpecialDays.map(s => <SpecialDayItem key={s.id} s={s} />)
+          }
+        </div>
+      </PixelModal>
+
+      {/* ── 더보기 팝업 ─────────────────────────────────────── */}
+      <PixelModal
+        open={showMoreList}
+        title={view === 'month' ? `${MONTHS_KO[month]} 전체 일정` : '이번 주 전체 일정'}
+        onClose={() => setShowMoreList(false)}
+        size="sm"
+      >
+        <div className="max-h-72 overflow-y-auto space-y-0">
+          {view === 'month'
+            ? monthTimeline.map(s => (
+                <TimelineItem key={s.id} day={s.day} month={s.month} doc={s} />
+              ))
+            : weekTimeline.flatMap(w =>
+                w.specials.map(s => (
+                  <div key={`${s.id}-modal`} className="flex items-center gap-3 py-2 border-b border-panel-border last:border-0">
+                    <span className="text-xl">{s.emoji}</span>
+                    <div>
+                      <p className="font-korean text-sm font-bold text-cream">{s.name}</p>
+                      <p className="font-korean text-xs text-panel-sub">
+                        {w.date.getMonth()+1}월 {w.date.getDate()}일 ({DAYS_KO[w.date.getDay()]})
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )
           }
         </div>
       </PixelModal>

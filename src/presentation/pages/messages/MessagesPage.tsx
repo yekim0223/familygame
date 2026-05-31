@@ -1,5 +1,5 @@
 // Design Ref: §5.3 SCR-15,16 MessagesPage — 그룹채팅 + 1:1 DM
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { useMessages } from '@/presentation/hooks/useMessages'
 import { useAuthStore } from '@/infrastructure/stores/authStore'
 import { useMessageStore } from '@/infrastructure/stores/messageStore'
@@ -7,6 +7,7 @@ import {
   sendMessage, sendDirectMessage,
   subscribeDirectChat, subscribeReceivedDMs,
   markMessageRead, markGroupMessagesRead, deleteMessage,
+  toggleReaction,
 } from '@/infrastructure/firebase/collections/messages'
 import { subscribeMembers } from '@/infrastructure/firebase/collections/members'
 import { CharacterSprite } from '@/presentation/components/character/CharacterSprite'
@@ -45,6 +46,9 @@ const EMOJI_CATS: Record<EmojiCat, string[]> = {
   ],
 }
 
+// ── 리액션 이모지 5종 ─────────────────────────────────────────────
+const REACTION_EMOJIS = ['👍', '👎', '😲', '😭', '🔥'] as const
+
 // ── 헬퍼 ──────────────────────────────────────────────────────────
 
 function getMemberInfo(id: string): { name: string; role: string; characterId: string } {
@@ -71,7 +75,6 @@ function senderTagCls(role: string, id: string): string {
   return 'bg-stone text-white'
 }
 
-// 역할별 말풍선 테두리 색상 — 부모: 역할 테마 컬러, 아이: 개인별 고유 컬러
 const CHILD_BUBBLE_BORDERS = ['border-approved', 'border-gold'] as const
 function getBubbleBorderCls(role: string, id: string): string {
   if (role === 'DAD')   return 'border-sky'
@@ -97,26 +100,162 @@ const ROLE_COLOR: Record<string, string> = {
   CHILD: 'bg-approved text-white', OBSERVER: 'bg-stone text-white',
 }
 
+// ── ReactionPicker — 롱프레스 후 나타나는 이모지 팝업 ─────────────
+
+function ReactionPicker({
+  messageId, familyId, myId,
+  currentReactions, isMine,
+  onClose, onDelete,
+}: {
+  messageId: string
+  familyId: string
+  myId: string
+  currentReactions: Record<string, string[]>
+  isMine: boolean
+  onClose: () => void
+  onDelete: () => void
+}) {
+  const handleReact = async (emoji: string) => {
+    await toggleReaction(familyId, messageId, emoji, myId, currentReactions)
+    onClose()
+  }
+  return (
+    <div
+      className="flex items-center gap-1 px-2 py-1.5 bg-panel-darkest border-2 border-gold/60
+                 shadow-[0_4px_16px_#00000080] z-50"
+      onClick={e => e.stopPropagation()}
+    >
+      {REACTION_EMOJIS.map(emoji => {
+        const reacted = (currentReactions[emoji] ?? []).includes(myId)
+        return (
+          <button
+            key={emoji}
+            type="button"
+            onPointerDown={e => { e.stopPropagation(); handleReact(emoji) }}
+            className={[
+              'w-10 h-10 flex items-center justify-center text-xl',
+              'border-2 transition-all duration-100 active:scale-90',
+              reacted
+                ? 'border-gold bg-gold/20'
+                : 'border-panel-border bg-panel-dark hover:border-gold/60 hover:bg-gold/10',
+            ].join(' ')}
+          >
+            {emoji}
+          </button>
+        )
+      })}
+      {isMine && (
+        <button
+          type="button"
+          onPointerDown={e => { e.stopPropagation(); onDelete(); onClose() }}
+          className="w-10 h-10 flex items-center justify-center text-xl
+                     border-2 border-rejected bg-panel-dark hover:bg-rejected/20
+                     transition-all duration-100 active:scale-90"
+        >
+          🗑️
+        </button>
+      )}
+    </div>
+  )
+}
+
+// ── ReactionChips — 메시지 하단 리액션 카운트 표시 ──────────────────
+
+function ReactionChips({
+  reactions, myId, members, messageId, familyId,
+}: {
+  reactions: Record<string, string[]>
+  myId: string
+  members: Member[]
+  messageId: string
+  familyId: string
+}) {
+  const [tooltip, setTooltip] = useState<string | null>(null)
+  const entries = Object.entries(reactions).filter(([, ids]) => ids.length > 0)
+  if (entries.length === 0) return null
+
+  const getName = (id: string) => members.find(m => m.id === id)?.name ?? getMemberInfo(id).name ?? id
+
+  return (
+    <div className="flex flex-wrap gap-1 mt-1">
+      {entries.map(([emoji, ids]) => {
+        const iMine = ids.includes(myId)
+        const names = ids.map(getName).join(', ')
+        return (
+          <button
+            key={emoji}
+            type="button"
+            onPointerDown={e => {
+              e.stopPropagation()
+              toggleReaction(familyId, messageId, emoji, myId, reactions)
+            }}
+            onMouseEnter={() => setTooltip(emoji)}
+            onMouseLeave={() => setTooltip(null)}
+            className={[
+              'relative flex items-center gap-0.5 px-1.5 py-0.5',
+              'border-2 font-pixel text-xs leading-none transition-all active:scale-95',
+              iMine
+                ? 'border-gold bg-gold/20 text-gold'
+                : 'border-panel-border bg-panel-dark text-cream/80',
+            ].join(' ')}
+          >
+            <span className="text-sm leading-none">{emoji}</span>
+            <span>{ids.length}</span>
+            {tooltip === emoji && (
+              <div className="absolute bottom-full left-0 mb-1 z-50 whitespace-nowrap
+                              bg-panel-darkest border border-gold/40 px-2 py-1
+                              font-korean text-xs text-cream shadow-lg pointer-events-none">
+                {names}
+              </div>
+            )}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
 // ── MessageBubble ──────────────────────────────────────────────────
 
 function MessageBubble({
   message, isMine, showName, unreadCount,
-  isSelected, onSelect, onDelete,
+  familyId, myId, members, onDelete,
 }: {
   message: Message
   isMine: boolean
   showName: boolean
   unreadCount: number
-  isSelected: boolean
-  onSelect: (id: string | null) => void
+  familyId: string
+  myId: string
+  members: Member[]
   onDelete: (id: string) => void
 }) {
   const { name, role, characterId } = getMemberInfo(message.senderId)
   const timeStr = new Date(message.createdAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
   const tagCls  = senderTagCls(role, message.senderId)
 
+  const [showPicker, setShowPicker] = useState(false)
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const reactions = message.reactions ?? {}
+
+  const startLongPress = useCallback(() => {
+    longPressTimer.current = setTimeout(() => setShowPicker(true), 480)
+  }, [])
+
+  const cancelLongPress = useCallback(() => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current)
+      longPressTimer.current = null
+    }
+  }, [])
+
+  useEffect(() => () => { if (longPressTimer.current) clearTimeout(longPressTimer.current) }, [])
+
   return (
-    <div className={`flex items-end gap-1.5 ${isMine ? 'flex-row-reverse' : 'flex-row'} mb-3`}>
+    <div
+      className={`flex items-end gap-1.5 ${isMine ? 'flex-row-reverse' : 'flex-row'} mb-3`}
+      onClick={() => showPicker && setShowPicker(false)}
+    >
       {!isMine && showName && (
         <div className="flex-shrink-0 self-end mb-4">
           <CharacterSprite characterId={characterId} role={role as any} size="sm" variant="job" />
@@ -124,45 +263,64 @@ function MessageBubble({
       )}
       {!isMine && !showName && <div className="w-8 flex-shrink-0" />}
 
-      <div className={`max-w-[72%] min-w-0 flex flex-col ${isMine ? 'items-end' : 'items-start'}`}>
+      <div className={`max-w-[72%] min-w-0 flex flex-col relative ${isMine ? 'items-end' : 'items-start'}`}>
         {showName && name && (
           <span className={`font-korean text-xs font-bold px-2 py-0.5 mb-1 border-2 border-black t-pixel-shadow ${tagCls}`}>
-            {name}{isMine ? ' (나)' : ''}
+            {name}
           </span>
         )}
-        {isMine && !showName && (
-          <span className="font-korean text-xs text-cream/50 mb-0.5 px-1">(나)</span>
+
+        {/* 리액션 피커 팝업 — 말풍선 위 */}
+        {showPicker && (
+          <div className={`absolute ${isMine ? 'right-0' : 'left-0'} bottom-full mb-1 z-50`}>
+            <ReactionPicker
+              messageId={message.id}
+              familyId={familyId}
+              myId={myId}
+              currentReactions={reactions}
+              isMine={isMine}
+              onClose={() => setShowPicker(false)}
+              onDelete={() => onDelete(message.id)}
+            />
+          </div>
         )}
 
-        {/* 말풍선 — speech-bubble 베이스, 역할별 테두리 오버라이드 */}
+        {/* 말풍선 — 보라색(내 메시지) vs 역할별 테두리(상대방) — 탭색(sky/pink)과 명도 대비 확보 */}
         <div
           className={[
-            'speech-bubble break-words min-w-0 cursor-pointer',
+            'speech-bubble break-words min-w-0 cursor-pointer select-none',
             isMine
               ? 'bg-purple text-white border-purple/80 shadow-[inset_2px_2px_0px_#ffffff20]'
               : `${getBubbleBorderCls(role, message.senderId)} shadow-[inset_2px_2px_0px_#ffffff15,inset_-2px_-2px_0px_#00000060]`,
-            isSelected && isMine ? 'border-rejected' : '',
-          ].filter(Boolean).join(' ')}
-          onClick={() => isMine && onSelect(isSelected ? null : message.id)}
+          ].join(' ')}
+          onTouchStart={startLongPress}
+          onTouchEnd={cancelLongPress}
+          onTouchCancel={cancelLongPress}
+          onContextMenu={e => { e.preventDefault(); setShowPicker(p => !p) }}
+          onMouseDown={startLongPress}
+          onMouseUp={cancelLongPress}
+          onMouseLeave={cancelLongPress}
         >
           {message.content}
         </div>
 
-        {/* 시간 + 읽음 수 + 삭제 버튼 */}
+        {/* 리액션 칩 */}
+        {Object.keys(reactions).length > 0 && (
+          <ReactionChips
+            reactions={reactions}
+            myId={myId}
+            members={members}
+            messageId={message.id}
+            familyId={familyId}
+          />
+        )}
+
+        {/* 시간 + 읽음 수 */}
         <div className={`flex items-center gap-1.5 mt-0.5 px-1 ${isMine ? 'flex-row-reverse' : 'flex-row'}`}>
           {isMine && unreadCount > 0 && (
             <span className="font-pixel text-xs text-gold leading-none">{unreadCount}</span>
           )}
           <span className="font-korean text-xs text-cream/60">{timeStr}</span>
-          {isMine && isSelected && (
-            <button
-              type="button"
-              onClick={e => { e.stopPropagation(); onDelete(message.id) }}
-              className="font-korean text-xs text-rejected font-bold px-1.5 py-0.5 bg-panel-darkest border border-rejected hover:bg-rejected hover:text-white transition-colors"
-            >
-              삭제
-            </button>
-          )}
         </div>
       </div>
     </div>
@@ -182,7 +340,7 @@ function EmojiPanel({ onPick, emojiCat, setEmojiCat }: {
         {(Object.keys(EMOJI_CATS) as EmojiCat[]).map(cat => (
           <button key={cat} type="button" onClick={() => setEmojiCat(cat)}
             className={`flex-1 py-2 font-korean text-sm font-bold border-r-2 border-black last:border-r-0 transition-colors
-              ${emojiCat === cat ? 'bg-purple text-white' : 'bg-panel-dark text-cream hover:bg-purple/20'}`}>
+              ${emojiCat === cat ? 'bg-sky text-pixel-dark' : 'bg-panel-dark text-cream hover:bg-sky/20'}`}>
             {cat}
           </button>
         ))}
@@ -234,7 +392,7 @@ function MessageInputBar({ onSend, disabled, showEmojiPanel, setShowEmojiPanel, 
       <div className="flex gap-2 p-2">
         <button type="button" onClick={() => setShowEmojiPanel(!showEmojiPanel)}
           className={`w-10 h-10 border-4 flex items-center justify-center text-xl flex-shrink-0
-            ${showEmojiPanel ? 'bg-gold/20 border-gold' : 'bg-panel-dark border-black hover:border-gold'}`}>
+            ${showEmojiPanel ? 'bg-sky/20 border-sky' : 'bg-panel-dark border-black hover:border-sky'}`}>
           😊
         </button>
         <input value={text} onChange={e => setText(e.target.value)}
@@ -242,7 +400,7 @@ function MessageInputBar({ onSend, disabled, showEmojiPanel, setShowEmojiPanel, 
           placeholder="메시지 입력..."
           className="flex-1 min-w-0 bg-panel-darkest text-gold font-korean text-sm
                      border-4 border-black px-3 py-2
-                     focus:outline-none focus:border-gold
+                     focus:outline-none focus:border-sky
                      shadow-[inset_3px_3px_0px_#00000090]" />
         <PixelButton
           variant="purple"
@@ -263,12 +421,12 @@ function MessageInputBar({ onSend, disabled, showEmojiPanel, setShowEmojiPanel, 
 function renderMessageList(
   messages: Message[],
   myId: string,
+  familyId: string,
+  members: Member[],
   totalActiveMembers: number,
   isDM: boolean,
   partnerId: string | null,
-  selectedMsgId: string | null,
-  onSelectMsg: (id: string | null) => void,
-  onDeleteMsg: (id: string) => void
+  onDeleteMsg: (id: string) => void,
 ): JSX.Element[] {
   const items: JSX.Element[] = []
   let lastDate = '', lastSenderId = ''
@@ -301,8 +459,9 @@ function renderMessageList(
         isMine={isMine}
         showName={showName}
         unreadCount={unreadCount}
-        isSelected={selectedMsgId === msg.id}
-        onSelect={onSelectMsg}
+        familyId={familyId}
+        myId={myId}
+        members={members}
         onDelete={onDeleteMsg}
       />
     )
@@ -323,8 +482,6 @@ export default function MessagesPage() {
   const [activeTab,       setActiveTab]       = useState<MessageTab>('group')
   const [showEmojiPanel,  setShowEmojiPanel]  = useState(false)
   const [emojiCat,        setEmojiCat]        = useState<EmojiCat>('감정')
-
-  const [selectedMsgId,   setSelectedMsgId]   = useState<string | null>(null)
   const [deleteConfirm,   setDeleteConfirm]   = useState<string | null>(null)
 
   // ── 그룹 채팅 ────────────────────────────────────────────────
@@ -345,7 +502,7 @@ export default function MessagesPage() {
     if (familyId && myId) markGroupMessagesRead(familyId, groupMessages, myId)
   }, [groupMessages, activeTab])
 
-  // ── 멤버 목록 (DM 파트너 선택용) ─────────────────────────────
+  // ── 멤버 목록 ────────────────────────────────────────────────
   const [members, setMembers] = useState<Member[]>([])
   useEffect(() => {
     if (!familyId) return
@@ -376,8 +533,8 @@ export default function MessagesPage() {
   )
 
   // ── DM — 대화 상대 선택 / 메시지 구독 ────────────────────────
-  const [partnerId,    setPartnerId]    = useState<string | null>(null)
-  const [directMsgs,   setDirectMsgs]  = useState<Message[]>([])
+  const [partnerId,  setPartnerId]  = useState<string | null>(null)
+  const [directMsgs, setDirectMsgs] = useState<Message[]>([])
   const directRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -385,7 +542,6 @@ export default function MessagesPage() {
     return subscribeDirectChat(familyId, myId, partnerId, setDirectMsgs)
   }, [familyId, myId, partnerId])
 
-  // DM 읽음 처리 (파트너 메시지 자동 마킹)
   useEffect(() => {
     if (!familyId || !myId || !partnerId) return
     directMsgs
@@ -393,13 +549,12 @@ export default function MessagesPage() {
       .forEach(m => markMessageRead(familyId, m.id, myId, m.readBy))
   }, [directMsgs, familyId, myId, partnerId])
 
-  // DM 스크롤 하단 유지 (규칙 8: scrollIntoView 금지, scrollTop = scrollHeight 사용)
+  // 규칙 8: scrollIntoView 금지, scrollTop = scrollHeight 사용
   useEffect(() => {
     if (directRef.current) directRef.current.scrollTop = directRef.current.scrollHeight
   }, [directMsgs])
 
-  const partner = members.find(m => m.id === partnerId)
-
+  const partner      = members.find(m => m.id === partnerId)
   const otherMembers = activeMembers.filter(m => m.id !== myId)
 
   // ── 전송 핸들러 ──────────────────────────────────────────────
@@ -416,37 +571,35 @@ export default function MessagesPage() {
   const handleTabChange = (tab: MessageTab) => {
     setActiveTab(tab)
     setShowEmojiPanel(false)
-    setSelectedMsgId(null)
     if (tab !== 'direct') setPartnerId(null)
   }
 
-  const handleDeleteRequest = (id: string) => {
-    setDeleteConfirm(id)
-  }
+  const handleDeleteRequest = (id: string) => setDeleteConfirm(id)
 
   const handleDeleteConfirm = async () => {
     if (!deleteConfirm || !familyId) return
     await deleteMessage(familyId, deleteConfirm)
     setDeleteConfirm(null)
-    setSelectedMsgId(null)
   }
-
-  const handleAreaClick = () => setSelectedMsgId(null)
 
   // ════════════════════════════════════════════════════════════
   return (
-    <div className="flex flex-col h-[calc(100vh-112px)] overflow-hidden" onClick={handleAreaClick}>
+    <div className="flex flex-col h-[calc(100vh-112px)] overflow-hidden">
 
-      {/* ── 탭 바 ──────────────────────────────────────────── */}
+      {/* ── 탭 바 — sky(그룹) / pink(DM): 보라색 말풍선과 명도 3:1+ 대비 ── */}
       <div className="flex border-b-4 border-black flex-shrink-0 bg-panel-darkest">
         <button type="button" onClick={() => handleTabChange('group')}
-          className={`flex-1 py-3 font-korean text-sm font-bold border-r-2 border-black
-            ${activeTab === 'group' ? 'bg-purple text-white' : 'bg-panel-darkest text-cream hover:bg-purple/10'}`}>
+          className={`flex-1 py-3 font-korean text-sm font-bold border-r-2 border-black transition-colors
+            ${activeTab === 'group'
+              ? 'bg-sky text-pixel-dark'
+              : 'bg-panel-darkest text-cream/70 hover:bg-sky/10'}`}>
           💌 그룹채팅
         </button>
         <button type="button" onClick={() => handleTabChange('direct')}
-          className={`relative flex-1 py-3 font-korean text-sm font-bold
-            ${activeTab === 'direct' ? 'bg-purple text-white' : 'bg-panel-darkest text-cream hover:bg-purple/10'}`}>
+          className={`relative flex-1 py-3 font-korean text-sm font-bold transition-colors
+            ${activeTab === 'direct'
+              ? 'bg-pink text-pixel-dark'
+              : 'bg-panel-darkest text-cream/70 hover:bg-pink/10'}`}>
           👤 1:1 채팅
           {totalDMUnread > 0 && (
             <span className="absolute top-1.5 right-3 min-w-[18px] h-[18px] bg-rejected text-white
@@ -458,7 +611,7 @@ export default function MessagesPage() {
         </button>
       </div>
 
-      {/* ── 그룹 채팅 ──────────────────────────────────────── */}
+      {/* ── 그룹 채팅 ──────────────────────────────────────────── */}
       {activeTab === 'group' && (
         <>
           <div ref={groupRef} className="flex-1 overflow-y-auto overflow-x-hidden px-3 pt-2 pb-1">
@@ -468,8 +621,8 @@ export default function MessagesPage() {
                 <p className="font-korean text-xs text-cream/60 mt-1">첫 메시지를 보내봐요!</p>
               </div>
             ) : renderMessageList(
-              groupMessages, myId, activeMembers.length, false, null,
-              selectedMsgId, setSelectedMsgId, handleDeleteRequest
+              groupMessages, myId, familyId ?? '', members,
+              activeMembers.length, false, null, handleDeleteRequest
             )}
           </div>
 
@@ -489,7 +642,7 @@ export default function MessagesPage() {
         </>
       )}
 
-      {/* ── 1:1 채팅 — 파트너 미선택 (멤버 목록) ────────────── */}
+      {/* ── 1:1 채팅 — 파트너 미선택 ────────────────────────── */}
       {activeTab === 'direct' && !partnerId && (
         <div className="flex-1 overflow-y-auto overflow-x-hidden">
           <div className="px-4 pt-5 pb-3">
@@ -518,7 +671,6 @@ export default function MessagesPage() {
                         variant="job"
                       />
                     </div>
-
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-korean text-base font-bold text-cream truncate">
@@ -532,7 +684,6 @@ export default function MessagesPage() {
                         <p className="font-korean text-xs text-panel-sub mt-0.5">{member.realName}</p>
                       )}
                     </div>
-
                     <div className="flex items-center gap-2 flex-shrink-0">
                       {unread > 0 && (
                         <span className="min-w-[22px] h-[22px] bg-rejected text-white font-pixel text-xs
@@ -553,27 +704,39 @@ export default function MessagesPage() {
       {/* ── 1:1 채팅 — 대화 화면 ──────────────────────────── */}
       {activeTab === 'direct' && partnerId && (
         <>
-          {/* 헤더 */}
-          <div className="flex items-center gap-3 px-3 py-2 bg-panel-darkest border-b-4 border-black flex-shrink-0">
-            <button type="button"
-              onClick={() => { setPartnerId(null); setShowEmojiPanel(false); setSelectedMsgId(null) }}
-              className="flex items-center gap-1 px-3 py-1.5 bg-panel-dark border-4 border-panel-border
-                         font-korean text-sm font-bold text-cream
-                         hover:border-gold active:scale-95 transition-all flex-shrink-0">
-              ← 뒤로
-            </button>
+          {/* 헤더 — 상대방 크고 직관적으로 앵커 */}
+          <div className="flex-shrink-0 bg-panel-darkest border-b-4 border-pink/60">
+            {/* 뒤로가기 + 안내 */}
+            <div className="flex items-center px-3 py-2 border-b border-panel-border/30">
+              <button type="button"
+                onClick={() => { setPartnerId(null); setShowEmojiPanel(false) }}
+                className="flex items-center gap-1 px-3 py-1.5 bg-panel-dark border-4 border-panel-border
+                           font-korean text-sm font-bold text-cream
+                           hover:border-pink active:scale-95 transition-all">
+                ← 뒤로
+              </button>
+              <span className="ml-auto font-korean text-xs text-cream/40">
+                가족만 볼 수 있어요
+              </span>
+            </div>
 
+            {/* 상대방 프로필 — 크고 직관적 */}
             {partner && (
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                <CharacterSprite
-                  characterId={partner.character.characterId}
-                  role={partner.role}
-                  size="sm"
-                  variant="job"
-                />
-                <div className="min-w-0">
-                  <p className="font-korean text-sm font-bold text-cream truncate">{partner.name}</p>
-                  <span className={`font-korean text-xs font-bold px-1.5 py-0 border border-black
+              <div className="flex flex-col items-center py-4 gap-2">
+                <div className="scale-125 mb-1">
+                  <CharacterSprite
+                    characterId={partner.character.characterId}
+                    role={partner.role}
+                    size="lg"
+                    variant="job"
+                  />
+                </div>
+                <div className="text-center">
+                  <p className="t-heading text-cream t-pixel-shadow">{partner.name}</p>
+                  {partner.realName && partner.realName !== partner.name && (
+                    <p className="font-korean text-xs text-panel-sub mt-0.5">({partner.realName})</p>
+                  )}
+                  <span className={`inline-block mt-1.5 font-korean text-xs font-bold px-2 py-0.5 border border-black
                     ${ROLE_COLOR[partner.role] ?? 'bg-stone text-white'}`}>
                     {ROLE_LABEL[partner.role] ?? partner.role}
                   </span>
@@ -593,8 +756,8 @@ export default function MessagesPage() {
                 <p className="font-korean text-xs text-cream/60">메시지는 가족끼리만 볼 수 있어요</p>
               </div>
             ) : renderMessageList(
-              directMsgs, myId, 2, true, partnerId,
-              selectedMsgId, setSelectedMsgId, handleDeleteRequest
+              directMsgs, myId, familyId ?? '', members,
+              2, true, partnerId, handleDeleteRequest
             )}
           </div>
 
