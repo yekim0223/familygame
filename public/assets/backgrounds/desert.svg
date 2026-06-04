@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <!-- 뜨거운 하늘 -->
+  <rect x="0" y="0" width="32" height="8" fill="#E8A830"/>
+  <rect x="0" y="0" width="32" height="3" fill="#FFD040"/>
+  <!-- 태양 (작열) -->
+  <rect x="13" y="0" width="6" height="4" fill="#FFE800"/>
+  <rect x="14" y="0" width="4" height="5" fill="#FFFFFF"/>
+  <!-- 모래 언덕 -->
+  <rect x="0" y="9" width="32" height="7" fill="#D4A840"/>
+  <rect x="0" y="8" width="16" height="3" fill="#E8C060"/>
+  <rect x="8" y="6" width="12" height="4" fill="#E8C060"/>
+  <rect x="14" y="5" width="8" height="3" fill="#F0D080"/>
+  <rect x="20" y="8" width="12" height="3" fill="#E8C060"/>
+  <!-- 선인장 -->
+  <rect x="4"  y="6" width="2" height="6" fill="#2A8A18"/>
+  <rect x="2"  y="7" width="2" height="2" fill="#2A8A18"/>
+  <rect x="6"  y="8" width="2" height="2" fill="#2A8A18"/>
+  <rect x="22" y="7" width="2" height="5" fill="#2A8A18"/>
+  <rect x="20" y="8" width="2" height="2" fill="#2A8A18"/>
+  <rect x="24" y="9" width="2" height="2" fill="#2A8A18"/>
+  <!-- 피라미드 실루엣 -->
+  <rect x="25" y="5" width="7" height="3" fill="#C89040"/>
+  <rect x="26" y="4" width="5" height="2" fill="#C89040"/>
+  <rect x="28" y="3" width="2" height="2" fill="#D0A050"/>
+  <!-- 모래 파문 -->
+  <rect x="8"  y="13" width="4" height="1" fill="#C89840"/>
+  <rect x="18" y="12" width="5" height="1" fill="#C89840"/>
+</svg>

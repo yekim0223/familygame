@@ -1,5 +1,6 @@
 // Design Ref: §3-3 Component System — 공통 팝업 컴포넌트 (v3.0)
 // 모든 팝업은 이 컴포넌트를 사용한다. z-[9999] 고정, dimming bg-black/60 고정.
+import { useEffect } from 'react'
 import type { ReactNode } from 'react'
 
 type ModalSize = 'sm' | 'md' | 'lg'
@@ -25,6 +26,13 @@ export function PixelModal({
   children,
   size = 'md',
 }: PixelModalProps) {
+  // I-3: 모달 열린 중 EffectOverlay 억제 — body.modal-open 클래스로 신호
+  useEffect(() => {
+    if (!open) return
+    document.body.classList.add('modal-open')
+    return () => document.body.classList.remove('modal-open')
+  }, [open])
+
   if (!open) return null
 
   return (

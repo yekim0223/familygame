@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated;image-rendering:crisp-edges">
+  <!-- 혈술사 머리 (검붉은) -->
+  <rect x="9"  y="1" width="14" height="2" fill="#6A0A0A"/>
+  <rect x="8"  y="2" width="16" height="3" fill="#8A1A1A"/>
+  <rect x="7"  y="4" width="2"  height="9" fill="#6A0A0A"/>
+  <rect x="23" y="4" width="2"  height="9" fill="#6A0A0A"/>
+  <!-- 피 흐르는 느낌 -->
+  <rect x="7"  y="8" width="2"  height="3" fill="#AA1818"/>
+  <rect x="23" y="8" width="2"  height="3" fill="#AA1818"/>
+  <rect x="8"  y="13" width="3" height="2" fill="#6A0A0A"/>
+  <rect x="21" y="13" width="3" height="2" fill="#6A0A0A"/>
+
+  <!-- ══ 얼굴 (창백 + 피 문양) ══ -->
+  <rect x="9"  y="5"  width="14" height="9" fill="#DDCCC0"/>
+  <rect x="10" y="14" width="12" height="1" fill="#DDCCC0"/>
+  <rect x="11" y="15" width="10" height="1" fill="#DDCCC0"/>
+  <!-- 피 눈물 문양 -->
+  <rect x="14" y="7"  width="1"  height="3" fill="#CC0820"/>
+  <rect x="17" y="7"  width="1"  height="3" fill="#CC0820"/>
+
+  <!-- ══ 눈썹·눈 (붉은 광기) ══ -->
+  <rect x="10" y="6"  width="5" height="1" fill="#4A0808"/>
+  <rect x="17" y="6"  width="5" height="1" fill="#4A0808"/>
+  <rect x="10" y="8"  width="5" height="4" fill="#1A0808"/>
+  <rect x="10" y="8"  width="5" height="3" fill="#8A0010"/>
+  <rect x="10" y="8"  width="5" height="1" fill="#FF2030"/>
+  <rect x="14" y="8"  width="1" height="1" fill="#FFFFFF"/>
+  <rect x="17" y="8"  width="5" height="4" fill="#1A0808"/>
+  <rect x="17" y="8"  width="5" height="3" fill="#8A0010"/>
+  <rect x="17" y="8"  width="5" height="1" fill="#FF2030"/>
+  <rect x="17" y="8"  width="1" height="1" fill="#FFFFFF"/>
+
+  <!-- ══ 볼·입 ══ -->
+  <rect x="9"  y="11" width="3" height="1" fill="#CC4444"/>
+  <rect x="20" y="11" width="3" height="1" fill="#CC4444"/>
+  <rect x="13" y="12" width="6" height="1" fill="#CC0820"/>
+  <rect x="14" y="13" width="4" height="1" fill="#AA0010"/>
+
+  <!-- ══ 목 ══ -->
+  <rect x="14" y="16" width="4" height="2" fill="#DDCCC0"/>
+
+  <!-- ══ 혈술사 로브 ══ -->
+  <rect x="9"  y="18" width="14" height="2" fill="#5A0808"/>
+  <rect x="9"  y="18" width="14" height="1" fill="#8A1818"/>
+  <!-- 로브 -->
+  <rect x="9"  y="20" width="14" height="8" fill="#3A0608"/>
+  <rect x="8"  y="21" width="16" height="7" fill="#4A0A10"/>
+  <rect x="10" y="20" width="4"  height="3" fill="#5A1018"/>
+  <!-- 혈구 문양 -->
+  <rect x="13" y="23" width="6"  height="5" fill="#CC0820"/>
+  <rect x="12" y="24" width="8"  height="3" fill="#CC0820"/>
+  <rect x="14" y="23" width="4"  height="5" fill="#FF2030"/>
+  <rect x="15" y="23" width="2"  height="5" fill="#FF4040"/>
+  <!-- 피 방울 효과 -->
+  <rect x="8"  y="25" width="2"  height="3" fill="#CC0820"/>
+  <rect x="8"  y="27" width="1"  height="2" fill="#AA0010"/>
+  <rect x="22" y="25" width="2"  height="3" fill="#CC0820"/>
+  <rect x="23" y="27" width="1"  height="2" fill="#AA0010"/>
+  <!-- 로브 옆 -->
+  <rect x="7"  y="21" width="3"  height="7" fill="#3A0608"/>
+  <rect x="22" y="21" width="3"  height="7" fill="#3A0608"/>
+
+  <!-- ══ 다리·부츠 ══ -->
+  <rect x="10" y="28" width="5" height="2" fill="#2A0406"/>
+  <rect x="17" y="28" width="5" height="2" fill="#2A0406"/>
+  <rect x="9"  y="30" width="6" height="2" fill="#3A0608"/>
+  <rect x="9"  y="30" width="6" height="1" fill="#5A1010"/>
+  <rect x="17" y="30" width="6" height="2" fill="#3A0608"/>
+  <rect x="17" y="30" width="6" height="1" fill="#5A1010"/>
+</svg>

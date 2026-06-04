@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 신성 후광 (십자) -->
+  <rect x="7" y="0" width="2" height="16" fill="#FFFFFF"/>
+  <rect x="0" y="7" width="16" height="2" fill="#FFFFFF"/>
+  <rect x="6" y="1" width="4" height="14" fill="#FFD700"/>
+  <rect x="1" y="6" width="14" height="4" fill="#FFD700"/>
+  <!-- 신성한 몸 (흰빛) -->
+  <rect x="5" y="4" width="6" height="8" fill="#FFFFF0"/>
+  <rect x="4" y="5" width="8" height="6" fill="#FFFFFF"/>
+  <!-- 날개 (신성) -->
+  <rect x="1" y="5" width="4" height="6" fill="#FFFFF0"/>
+  <rect x="11" y="5" width="4" height="6" fill="#FFFFF0"/>
+  <rect x="2" y="5" width="3" height="5" fill="#FFD700"/>
+  <rect x="11" y="5" width="3" height="5" fill="#FFD700"/>
+  <!-- 눈 (신성한 빛) -->
+  <rect x="6" y="6" width="2" height="2" fill="#FFD700"/>
+  <rect x="8" y="6" width="2" height="2" fill="#FFD700"/>
+  <rect x="6" y="6" width="2" height="1" fill="#FFFFFF"/>
+  <rect x="8" y="6" width="2" height="1" fill="#FFFFFF"/>
+  <rect x="7" y="6" width="1" height="2" fill="#1A0808"/>
+  <rect x="9" y="6" width="1" height="2" fill="#1A0808"/>
+  <!-- 광선 장식 -->
+  <rect x="5" y="5" width="1" height="6" fill="#FFD700"/>
+  <rect x="10" y="5" width="1" height="6" fill="#FFD700"/>
+  <!-- 신성 표시 (이마) -->
+  <rect x="7" y="5" width="2" height="1" fill="#FFD700"/>
+  <rect x="6" y="5" width="4" height="1" fill="#FFD700"/>
+</svg>

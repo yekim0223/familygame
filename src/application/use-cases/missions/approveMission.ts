@@ -1,9 +1,7 @@
 // Design Ref: §2.3 Application — 미션 개별 승인/보류/미승인
 // 개별 승인: 여러 아이 중 한 명만 승인해도 다른 아이에게 영향 없음
 import { updateMission } from '@/infrastructure/firebase/collections/missions'
-import { getMember } from '@/infrastructure/firebase/collections/members'
 import { createNotification } from '@/infrastructure/firebase/collections/notifications'
-import { grantReward } from '@/application/use-cases/rewards/grantReward'
 import type { Mission, MissionStatus } from '@/domain/entities/Mission'
 
 type ApproveAction = 'APPROVED' | 'ON_HOLD' | 'REJECTED'
@@ -49,22 +47,7 @@ export async function approveMission(
   let newLevel   = 0
 
   if (action === 'APPROVED') {
-    // 이 아이에게만 보상 지급
-    const { data: member } = await getMember(familyId, childId)
-    if (member) {
-      const result = await grantReward({
-        familyId,
-        missionId:  mission.id,
-        member,
-        rewards:    mission.rewards,
-        expGain:    mission.difficulty,
-        approvedBy: approverId,
-      })
-      leveledUp = result.leveledUp
-      newLevel  = result.newLevel
-      if (result.error) return { leveledUp, newLevel, error: result.error }
-    }
-    // 승인 알림은 발송하지 않음 (단순 완료 제외 정책)
+    // 보상 자동 지급 제거 — 부모가 보상주기에서 수동 발송
 
   } else if (action === 'ON_HOLD') {
     await createNotification(familyId, {

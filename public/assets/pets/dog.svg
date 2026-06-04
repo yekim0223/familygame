@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 귀 (floppy) -->
+  <rect x="1" y="3" width="3" height="7" fill="#8B5A2B"/>
+  <rect x="12" y="3" width="3" height="7" fill="#8B5A2B"/>
+  <rect x="1" y="4" width="2" height="5" fill="#A0722A"/>
+  <rect x="13" y="4" width="2" height="5" fill="#A0722A"/>
+  <!-- 얼굴 -->
+  <rect x="3" y="2" width="10" height="10" fill="#C8A060"/>
+  <rect x="4" y="2" width="8" height="9" fill="#D4AA70"/>
+  <!-- 코 주변 -->
+  <rect x="5" y="8" width="6" height="3" fill="#E8C88A"/>
+  <!-- 눈 -->
+  <rect x="5" y="5" width="2" height="2" fill="#1A0808"/>
+  <rect x="9" y="5" width="2" height="2" fill="#1A0808"/>
+  <rect x="5" y="5" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="9" y="5" width="1" height="1" fill="#FFFFFF"/>
+  <!-- 코 -->
+  <rect x="6" y="9" width="4" height="2" fill="#1A0808"/>
+  <rect x="7" y="9" width="2" height="1" fill="#3A1818"/>
+  <!-- 입 -->
+  <rect x="7" y="11" width="1" height="1" fill="#8B4040"/>
+  <rect x="8" y="11" width="1" height="1" fill="#8B4040"/>
+  <!-- 이마 얼룩 -->
+  <rect x="7" y="3" width="2" height="1" fill="#B89050"/>
+</svg>

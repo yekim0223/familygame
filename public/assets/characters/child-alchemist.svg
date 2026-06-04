@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated;image-rendering:crisp-edges">
+  <!-- 고글 (머리에) -->
+  <rect x="8"  y="2" width="16" height="5" fill="#602818"/>
+  <rect x="7"  y="3" width="18" height="4" fill="#803828"/>
+  <rect x="9"  y="2" width="14" height="2" fill="#A04838"/>
+  <!-- 고글 렌즈 -->
+  <rect x="9"  y="4" width="6" height="3" fill="#80C8A0"/>
+  <rect x="10" y="4" width="5" height="3" fill="#A0E0C0"/>
+  <rect x="17" y="4" width="6" height="3" fill="#80C8A0"/>
+  <rect x="18" y="4" width="5" height="3" fill="#A0E0C0"/>
+  <!-- 고글 프레임 -->
+  <rect x="9"  y="4" width="1" height="3" fill="#603820"/>
+  <rect x="14" y="4" width="1" height="3" fill="#603820"/>
+  <rect x="17" y="4" width="1" height="3" fill="#603820"/>
+  <rect x="22" y="4" width="1" height="3" fill="#603820"/>
+  <rect x="15" y="5" width="2" height="1" fill="#603820"/>
+
+  <!-- ══ 머리 (회색빛) ══ -->
+  <rect x="7"  y="5" width="2"  height="9" fill="#505060"/>
+  <rect x="23" y="5" width="2"  height="9" fill="#505060"/>
+  <rect x="6"  y="7" width="2"  height="7" fill="#404050"/>
+  <rect x="24" y="7" width="2"  height="7" fill="#404050"/>
+  <rect x="7"  y="14" width="3" height="2" fill="#505060"/>
+  <rect x="22" y="14" width="3" height="2" fill="#505060"/>
+
+  <!-- ══ 얼굴 ══ -->
+  <rect x="9"  y="7"  width="14" height="8" fill="#F5C17A"/>
+  <rect x="10" y="15" width="12" height="1" fill="#F5C17A"/>
+  <rect x="11" y="16" width="10" height="1" fill="#F5C17A"/>
+
+  <!-- ══ 눈썹·눈 ══ -->
+  <rect x="10" y="8"  width="5" height="1" fill="#3A2A1A"/>
+  <rect x="17" y="8"  width="5" height="1" fill="#3A2A1A"/>
+  <rect x="10" y="9"  width="5" height="4" fill="#1A0828"/>
+  <rect x="10" y="9"  width="5" height="3" fill="#208060"/>
+  <rect x="10" y="9"  width="5" height="1" fill="#40C090"/>
+  <rect x="14" y="9"  width="1" height="1" fill="#FFFFFF"/>
+  <rect x="17" y="9"  width="5" height="4" fill="#1A0828"/>
+  <rect x="17" y="9"  width="5" height="3" fill="#208060"/>
+  <rect x="17" y="9"  width="5" height="1" fill="#40C090"/>
+  <rect x="17" y="9"  width="1" height="1" fill="#FFFFFF"/>
+
+  <!-- ══ 볼·입 ══ -->
+  <rect x="9"  y="12" width="3" height="1" fill="#F0A090"/>
+  <rect x="20" y="12" width="3" height="1" fill="#F0A090"/>
+  <rect x="13" y="13" width="6" height="1" fill="#CC5533"/>
+  <rect x="14" y="14" width="4" height="1" fill="#AA3311"/>
+
+  <!-- ══ 목 ══ -->
+  <rect x="14" y="17" width="4" height="2" fill="#F5C17A"/>
+
+  <!-- ══ 연금술사 코트 ══ -->
+  <rect x="8"  y="19" width="16" height="2" fill="#604020"/>
+  <rect x="8"  y="19" width="16" height="1" fill="#804030"/>
+  <!-- 코트 몸통 -->
+  <rect x="9"  y="21" width="14" height="7" fill="#5A3818"/>
+  <rect x="10" y="21" width="4"  height="3" fill="#7A4828"/>
+  <!-- 포켓들 (약병) -->
+  <rect x="9"  y="24" width="3"  height="3" fill="#3A2A10"/>
+  <rect x="9"  y="24" width="3"  height="1" fill="#604020"/>
+  <!-- 약병 색상 -->
+  <rect x="10" y="25" width="1"  height="2" fill="#40C0A0"/>
+  <!-- 오른쪽 포켓 -->
+  <rect x="20" y="24" width="3"  height="3" fill="#3A2A10"/>
+  <rect x="20" y="24" width="3"  height="1" fill="#604020"/>
+  <rect x="21" y="25" width="1"  height="2" fill="#FF6040"/>
+  <!-- 중앙 문양 (연금 기호) -->
+  <rect x="14" y="22" width="4"  height="5" fill="#C08020"/>
+  <rect x="13" y="24" width="6"  height="2" fill="#C08020"/>
+  <rect x="15" y="22" width="2"  height="5" fill="#E0A030"/>
+  <!-- 코트 옆 -->
+  <rect x="7"  y="21" width="3"  height="7" fill="#4A2A10"/>
+  <rect x="22" y="21" width="3"  height="7" fill="#4A2A10"/>
+
+  <!-- ══ 벨트 ══ -->
+  <rect x="9"  y="28" width="14" height="2" fill="#3A2010"/>
+  <rect x="9"  y="28" width="14" height="1" fill="#604020"/>
+  <rect x="14" y="27" width="4"  height="3" fill="#C08020"/>
+
+  <!-- ══ 다리·부츠 ══ -->
+  <rect x="10" y="28" width="5" height="2" fill="#3A2818"/>
+  <rect x="17" y="28" width="5" height="2" fill="#3A2818"/>
+  <rect x="9"  y="30" width="6" height="2" fill="#5A3818"/>
+  <rect x="9"  y="30" width="6" height="1" fill="#806030"/>
+  <rect x="17" y="30" width="6" height="2" fill="#5A3818"/>
+  <rect x="17" y="30" width="6" height="1" fill="#806030"/>
+</svg>

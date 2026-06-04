@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <!-- 노을 하늘 -->
+  <rect x="0" y="0" width="32" height="8" fill="#FF8040"/>
+  <rect x="0" y="0" width="32" height="3" fill="#FF6020"/>
+  <rect x="0" y="5" width="32" height="3" fill="#FFA060"/>
+  <!-- 태양 (큰) -->
+  <rect x="24" y="1" width="5" height="5" fill="#FFD700"/>
+  <rect x="25" y="0" width="3" height="6" fill="#FFEE00"/>
+  <!-- 아카시아 나무 -->
+  <rect x="5" y="5" width="2" height="7" fill="#5A3010"/>
+  <rect x="2" y="3" width="8" height="3" fill="#6A8A30"/>
+  <rect x="1" y="4" width="9" height="2" fill="#7A9A40"/>
+  <rect x="20" y="6" width="2" height="6" fill="#5A3010"/>
+  <rect x="17" y="4" width="8" height="3" fill="#6A8A30"/>
+  <rect x="16" y="5" width="9" height="2" fill="#7A9A40"/>
+  <!-- 사바나 바닥 -->
+  <rect x="0" y="10" width="32" height="6" fill="#C8A040"/>
+  <rect x="0" y="10" width="32" height="1" fill="#E0B850"/>
+  <!-- 마른 풀 -->
+  <rect x="8"  y="9"  width="1" height="2" fill="#D4A040"/>
+  <rect x="14" y="9"  width="1" height="2" fill="#D4A040"/>
+  <rect x="26" y="9"  width="1" height="2" fill="#D4A040"/>
+  <!-- 사자 실루엣 -->
+  <rect x="28" y="11" width="4" height="2" fill="#8B5A1A"/>
+  <rect x="29" y="10" width="3" height="2" fill="#9A6A28"/>
+  <rect x="31" y="10" width="1" height="1" fill="#AA7A38"/>
+</svg>

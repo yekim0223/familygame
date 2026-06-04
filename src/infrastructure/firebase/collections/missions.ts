@@ -1,7 +1,7 @@
 // Design Ref: §4.1 Firestore — missions 컬렉션 CRUD + 구독
 import { where, orderBy } from 'firebase/firestore'
 import { fsAdd, fsGet, fsUpdate, fsSubscribe, fsDelete, toDate } from '../firestore'
-import type { Mission, MissionStatus, DaySlot } from '@/domain/entities/Mission'
+import type { Mission, DaySlot } from '@/domain/entities/Mission'
 
 function col(familyId: string) { return `families/${familyId}/missions` }
 function doc(familyId: string, missionId: string) { return `families/${familyId}/missions/${missionId}` }
@@ -27,19 +27,6 @@ export function subscribeMissions(
   return fsSubscribe<any>(
     col(familyId),
     [orderBy('createdAt', 'desc')],
-    raw => onData(raw.map(toMission))
-  )
-}
-
-// 특정 구성원의 미션 구독
-export function subscribeMemberMissions(
-  familyId: string,
-  memberId: string,
-  onData: (missions: Mission[]) => void
-): () => void {
-  return fsSubscribe<any>(
-    col(familyId),
-    [where('targetMemberIds', 'array-contains', memberId), orderBy('createdAt', 'desc')],
     raw => onData(raw.map(toMission))
   )
 }
@@ -72,21 +59,6 @@ export async function createMission(
   mission: Omit<Mission, 'id' | 'createdAt'>
 ): Promise<{ id: string | null; error: string | null }> {
   return fsAdd(col(familyId), mission)
-}
-
-// 미션 상태 업데이트
-export async function updateMissionStatus(
-  familyId: string,
-  missionId: string,
-  status: MissionStatus,
-  changedBy: string,
-  _note?: string
-): Promise<{ error: string | null }> {
-  return fsUpdate(doc(familyId, missionId), {
-    status,
-    [`statusHistory`]: [], // Firestore arrayUnion으로 추가 권장 (단순화)
-    ...(status === 'PENDING_APPROVAL' ? { completedBy: changedBy } : {}),
-  })
 }
 
 // 미션 즐겨찾기 토글

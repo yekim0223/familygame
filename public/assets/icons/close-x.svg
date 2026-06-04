@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 닫기 X -->
+  <rect x="3" y="1" width="10" height="14" fill="#E53935"/>
+  <rect x="1" y="3" width="14" height="10" fill="#E53935"/>
+  <rect x="2" y="2" width="12" height="12" fill="#E53935"/>
+  <!-- X 표시 -->
+  <rect x="4"  y="4"  width="2" height="2" fill="#FFFFFF"/>
+  <rect x="5"  y="5"  width="2" height="2" fill="#FFFFFF"/>
+  <rect x="6"  y="6"  width="4" height="4" fill="#FFFFFF"/>
+  <rect x="7"  y="7"  width="2" height="2" fill="#FFCCCC"/>
+  <rect x="9"  y="5"  width="2" height="2" fill="#FFFFFF"/>
+  <rect x="10" y="4"  width="2" height="2" fill="#FFFFFF"/>
+  <rect x="4"  y="10" width="2" height="2" fill="#FFFFFF"/>
+  <rect x="5"  y="9"  width="2" height="2" fill="#FFFFFF"/>
+  <rect x="9"  y="9"  width="2" height="2" fill="#FFFFFF"/>
+  <rect x="10" y="10" width="2" height="2" fill="#FFFFFF"/>
+  <!-- 하이라이트 -->
+  <rect x="4" y="3" width="3" height="2" fill="#EF5350"/>
+</svg>

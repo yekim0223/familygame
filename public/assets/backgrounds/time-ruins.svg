@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <rect x="0" y="0" width="32" height="16" fill="#1A1828"/>
+  <!-- 시간 왜곡 하늘 -->
+  <rect x="0" y="0" width="32" height="7" fill="#2A2838"/>
+  <!-- 시계 문양 (하늘) -->
+  <rect x="13" y="0" width="6" height="6" fill="#C8A000"/>
+  <rect x="14" y="0" width="4" height="5" fill="#E8C020"/>
+  <rect x="15" y="0" width="2" height="5" fill="#FFEE80"/>
+  <!-- 시침 -->
+  <rect x="16" y="1" width="1" height="3" fill="#1A1828"/>
+  <rect x="14" y="3" width="3" height="1" fill="#1A1828"/>
+  <!-- 모래시계 구조물들 -->
+  <rect x="3"  y="5" width="5" height="11" fill="#5A4828"/>
+  <rect x="3"  y="9" width="5" height="1"  fill="#2A2810"/>
+  <rect x="4"  y="5" width="3" height="5"  fill="#6A5838"/>
+  <rect x="4"  y="10" width="3" height="5" fill="#6A5838"/>
+  <!-- 떠있는 모래 -->
+  <rect x="5"  y="9" width="1" height="1"  fill="#E8C060"/>
+  <rect x="5"  y="10" width="1" height="1" fill="#D0A840"/>
+  <!-- 시간 소용돌이 -->
+  <rect x="18" y="6" width="10" height="10" fill="#1A2038"/>
+  <rect x="20" y="7" width="8"  height="8"  fill="#2A3050"/>
+  <rect x="22" y="8" width="6"  height="6"  fill="#3A4060"/>
+  <rect x="22" y="9" width="6"  height="1"  fill="#6060C0"/>
+  <rect x="23" y="8" width="4"  height="1"  fill="#8080E0"/>
+  <rect x="24" y="10" width="4" height="1"  fill="#4040A0"/>
+  <!-- 모래 바닥 -->
+  <rect x="0" y="13" width="32" height="3" fill="#5A4828"/>
+  <rect x="0" y="13" width="32" height="1" fill="#7A6838"/>
+  <!-- 모래시계 파편 -->
+  <rect x="10" y="11" width="3" height="2" fill="#C8A060"/>
+</svg>

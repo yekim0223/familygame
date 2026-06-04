@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 게임패드 본체 (밝은 보라) -->
+  <rect x="1"  y="4" width="14" height="8" fill="#7755CC"/>
+  <rect x="0"  y="6" width="16" height="4" fill="#7755CC"/>
+  <rect x="1"  y="4" width="14" height="1" fill="#9977EE"/>
+  <!-- 십자 버튼 (좌) - 밝은 하늘색 -->
+  <rect x="2"  y="7" width="4" height="2" fill="#44BBFF"/>
+  <rect x="3"  y="6" width="2" height="4" fill="#44BBFF"/>
+  <rect x="3"  y="7" width="2" height="2" fill="#88DDFF"/>
+  <!-- ABXY 버튼 (우) - 각각 다른 색 -->
+  <rect x="11" y="6" width="2" height="2" fill="#44BBFF"/>  <!-- 위: 파랑 -->
+  <rect x="11" y="6" width="2" height="1" fill="#88DDFF"/>
+  <rect x="9"  y="8" width="2" height="2" fill="#33DD33"/>  <!-- 좌: 초록 -->
+  <rect x="13" y="8" width="2" height="2" fill="#FF4444"/>  <!-- 우: 빨강 -->
+  <rect x="11" y="9" width="2" height="2" fill="#FFCC00"/>  <!-- 아래: 노랑 -->
+  <!-- 중앙 버튼 -->
+  <rect x="6"  y="8" width="2" height="1" fill="#BB99FF"/>
+  <rect x="8"  y="8" width="2" height="1" fill="#BB99FF"/>
+  <!-- 상단 트리거 -->
+  <rect x="1"  y="3" width="4" height="2" fill="#5533AA"/>
+  <rect x="11" y="3" width="4" height="2" fill="#5533AA"/>
+  <rect x="2"  y="3" width="2" height="1" fill="#7755CC"/>
+  <rect x="12" y="3" width="2" height="1" fill="#7755CC"/>
+  <!-- 하단 그립 -->
+  <rect x="1"  y="11" width="3" height="3" fill="#5533AA"/>
+  <rect x="12" y="11" width="3" height="3" fill="#5533AA"/>
+  <!-- 광택 -->
+  <rect x="2"  y="5" width="3" height="1" fill="#AA88EE"/>
+</svg>

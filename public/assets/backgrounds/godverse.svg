@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <rect x="0" y="0" width="32" height="16" fill="#020115"/>
+  <!-- 신의 우주 — 모든 것의 조화 -->
+  <!-- 배경 별들 (촘촘하게) -->
+  <rect x="1"  y="1" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="4"  y="3" width="1" height="1" fill="#FFDDAA"/>
+  <rect x="7"  y="1" width="1" height="1" fill="#AADDFF"/>
+  <rect x="11" y="2" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="14" y="0" width="1" height="1" fill="#FFDDAA"/>
+  <rect x="18" y="2" width="1" height="1" fill="#AADDFF"/>
+  <rect x="21" y="1" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="25" y="3" width="1" height="1" fill="#FFAA88"/>
+  <rect x="28" y="1" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="31" y="3" width="1" height="1" fill="#AADDFF"/>
+  <rect x="3"  y="13" width="1" height="1" fill="#FFDDAA"/>
+  <rect x="8"  y="14" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="13" y="13" width="1" height="1" fill="#AADDFF"/>
+  <rect x="19" y="14" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="23" y="13" width="1" height="1" fill="#FFDDAA"/>
+  <rect x="29" y="14" width="1" height="1" fill="#FFFFFF"/>
+  <!-- 신성한 만다라 패턴 (중앙 방사형) -->
+  <!-- 가로 축 -->
+  <rect x="4"  y="7" width="24" height="2" fill="#221133"/>
+  <rect x="6"  y="7" width="20" height="2" fill="#331144"/>
+  <!-- 세로 축 -->
+  <rect x="15" y="2" width="2" height="12" fill="#221133"/>
+  <rect x="15" y="4" width="2" height="8"  fill="#331144"/>
+  <!-- 대각선 (45도) -->
+  <rect x="10" y="5" width="2" height="2" fill="#221133"/>
+  <rect x="20" y="9" width="2" height="2" fill="#221133"/>
+  <rect x="10" y="9" width="2" height="2" fill="#221133"/>
+  <rect x="20" y="5" width="2" height="2" fill="#221133"/>
+  <!-- 내부 패턴 (신성한 기하) -->
+  <rect x="11" y="5" width="10" height="6" fill="#332255"/>
+  <rect x="12" y="5" width="8"  height="6" fill="#442266"/>
+  <rect x="13" y="5" width="6"  height="6" fill="#553377"/>
+  <rect x="13" y="6" width="6"  height="4" fill="#664488"/>
+  <!-- 8방향 빛 방사 -->
+  <rect x="15" y="3" width="2" height="2" fill="#8855BB"/>
+  <rect x="15" y="11" width="2" height="2" fill="#8855BB"/>
+  <rect x="7"  y="7" width="3" height="2" fill="#664499"/>
+  <rect x="22" y="7" width="3" height="2" fill="#664499"/>
+  <!-- 중앙 신의 눈 -->
+  <rect x="13" y="6" width="6" height="4" fill="#9966CC"/>
+  <rect x="14" y="6" width="4" height="4" fill="#BB88EE"/>
+  <rect x="14" y="7" width="4" height="2" fill="#DDAAFF"/>
+  <rect x="15" y="7" width="2" height="2" fill="#FFFFFF"/>
+  <!-- 황금 테두리 장식 -->
+  <rect x="0"  y="0" width="2" height="16" fill="#110022"/>
+  <rect x="30" y="0" width="2" height="16" fill="#110022"/>
+  <rect x="0"  y="0" width="32" height="1" fill="#221133"/>
+  <rect x="0"  y="15" width="32" height="1" fill="#221133"/>
+  <!-- 무지개 오러 -->
+  <rect x="0"  y="6" width="4" height="4" fill="#220044"/>
+  <rect x="28" y="6" width="4" height="4" fill="#220044"/>
+  <rect x="1"  y="7" width="2" height="2" fill="#4400AA"/>
+  <rect x="29" y="7" width="2" height="2" fill="#4400AA"/>
+</svg>

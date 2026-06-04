@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated" viewBox="0 0 32 32">
+  <!-- 온기 — 빛의 공감사 (공감·치유·따뜻한 정) -->
+
+  <!-- 부드러운 핑크 머리 -->
+  <rect x="9"  y="1"  width="14" height="2"  fill="#EE88BB"/>
+  <rect x="7"  y="3"  width="18" height="3"  fill="#FF99CC"/>
+  <rect x="5"  y="4"  width="4"  height="5"  fill="#EE88BB"/>
+  <rect x="23" y="4"  width="4"  height="5"  fill="#EE88BB"/>
+  <rect x="6"  y="7"  width="3"  height="4"  fill="#FF99CC"/>
+  <rect x="23" y="7"  width="3"  height="4"  fill="#FF99CC"/>
+
+  <!-- 얼굴 -->
+  <rect x="8"  y="6"  width="16" height="11" fill="#FFDDC8"/>
+
+  <!-- 온화한 눈 (보라빛) -->
+  <rect x="10" y="8"  width="4"  height="4"  fill="#FFFFFF"/>
+  <rect x="18" y="8"  width="4"  height="4"  fill="#FFFFFF"/>
+  <rect x="11" y="9"  width="2"  height="2"  fill="#9966CC"/>
+  <rect x="19" y="9"  width="2"  height="2"  fill="#9966CC"/>
+  <rect x="12" y="9"  width="1"  height="1"  fill="#FFFFFF"/>
+  <rect x="20" y="9"  width="1"  height="1"  fill="#FFFFFF"/>
+  <!-- 살짝 내리깔린 눈썹 (공감 표정) -->
+  <rect x="10" y="7"  width="5"  height="1"  fill="#BB8899"/>
+  <rect x="17" y="7"  width="5"  height="1"  fill="#BB8899"/>
+
+  <!-- 작은 미소 -->
+  <rect x="13" y="13" width="6"  height="2"  fill="#CC6688"/>
+  <rect x="14" y="14" width="4"  height="1"  fill="#FFAACC"/>
+
+  <!-- 볼 홍조 (더 진하게) -->
+  <rect x="8"  y="12" width="4"  height="2"  fill="#FFB8D8"/>
+  <rect x="20" y="12" width="4"  height="2"  fill="#FFB8D8"/>
+
+  <!-- 목 -->
+  <rect x="13" y="17" width="6"  height="2"  fill="#FFDDC8"/>
+
+  <!-- 흰 성직자 로브 -->
+  <rect x="6"  y="19" width="20" height="10" fill="#FFF8F0"/>
+  <rect x="6"  y="19" width="20" height="2"  fill="#FFFFFF"/>
+  <rect x="14" y="19" width="4"  height="10" fill="#EE99BB"/>
+
+  <!-- 치유 하트 (왼손) -->
+  <rect x="2"  y="23" width="2"  height="1"  fill="#FF6699"/>
+  <rect x="5"  y="23" width="2"  height="1"  fill="#FF6699"/>
+  <rect x="1"  y="24" width="7"  height="2"  fill="#FF6699"/>
+  <rect x="2"  y="26" width="5"  height="1"  fill="#FF6699"/>
+  <rect x="3"  y="27" width="3"  height="1"  fill="#FF6699"/>
+  <rect x="4"  y="28" width="1"  height="1"  fill="#FF6699"/>
+
+  <!-- 치유 오라 (빛) -->
+  <rect x="26" y="20" width="2"  height="2"  fill="#FFEECC"/>
+  <rect x="28" y="22" width="2"  height="2"  fill="#FFCC88"/>
+  <rect x="0"  y="20" width="2"  height="2"  fill="#FFEECC"/>
+</svg>

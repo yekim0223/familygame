@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 우주 껍질 (은하 무늬) -->
+  <rect x="3" y="4" width="10" height="7" fill="#1A0838"/>
+  <rect x="2" y="5" width="12" height="5" fill="#1A0838"/>
+  <!-- 껍질 은하 무늬 -->
+  <rect x="5" y="5" width="2" height="2" fill="#6040C0"/>
+  <rect x="9" y="5" width="2" height="2" fill="#8060E0"/>
+  <rect x="7" y="5" width="2" height="2" fill="#4020A0"/>
+  <rect x="5" y="8" width="2" height="2" fill="#8060E0"/>
+  <rect x="9" y="8" width="2" height="2" fill="#6040C0"/>
+  <rect x="7" y="8" width="2" height="2" fill="#A080FF"/>
+  <!-- 별 장식 -->
+  <rect x="4" y="6" width="1" height="1" fill="#FFD700"/>
+  <rect x="11" y="7" width="1" height="1" fill="#FFD700"/>
+  <rect x="7" y="4" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="10" y="9" width="1" height="1" fill="#FFFFFF"/>
+  <!-- 머리 -->
+  <rect x="6" y="2" width="4" height="3" fill="#3060A0"/>
+  <rect x="6" y="2" width="4" height="1" fill="#5080C0"/>
+  <!-- 눈 (우주빛) -->
+  <rect x="7" y="2" width="1" height="1" fill="#A0C0FF"/>
+  <rect x="9" y="2" width="1" height="1" fill="#A0C0FF"/>
+  <!-- 발 -->
+  <rect x="1" y="8" width="2" height="3" fill="#3060A0"/>
+  <rect x="13" y="8" width="2" height="3" fill="#3060A0"/>
+  <rect x="4" y="11" width="3" height="2" fill="#3060A0"/>
+  <rect x="9" y="11" width="3" height="2" fill="#3060A0"/>
+  <!-- 꼬리 -->
+  <rect x="7" y="11" width="2" height="2" fill="#3060A0"/>
+</svg>

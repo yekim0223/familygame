@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated">
+  <!-- 황금 검 — 직선 날, -25도 회전 (몸 반대방향) -->
+  <g transform="rotate(-25, 16, 16)">
+    <!-- 황금 검날 -->
+    <rect x="14" y="1"  width="4"  height="20" fill="#FFD700"/>
+    <rect x="15" y="1"  width="2"  height="18" fill="#FFEE88"/>
+    <rect x="14" y="2"  width="1"  height="14" fill="#FFFF88"/>
+    <!-- 날 끝 -->
+    <rect x="14" y="0"  width="4"  height="3"  fill="#FFFF99"/>
+    <rect x="15" y="0"  width="2"  height="2"  fill="#FFFFFF"/>
+    <!-- 화려한 가드 -->
+    <rect x="7"  y="19" width="18" height="4"  fill="#FFD700"/>
+    <rect x="7"  y="19" width="18" height="1"  fill="#FFEE88"/>
+    <rect x="5"  y="19" width="5"  height="5"  fill="#C8A000"/>
+    <rect x="22" y="19" width="5"  height="5"  fill="#C8A000"/>
+    <!-- 가드 보석 -->
+    <rect x="5"  y="20" width="2"  height="2"  fill="#FF4488"/>
+    <rect x="25" y="20" width="2"  height="2"  fill="#4488FF"/>
+    <!-- 손잡이 (황금 감기) -->
+    <rect x="13" y="23" width="6"  height="7"  fill="#C8A000"/>
+    <rect x="14" y="23" width="1"  height="7"  fill="#FFD700"/>
+    <rect x="16" y="23" width="1"  height="7"  fill="#FFD700"/>
+    <!-- 끝 보석 -->
+    <rect x="12" y="30" width="8"  height="2"  fill="#FFD700"/>
+    <rect x="14" y="30" width="4"  height="2"  fill="#FF44BB"/>
+    <rect x="15" y="29" width="2"  height="1"  fill="#FFEE00"/>
+  </g>
+</svg>

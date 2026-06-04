@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <rect x="0" y="0" width="32" height="16" fill="#030A18"/>
+  <!-- 심해 발광 -->
+  <rect x="0" y="10" width="32" height="6" fill="#050E20"/>
+  <!-- 수면 (희미하게) -->
+  <rect x="0" y="0" width="32" height="2" fill="#0A1A30"/>
+  <rect x="0" y="1" width="32" height="1" fill="#1A3040"/>
+  <!-- 발광 물고기 1 -->
+  <rect x="4"  y="5" width="5" height="2" fill="#00FFAA"/>
+  <rect x="3"  y="5" width="1" height="2" fill="#00DD88"/>
+  <rect x="4"  y="4" width="2" height="1" fill="#AAFFDD"/>
+  <!-- 발광 물고기 2 (큰) -->
+  <rect x="16" y="8" width="8" height="3" fill="#4444FF"/>
+  <rect x="14" y="9" width="2" height="2" fill="#2222CC"/>
+  <rect x="16" y="7" width="3" height="1" fill="#8888FF"/>
+  <!-- 눈 -->
+  <rect x="22" y="8" width="2" height="2" fill="#FFFF00"/>
+  <rect x="23" y="8" width="1" height="1" fill="#1A1A1A"/>
+  <!-- 심해 해파리 -->
+  <rect x="7"  y="9" width="3" height="2" fill="#FF44FF"/>
+  <rect x="8"  y="8" width="1" height="3" fill="#FF88FF"/>
+  <rect x="7"  y="11" width="1" height="3" fill="#FF44FF"/>
+  <rect x="9"  y="11" width="1" height="3" fill="#FF44FF"/>
+  <!-- 산호 (발광) -->
+  <rect x="24" y="12" width="2" height="4" fill="#FF6644"/>
+  <rect x="25" y="11" width="1" height="5" fill="#FF8866"/>
+  <rect x="2"  y="13" width="2" height="3" fill="#FF4444"/>
+  <!-- 기포 -->
+  <rect x="12" y="4"  width="1" height="1" fill="#2288AA"/>
+  <rect x="20" y="5"  width="1" height="1" fill="#2288AA"/>
+  <rect x="28" y="7"  width="1" height="1" fill="#2288AA"/>
+  <!-- 심해 문어 -->
+  <rect x="27" y="11" width="4" height="3" fill="#8822AA"/>
+  <rect x="27" y="13" width="1" height="3" fill="#6611888"/>
+  <rect x="29" y="13" width="1" height="3" fill="#661188"/>
+  <rect x="31" y="12" width="1" height="2" fill="#661188"/>
+</svg>

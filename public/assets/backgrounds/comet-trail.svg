@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <rect x="0" y="0" width="32" height="16" fill="#040410"/>
+  <!-- 별들 -->
+  <rect x="2"  y="2" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="7"  y="4" width="1" height="1" fill="#AAAAFF"/>
+  <rect x="14" y="1" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="20" y="3" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="29" y="2" width="1" height="1" fill="#AAAAFF"/>
+  <rect x="25" y="5" width="1" height="1" fill="#FFFFFF"/>
+  <!-- 혜성 꼬리 (긴) -->
+  <rect x="0"  y="5" width="20" height="2" fill="#AACCFF44"/>
+  <rect x="2"  y="4" width="16" height="3" fill="#CCDDFF33"/>
+  <rect x="4"  y="5" width="12" height="1" fill="#DDEEFF"/>
+  <!-- 혜성 핵 -->
+  <rect x="16" y="4" width="5" height="4" fill="#FFEECC"/>
+  <rect x="17" y="3" width="4" height="5" fill="#FFFFFF"/>
+  <rect x="18" y="3" width="2" height="5" fill="#FFD700"/>
+  <rect x="18" y="3" width="2" height="1" fill="#FFFFFF"/>
+  <!-- 혜성 꼬리 (뒤) -->
+  <rect x="21" y="5" width="11" height="1" fill="#88AAFF"/>
+  <rect x="22" y="4" width="9"  height="3" fill="#99BBFF44"/>
+  <rect x="24" y="4" width="7"  height="1" fill="#AACCFF"/>
+  <!-- 먼지 파편 -->
+  <rect x="10" y="3" width="1" height="1" fill="#FFEECC"/>
+  <rect x="6"  y="6" width="1" height="1" fill="#FFEECC"/>
+  <rect x="14" y="4" width="1" height="1" fill="#FFD700"/>
+  <rect x="4"  y="7" width="1" height="1" fill="#FFEECC"/>
+  <!-- 우주 배경 -->
+  <rect x="0" y="10" width="32" height="6" fill="#060818"/>
+</svg>

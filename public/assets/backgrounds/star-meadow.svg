@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <!-- 별빛 하늘 (보라+파랑) -->
+  <rect x="0" y="0" width="32" height="9" fill="#1A1030"/>
+  <rect x="0" y="0" width="32" height="4" fill="#2A1848"/>
+  <!-- 큰 별들 -->
+  <rect x="4"  y="1" width="2" height="2" fill="#FFD700"/>
+  <rect x="5"  y="0" width="1" height="3" fill="#FFD700"/>
+  <rect x="3"  y="1" width="3" height="1" fill="#FFD700"/>
+  <rect x="15" y="2" width="2" height="2" fill="#FFD700"/>
+  <rect x="16" y="1" width="1" height="3" fill="#FFD700"/>
+  <rect x="14" y="2" width="3" height="1" fill="#FFD700"/>
+  <rect x="26" y="1" width="2" height="2" fill="#FFD700"/>
+  <rect x="27" y="0" width="1" height="3" fill="#FFD700"/>
+  <rect x="25" y="1" width="3" height="1" fill="#FFD700"/>
+  <!-- 작은 별들 -->
+  <rect x="9"  y="1" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="20" y="2" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="29" y="2" width="1" height="1" fill="#AAAAFF"/>
+  <rect x="12" y="3" width="1" height="1" fill="#AAAAFF"/>
+  <rect x="22" y="1" width="1" height="1" fill="#FFAAFF"/>
+  <!-- 별빛 들판 -->
+  <rect x="0" y="9" width="32" height="7" fill="#1A2030"/>
+  <rect x="0" y="9" width="32" height="2" fill="#2A3040"/>
+  <!-- 빛나는 풀 -->
+  <rect x="3"  y="8" width="1" height="3" fill="#4488CC"/>
+  <rect x="7"  y="8" width="1" height="3" fill="#44CCAA"/>
+  <rect x="12" y="8" width="1" height="3" fill="#88CC44"/>
+  <rect x="18" y="8" width="1" height="3" fill="#CC8844"/>
+  <rect x="23" y="8" width="1" height="3" fill="#CC44AA"/>
+  <rect x="28" y="8" width="1" height="3" fill="#4488FF"/>
+  <!-- 발광 꽃 -->
+  <rect x="5"  y="9" width="1" height="1" fill="#FF88FF"/>
+  <rect x="15" y="10" width="1" height="1" fill="#FFFF88"/>
+  <rect x="25" y="9" width="1" height="1" fill="#88FFFF"/>
+  <!-- 별 반사 (바닥) -->
+  <rect x="10" y="12" width="2" height="1" fill="#FFD700"/>
+  <rect x="21" y="11" width="2" height="1" fill="#FFD700"/>
+</svg>

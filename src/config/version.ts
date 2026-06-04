@@ -1,2 +1,2 @@
-export const APP_VERSION = '2.4.0'
-export const APP_VERSION_SHORT = 'VER2.4'
+export const APP_VERSION = '8.2'
+export const APP_VERSION_SHORT = 'VER8.2'

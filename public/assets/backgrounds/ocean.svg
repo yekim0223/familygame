@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <rect x="0" y="0" width="32" height="7" fill="#87CEEB"/>
+  <!-- 태양 반짝임 -->
+  <rect x="26" y="1" width="3" height="3" fill="#FFD700"/>
+  <!-- 파도 -->
+  <rect x="0" y="7" width="32" height="9" fill="#1A6080"/>
+  <rect x="0" y="7" width="32" height="2" fill="#2A80A0"/>
+  <rect x="2" y="7" width="4" height="1" fill="#40A0C0"/>
+  <rect x="10" y="7" width="5" height="1" fill="#40A0C0"/>
+  <rect x="20" y="7" width="4" height="1" fill="#40A0C0"/>
+  <rect x="28" y="8" width="3" height="1" fill="#40A0C0"/>
+  <!-- 깊은 바다 -->
+  <rect x="0" y="11" width="32" height="5" fill="#0A3A58"/>
+  <!-- 물고기 -->
+  <rect x="5"  y="10" width="3" height="1" fill="#FF8800"/>
+  <rect x="4"  y="10" width="1" height="1" fill="#FF6600"/>
+  <rect x="16" y="12" width="3" height="1" fill="#60C0FF"/>
+  <rect x="15" y="12" width="1" height="1" fill="#40A0E0"/>
+  <rect x="24" y="9" width="2" height="1" fill="#FFD700"/>
+  <!-- 산호 -->
+  <rect x="8"  y="14" width="2" height="2" fill="#FF4444"/>
+  <rect x="9"  y="13" width="1" height="3" fill="#FF6666"/>
+  <rect x="20" y="13" width="2" height="3" fill="#FF8844"/>
+  <!-- 해초 -->
+  <rect x="13" y="12" width="1" height="4" fill="#228B22"/>
+  <rect x="28" y="13" width="1" height="3" fill="#1A6B1A"/>
+</svg>

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <rect x="0" y="0" width="32" height="16" fill="#080312"/>
+  <!-- 플라즈마 구름 (하단) -->
+  <rect x="0"  y="10" width="32" height="6" fill="#440020"/>
+  <rect x="0"  y="9"  width="32" height="2" fill="#660030"/>
+  <rect x="2"  y="8"  width="28" height="2" fill="#882244"/>
+  <!-- 번개 (1) -->
+  <rect x="5"  y="0" width="1" height="4" fill="#FFFFFF"/>
+  <rect x="6"  y="4" width="2" height="3" fill="#FFFF00"/>
+  <rect x="7"  y="6" width="2" height="3" fill="#FFFFFF"/>
+  <rect x="8"  y="8" width="1" height="2" fill="#FFFF88"/>
+  <!-- 번개 (2) -->
+  <rect x="15" y="0" width="1" height="3" fill="#AAFFFF"/>
+  <rect x="14" y="3" width="2" height="3" fill="#FFFFFF"/>
+  <rect x="15" y="5" width="2" height="4" fill="#00FFFF"/>
+  <rect x="16" y="8" width="1" height="2" fill="#AAFFFF"/>
+  <!-- 번개 (3) -->
+  <rect x="24" y="1" width="1" height="3" fill="#FFFFFF"/>
+  <rect x="23" y="4" width="2" height="3" fill="#FFFF88"/>
+  <rect x="24" y="6" width="2" height="2" fill="#FFFFFF"/>
+  <rect x="25" y="7" width="1" height="2" fill="#FFFF44"/>
+  <!-- 폭풍 소용돌이 (상단) -->
+  <rect x="10" y="1" width="12" height="6" fill="#220040"/>
+  <rect x="11" y="2" width="10" height="4" fill="#440066"/>
+  <rect x="12" y="3" width="8"  height="2" fill="#6600AA"/>
+  <rect x="14" y="3" width="4"  height="2" fill="#8800CC"/>
+  <!-- 플라즈마 불꽃 (하단) -->
+  <rect x="3"  y="11" width="3" height="3" fill="#FF4400"/>
+  <rect x="10" y="10" width="4" height="4" fill="#FF6600"/>
+  <rect x="18" y="11" width="3" height="3" fill="#FF4400"/>
+  <rect x="26" y="10" width="4" height="4" fill="#FF5500"/>
+</svg>

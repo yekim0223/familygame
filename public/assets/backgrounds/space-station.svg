@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <rect x="0" y="0" width="32" height="16" fill="#040410"/>
+  <!-- 별들 -->
+  <rect x="2"  y="1" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="9"  y="3" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="20" y="1" width="1" height="1" fill="#AAAAFF"/>
+  <rect x="28" y="3" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="15" y="4" width="1" height="1" fill="#CCCCFF"/>
+  <!-- 우주 정거장 중앙 -->
+  <rect x="10" y="6" width="12" height="4" fill="#6080A0"/>
+  <rect x="11" y="5" width="10" height="5" fill="#7090B0"/>
+  <rect x="12" y="5" width="8"  height="1" fill="#90B0D0"/>
+  <!-- 창문들 -->
+  <rect x="12" y="7" width="2" height="2" fill="#FFFF88"/>
+  <rect x="15" y="7" width="2" height="2" fill="#88FFFF"/>
+  <rect x="18" y="7" width="2" height="2" fill="#FFFF88"/>
+  <!-- 좌우 태양광 패널 -->
+  <rect x="0"  y="7" width="9"  height="2" fill="#2040C0"/>
+  <rect x="0"  y="7" width="9"  height="1" fill="#4060E0"/>
+  <rect x="3"  y="6" width="1"  height="4" fill="#3050D0"/>
+  <rect x="5"  y="6" width="1"  height="4" fill="#3050D0"/>
+  <rect x="7"  y="6" width="1"  height="4" fill="#3050D0"/>
+  <rect x="23" y="7" width="9"  height="2" fill="#2040C0"/>
+  <rect x="23" y="7" width="9"  height="1" fill="#4060E0"/>
+  <rect x="24" y="6" width="1"  height="4" fill="#3050D0"/>
+  <rect x="26" y="6" width="1"  height="4" fill="#3050D0"/>
+  <rect x="28" y="6" width="1"  height="4" fill="#3050D0"/>
+  <!-- 연결 암 -->
+  <rect x="9"  y="7" width="2"  height="2" fill="#506070"/>
+  <rect x="21" y="7" width="2"  height="2" fill="#506070"/>
+  <!-- 지구 (아래) -->
+  <rect x="0"  y="12" width="8" height="4" fill="#1A6080"/>
+  <rect x="0"  y="12" width="8" height="1" fill="#2A80A0"/>
+  <rect x="1"  y="13" width="2" height="2" fill="#FFFFFF"/>
+  <rect x="4"  y="12" width="3" height="2" fill="#3A7020"/>
+  <!-- 우주선 (작은) -->
+  <rect x="25" y="13" width="4" height="2" fill="#808090"/>
+  <rect x="26" y="12" width="2" height="3" fill="#909090"/>
+  <rect x="27" y="14" width="2" height="1" fill="#FF8800"/>
+</svg>

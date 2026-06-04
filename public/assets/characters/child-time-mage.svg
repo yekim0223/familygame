@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated;image-rendering:crisp-edges">
+  <!-- 시공술사 — 모래시계 문양 투구 -->
+  <rect x="9"  y="1" width="14" height="5" fill="#2A1040"/>
+  <rect x="8"  y="2" width="16" height="4" fill="#3A1858"/>
+  <rect x="9"  y="1" width="14" height="1" fill="#4A2868"/>
+  <!-- 모래시계 문양 -->
+  <rect x="13" y="1" width="6"  height="4" fill="#C08020"/>
+  <rect x="14" y="1" width="4"  height="2" fill="#FFCC30"/>
+  <rect x="15" y="3" width="2"  height="2" fill="#C08020"/>
+  <rect x="14" y="2" width="4"  height="1" fill="#FFCC30"/>
+  <rect x="13" y="4" width="6"  height="1" fill="#FFCC30"/>
+
+  <!-- ══ 머리 (회보라) ══ -->
+  <rect x="7"  y="5" width="2"  height="8" fill="#2A1040"/>
+  <rect x="23" y="5" width="2"  height="8" fill="#2A1040"/>
+  <rect x="6"  y="7" width="2"  height="6" fill="#1A0828"/>
+  <rect x="24" y="7" width="2"  height="6" fill="#1A0828"/>
+  <rect x="7"  y="13" width="4" height="2" fill="#2A1040"/>
+  <rect x="21" y="13" width="4" height="2" fill="#2A1040"/>
+
+  <!-- ══ 얼굴 ══ -->
+  <rect x="9"  y="6"  width="14" height="8" fill="#EEDDCC"/>
+  <rect x="10" y="14" width="12" height="1" fill="#EEDDCC"/>
+  <rect x="11" y="15" width="10" height="1" fill="#EEDDCC"/>
+
+  <!-- ══ 눈썹·눈 (시간빛 황금) ══ -->
+  <rect x="10" y="7"  width="5" height="1" fill="#5A3888"/>
+  <rect x="17" y="7"  width="5" height="1" fill="#5A3888"/>
+  <rect x="10" y="9"  width="5" height="4" fill="#1A0828"/>
+  <rect x="10" y="9"  width="5" height="3" fill="#A06800"/>
+  <rect x="10" y="9"  width="5" height="1" fill="#FFCC30"/>
+  <rect x="14" y="9"  width="1" height="1" fill="#FFFFFF"/>
+  <rect x="17" y="9"  width="5" height="4" fill="#1A0828"/>
+  <rect x="17" y="9"  width="5" height="3" fill="#A06800"/>
+  <rect x="17" y="9"  width="5" height="1" fill="#FFCC30"/>
+  <rect x="17" y="9"  width="1" height="1" fill="#FFFFFF"/>
+
+  <!-- ══ 코·입 ══ -->
+  <rect x="15" y="11" width="2" height="1" fill="#C09060"/>
+  <rect x="13" y="13" width="6" height="1" fill="#AA7744"/>
+  <rect x="14" y="14" width="4" height="1" fill="#886633"/>
+
+  <!-- ══ 목 ══ -->
+  <rect x="14" y="16" width="4" height="2" fill="#EEDDCC"/>
+
+  <!-- ══ 시공 로브 ══ -->
+  <rect x="9"  y="18" width="14" height="2" fill="#2A1040"/>
+  <rect x="9"  y="18" width="14" height="1" fill="#4A2868"/>
+  <!-- 모래시계 칼라 -->
+  <rect x="10" y="17" width="12" height="2" fill="#C08020"/>
+  <rect x="13" y="17" width="6"  height="3" fill="#FFCC30"/>
+  <!-- 로브 (시공간빛) -->
+  <rect x="9"  y="20" width="14" height="8" fill="#1A0828"/>
+  <rect x="8"  y="21" width="16" height="7" fill="#2A1040"/>
+  <rect x="10" y="20" width="4"  height="3" fill="#3A1858"/>
+  <!-- 시공간 균열 문양 -->
+  <rect x="14" y="23" width="4"  height="1" fill="#FFCC30"/>
+  <rect x="15" y="22" width="2"  height="3" fill="#FFCC30"/>
+  <rect x="13" y="23" width="6"  height="1" fill="#C08020"/>
+  <rect x="11" y="25" width="10" height="1" fill="#FFCC30"/>
+  <!-- 시공 파편 -->
+  <rect x="9"  y="22" width="2"  height="2" fill="#4A2868"/>
+  <rect x="21" y="24" width="2"  height="2" fill="#4A2868"/>
+  <!-- 로브 옆 -->
+  <rect x="7"  y="21" width="3"  height="7" fill="#1A0828"/>
+  <rect x="22" y="21" width="3"  height="7" fill="#1A0828"/>
+
+  <!-- ══ 다리·부츠 ══ -->
+  <rect x="10" y="28" width="5" height="2" fill="#100818"/>
+  <rect x="17" y="28" width="5" height="2" fill="#100818"/>
+  <rect x="9"  y="30" width="6" height="2" fill="#1A0828"/>
+  <rect x="9"  y="30" width="6" height="1" fill="#2A1040"/>
+  <rect x="17" y="30" width="6" height="2" fill="#1A0828"/>
+  <rect x="17" y="30" width="6" height="1" fill="#2A1040"/>
+</svg>

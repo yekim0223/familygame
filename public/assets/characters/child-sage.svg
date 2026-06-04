@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated;image-rendering:crisp-edges">
+  <!-- 현자 두건 (은빛) -->
+  <rect x="8"  y="2" width="16" height="5" fill="#C0C8D8"/>
+  <rect x="7"  y="4" width="18" height="3" fill="#D0D8E8"/>
+  <rect x="9"  y="2" width="14" height="1" fill="#E0E8F8"/>
+  <!-- 지식의 문자 문양 -->
+  <rect x="13" y="3" width="6"  height="3" fill="#4060B0"/>
+  <rect x="14" y="3" width="4"  height="2" fill="#6080D0"/>
+  <rect x="15" y="3" width="2"  height="1" fill="#A0C0FF"/>
+
+  <!-- ══ 머리 (흰 수염+머리) ══ -->
+  <rect x="7"  y="6" width="2"  height="7" fill="#FFFFFF"/>
+  <rect x="23" y="6" width="2"  height="7" fill="#FFFFFF"/>
+  <rect x="6"  y="8" width="2"  height="5" fill="#E8E8F0"/>
+  <rect x="24" y="8" width="2"  height="5" fill="#E8E8F0"/>
+  <rect x="7"  y="13" width="4" height="2" fill="#FFFFFF"/>
+  <rect x="21" y="13" width="4" height="2" fill="#FFFFFF"/>
+
+  <!-- ══ 얼굴 ══ -->
+  <rect x="9"  y="7"  width="14" height="7" fill="#EEDDCC"/>
+  <rect x="10" y="14" width="12" height="1" fill="#EEDDCC"/>
+  <rect x="11" y="15" width="10" height="1" fill="#EEDDCC"/>
+
+  <!-- 수염 -->
+  <rect x="10" y="12" width="12" height="4" fill="#F0F0F8"/>
+  <rect x="11" y="15" width="10" height="4" fill="#E8E8F0"/>
+  <rect x="12" y="18" width="8"  height="3" fill="#E0E0E8"/>
+
+  <!-- ══ 눈썹·눈 (지혜) ══ -->
+  <rect x="10" y="8"  width="6" height="2" fill="#808898"/>
+  <rect x="16" y="8"  width="6" height="2" fill="#808898"/>
+  <rect x="10" y="10" width="5" height="3" fill="#1A0828"/>
+  <rect x="10" y="10" width="5" height="2" fill="#4060A0"/>
+  <rect x="10" y="10" width="5" height="1" fill="#8090D0"/>
+  <rect x="14" y="10" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="17" y="10" width="5" height="3" fill="#1A0828"/>
+  <rect x="17" y="10" width="5" height="2" fill="#4060A0"/>
+  <rect x="17" y="10" width="5" height="1" fill="#8090D0"/>
+  <rect x="17" y="10" width="1" height="1" fill="#FFFFFF"/>
+
+  <!-- ══ 목 ══ -->
+  <rect x="14" y="16" width="4" height="4" fill="#EEDDCC"/>
+
+  <!-- ══ 현자 로브 (깊은 청남색) ══ -->
+  <rect x="9"  y="20" width="14" height="2" fill="#2040808"/>
+  <rect x="9"  y="20" width="14" height="1" fill="#306090"/>
+  <rect x="9"  y="22" width="14" height="8" fill="#203060"/>
+  <rect x="8"  y="23" width="16" height="7" fill="#2A3870"/>
+  <rect x="10" y="22" width="4"  height="3" fill="#304880"/>
+  <!-- 지식 문양 -->
+  <rect x="13" y="25" width="6"  height="4" fill="#6080C0"/>
+  <rect x="12" y="26" width="8"  height="2" fill="#6080C0"/>
+  <rect x="15" y="24" width="2"  height="5" fill="#A0C0F0"/>
+  <!-- 로브 옆 -->
+  <rect x="7"  y="23" width="3"  height="7" fill="#18304888"/>
+  <rect x="22" y="23" width="3"  height="7" fill="#183048"/>
+
+  <!-- ══ 부츠 ══ -->
+  <rect x="10" y="28" width="5" height="2" fill="#182840"/>
+  <rect x="17" y="28" width="5" height="2" fill="#182840"/>
+  <rect x="9"  y="30" width="6" height="2" fill="#203060"/>
+  <rect x="9"  y="30" width="6" height="1" fill="#306090"/>
+  <rect x="17" y="30" width="6" height="2" fill="#203060"/>
+  <rect x="17" y="30" width="6" height="1" fill="#306090"/>
+</svg>

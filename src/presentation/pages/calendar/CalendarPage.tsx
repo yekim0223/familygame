@@ -216,9 +216,11 @@ export default function CalendarPage() {
               onClick={() => handleDayClick(date)}
               className={[
                 'relative flex flex-col items-center justify-center !w-full !h-auto aspect-square transition-opacity',
-                hasSpecial ? 'card-highlight' : 'inventory-slot',
+                // isToday는 항상 단일 gold 강조 (card-highlight와 ring 동시 적용 금지)
+                isToday
+                  ? 'inventory-slot !border-2 !border-gold bg-gold/10'
+                  : hasSpecial ? 'card-highlight' : 'inventory-slot',
                 !isCurrentMonth ? 'opacity-30' : '',
-                isToday ? 'ring-2 ring-gold ring-offset-1 ring-offset-panel-dark' : '',
               ].filter(Boolean).join(' ')}
             >
               <span className={[
@@ -256,8 +258,9 @@ export default function CalendarPage() {
             onClick={() => handleDayClick(date)}
             className={[
               'flex flex-col items-center p-1.5 min-h-[90px] !w-full',
-              hasSpecial ? 'card-highlight' : 'inventory-slot',
-              isToday ? 'ring-2 ring-gold ring-offset-1 ring-offset-panel-dark' : '',
+              isToday
+                ? 'inventory-slot !border-2 !border-gold bg-gold/10'
+                : hasSpecial ? 'card-highlight' : 'inventory-slot',
             ].filter(Boolean).join(' ')}
           >
             <span className={`font-korean text-xs font-bold mb-0.5

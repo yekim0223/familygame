@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 은하 후광 -->
+  <rect x="0" y="4" width="2" height="7" fill="#0020408"/>
+  <rect x="14" y="4" width="2" height="7" fill="#0020408"/>
+  <!-- 귀 -->
+  <rect x="2" y="2" width="4" height="4" fill="#001030"/>
+  <rect x="10" y="2" width="4" height="4" fill="#001030"/>
+  <rect x="3" y="3" width="2" height="2" fill="#2040808"/>
+  <rect x="11" y="3" width="2" height="2" fill="#2040808"/>
+  <!-- 얼굴 (은하 검정) -->
+  <rect x="3" y="4" width="10" height="9" fill="#001020"/>
+  <rect x="2" y="5" width="12" height="8" fill="#001828"/>
+  <rect x="4" y="4" width="8" height="1" fill="#002840"/>
+  <!-- 은하 무늬 (얼굴) -->
+  <rect x="4" y="6" width="3" height="2" fill="#0060C0"/>
+  <rect x="9" y="6" width="3" height="2" fill="#8000C0"/>
+  <rect x="7" y="5" width="2" height="2" fill="#FF4080"/>
+  <rect x="5" y="9" width="2" height="2" fill="#FFD700"/>
+  <rect x="9" y="9" width="2" height="2" fill="#00C0FF"/>
+  <!-- 별들 -->
+  <rect x="4" y="5" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="11" y="8" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="7" y="11" width="1" height="1" fill="#FFFFFF"/>
+  <!-- 눈 (은하 빛) -->
+  <rect x="5" y="6" width="2" height="2" fill="#00C0FF"/>
+  <rect x="9" y="6" width="2" height="2" fill="#00C0FF"/>
+  <rect x="5" y="6" width="2" height="1" fill="#0080FF"/>
+  <rect x="9" y="6" width="2" height="1" fill="#0080FF"/>
+  <rect x="5" y="6" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="9" y="6" width="1" height="1" fill="#FFFFFF"/>
+  <!-- 코 (성운) -->
+  <rect x="6" y="10" width="4" height="2" fill="#001020"/>
+  <!-- 입 -->
+  <rect x="7" y="12" width="2" height="1" fill="#2040808"/>
+</svg>

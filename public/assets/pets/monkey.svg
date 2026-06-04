@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 귀 (둥글) -->
+  <rect x="1" y="5" width="3" height="4" fill="#8B4513"/>
+  <rect x="12" y="5" width="3" height="4" fill="#8B4513"/>
+  <rect x="2" y="6" width="1" height="2" fill="#D2A077"/>
+  <rect x="13" y="6" width="1" height="2" fill="#D2A077"/>
+  <!-- 얼굴 -->
+  <rect x="3" y="3" width="10" height="10" fill="#8B4513"/>
+  <rect x="2" y="4" width="12" height="8" fill="#8B4513"/>
+  <!-- 얼굴 밝은 부분 -->
+  <rect x="4" y="4" width="8" height="1" fill="#A0602A"/>
+  <!-- 이마/피부 -->
+  <rect x="4" y="5" width="8" height="5" fill="#9A5523"/>
+  <!-- 주둥이 (밝은) -->
+  <rect x="4" y="9" width="8" height="3" fill="#D2A077"/>
+  <!-- 눈 -->
+  <rect x="5" y="6" width="2" height="2" fill="#1A0808"/>
+  <rect x="9" y="6" width="2" height="2" fill="#1A0808"/>
+  <rect x="5" y="6" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="9" y="6" width="1" height="1" fill="#FFFFFF"/>
+  <!-- 코 -->
+  <rect x="6" y="9" width="4" height="2" fill="#5A2A10"/>
+  <rect x="7" y="9" width="2" height="1" fill="#8B4030"/>
+  <!-- 입 -->
+  <rect x="6" y="11" width="4" height="1" fill="#AA6644"/>
+</svg>

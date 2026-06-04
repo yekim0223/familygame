@@ -1,12 +1,10 @@
 // Design Ref: §5.3 SCR-08 ApprovalListPage — 미션 승인 관리 (부모 전용)
-// Plan UI Checklist: 구성원 이름, 미션명, 신청 시간, 승인/보류/미승인 버튼
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { usePendingMissions } from '@/presentation/hooks/useMissions'
 import { useAuthStore } from '@/infrastructure/stores/authStore'
 import { approveMission } from '@/application/use-cases/missions/approveMission'
 import { PixelButton } from '@/presentation/components/pixel/PixelButton'
-import { PixelCard } from '@/presentation/components/pixel/PixelCard'
 import type { Mission } from '@/domain/entities/Mission'
 
 export default function ApprovalListPage() {
@@ -29,30 +27,33 @@ export default function ApprovalListPage() {
   }
 
   return (
-    <div className="p-3">
-      <h1 className="font-pixel text-xs text-gold mb-3">
-        ✅ 승인 대기 ({pendingMissions.length})
-      </h1>
+    <div className="p-3 pb-4 space-y-3">
+      <div className="flex items-center gap-2">
+        <span className="text-base">✅</span>
+        <h1 className="t-sub font-bold text-gold t-pixel-shadow">
+          승인 대기 ({pendingMissions.length})
+        </h1>
+      </div>
 
       {pendingMissions.length === 0 ? (
-        <div className="text-center py-8">
-          <p className="text-3xl mb-2">😊</p>
-          <p className="font-korean text-sm text-stone">승인 대기 중인 퀘스트가 없어요</p>
+        <div className="text-center py-10">
+          <p className="text-3xl mb-3">😊</p>
+          <p className="font-korean text-sm text-panel-sub">승인 대기 중인 퀘스트가 없어요</p>
         </div>
       ) : (
         <div className="space-y-3">
           {pendingMissions.map(mission => (
-            <PixelCard key={mission.id} padding="sm">
-              <div className="mb-2">
-                <p className="font-korean text-sm font-bold text-pixel-dark">
-                  {mission.emoji} {mission.title}
+            <div key={mission.id} className="card-pixel p-3">
+              <div className="mb-3">
+                <p className="font-korean text-sm font-bold text-cream">
+                  {mission.title}
                 </p>
-                <p className="font-korean text-xs text-stone mt-0.5">
+                <p className="font-korean text-xs text-panel-sub mt-0.5">
                   완료 신청: {mission.statusHistory[mission.statusHistory.length - 1]?.changedAt?.toLocaleString() ?? '방금'}
                 </p>
-                <div className="flex flex-wrap gap-1 mt-1">
+                <div className="flex flex-wrap gap-1 mt-2">
                   {mission.rewards.map((r, i) => (
-                    <span key={i} className="font-korean text-xs bg-gold/20 border border-gold px-1">
+                    <span key={i} className="font-korean text-xs bg-gold/20 border border-gold px-1 text-gold">
                       {r.type === 'MONEY' ? `💰${r.amount.toLocaleString()}원` :
                        r.type === 'GAME_TIME' ? `🎮${r.amount}분` : '보상'}
                     </span>
@@ -60,7 +61,7 @@ export default function ApprovalListPage() {
                 </div>
               </div>
 
-              <div className="flex gap-1.5">
+              <div className="flex gap-2">
                 <PixelButton
                   variant="success" size="sm" fullWidth
                   disabled={processing === mission.id}
@@ -83,7 +84,7 @@ export default function ApprovalListPage() {
                   ❌ 미승인
                 </PixelButton>
               </div>
-            </PixelCard>
+            </div>
           ))}
         </div>
       )}

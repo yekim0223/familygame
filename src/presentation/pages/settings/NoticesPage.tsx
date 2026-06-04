@@ -1,7 +1,10 @@
 // 공지사항 관리 — 엄마/아빠 공통
 import { useState, useEffect } from 'react'
 import { useAuthStore } from '@/infrastructure/stores/authStore'
-import { subscribeNotices, addNotice, deleteNotice, type Notice } from '@/infrastructure/firebase/collections/notices'
+import {
+  subscribeNotices, addNotice, updateNotice, deleteNotice,
+  type Notice,
+} from '@/infrastructure/firebase/collections/notices'
 import { PixelButton } from '@/presentation/components/pixel/PixelButton'
 import { PixelModal } from '@/presentation/components/pixel/PixelModal'
 
@@ -9,6 +12,13 @@ const INPUT_CLS =
   'w-full input-pixel font-korean text-sm text-gold placeholder:text-panel-sub min-h-[44px] px-3 py-2.5 focus:outline-none focus:border-gold'
 const TEXTAREA_CLS =
   'w-full input-pixel font-korean text-sm text-gold placeholder:text-panel-sub resize-none px-3 py-2.5 focus:outline-none focus:border-gold'
+
+function fmtDate(d: Date) {
+  return d.toLocaleString('ko-KR', {
+    month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', hour12: false,
+  })
+}
 
 export default function NoticesPage() {
   const { currentMember, familyId } = useAuthStore()
@@ -19,6 +29,12 @@ export default function NoticesPage() {
   const [msg,           setMsg]           = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
   const [expandedId,    setExpandedId]    = useState<string | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; title: string } | null>(null)
+
+  // ── 편집 상태
+  const [editId,        setEditId]        = useState<string | null>(null)
+  const [editTitle,     setEditTitle]     = useState('')
+  const [editContent,   setEditContent]   = useState('')
+  const [editSaving,    setEditSaving]    = useState(false)
 
   useEffect(() => {
     if (!familyId) return
@@ -43,6 +59,25 @@ export default function NoticesPage() {
     setTimeout(() => setMsg(null), 3000)
   }
 
+  const startEdit = (n: Notice) => {
+    setEditId(n.id)
+    setEditTitle(n.title)
+    setEditContent(n.content)
+  }
+
+  const cancelEdit = () => {
+    setEditId(null); setEditTitle(''); setEditContent('')
+  }
+
+  const handleUpdate = async () => {
+    if (!familyId || !editId || !editTitle.trim() || !editContent.trim()) return
+    setEditSaving(true)
+    const { error } = await updateNotice(familyId, editId, editTitle.trim(), editContent.trim())
+    setEditSaving(false)
+    if (error) return
+    cancelEdit()
+  }
+
   const handleDeleteConfirm = async () => {
     if (!deleteConfirm || !familyId) return
     await deleteNotice(familyId, deleteConfirm.id)
@@ -57,7 +92,7 @@ export default function NoticesPage() {
     <div className="p-3 pb-8 space-y-4">
 
       {/* ── 헤더 ──────────────────────────────────────────── */}
-      <h1 className="t-heading t-pixel-shadow">📢 공지사항 관리</h1>
+      <h1 className="t-heading t-pixel-shadow">공지사항 관리</h1>
 
       {/* ── 새 공지 작성 ────────────────────────────────── */}
       <div className="card-pixel p-4 space-y-3">
@@ -74,7 +109,7 @@ export default function NoticesPage() {
         <textarea
           value={content}
           onChange={e => setContent(e.target.value)}
-          placeholder="내용을 입력하세요 (홈 화면에 최대 5줄 표시)"
+          placeholder="내용을 입력하세요 (홈 화면에 최대 3개 표시)"
           rows={4}
           maxLength={300}
           className={TEXTAREA_CLS}
@@ -111,16 +146,14 @@ export default function NoticesPage() {
         ) : (
           notices.map(n => {
             const isExpanded = expandedId === n.id
-            const dateStr = n.createdAt.toLocaleDateString('ko-KR', {
-              month: 'long', day: 'numeric',
-            })
+            const isEditing  = editId === n.id
             return (
               <div key={n.id} className="card-pixel overflow-hidden">
 
                 {/* ── 목록 행 ──────────────────────────── */}
                 <button
                   type="button"
-                  onClick={() => toggleExpand(n.id)}
+                  onClick={() => { if (!isEditing) toggleExpand(n.id) }}
                   className="w-full flex items-center gap-3 px-4 py-3 text-left
                              hover:bg-gold/10 active:bg-gold/20 transition-colors min-h-[56px]"
                 >
@@ -131,32 +164,84 @@ export default function NoticesPage() {
                     {!isExpanded && (
                       <p className="t-micro mt-0.5 truncate">{n.content}</p>
                     )}
-                    <p className="t-sub mt-0.5">{dateStr} · {n.authorName}</p>
+                    {/* 등록일 / 수정일 */}
+                    <div className="flex flex-wrap gap-x-2 mt-0.5">
+                      <span className="t-micro">등록 {fmtDate(n.createdAt)}</span>
+                      {n.updatedAt && (
+                        <span className="t-micro text-gold/70">· 수정 {fmtDate(n.updatedAt)}</span>
+                      )}
+                      <span className="t-micro">· {n.authorName}</span>
+                    </div>
                   </div>
 
-                  <span
-                    className={`font-pixel text-cream/50 text-xs flex-shrink-0
-                                transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}
-                  >
-                    ›
-                  </span>
+                  {!isEditing && (
+                    <span
+                      className={`font-pixel text-cream/50 text-xs flex-shrink-0
+                                  transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}
+                    >
+                      ›
+                    </span>
+                  )}
                 </button>
 
-                {/* ── 상세 본문 (아코디언) ─────────────── */}
+                {/* ── 상세 / 편집 본문 ─────────────────── */}
                 {isExpanded && (
                   <div className="border-t-2 border-black/40 mx-3">
-                    <div className="speech-bubble m-3 border-panel-border">
-                      <p className="t-body whitespace-pre-wrap">{n.content}</p>
-                    </div>
-                    <div className="flex justify-end px-3 pb-3">
-                      <PixelButton
-                        variant="danger"
-                        size="sm"
-                        onClick={() => setDeleteConfirm({ id: n.id, title: n.title })}
-                      >
-                        삭제
-                      </PixelButton>
-                    </div>
+                    {isEditing ? (
+                      /* 편집 폼 */
+                      <div className="space-y-2 py-3">
+                        <input
+                          value={editTitle}
+                          onChange={e => setEditTitle(e.target.value)}
+                          maxLength={30}
+                          className={INPUT_CLS}
+                        />
+                        <textarea
+                          value={editContent}
+                          onChange={e => setEditContent(e.target.value)}
+                          rows={4}
+                          maxLength={300}
+                          className={TEXTAREA_CLS}
+                        />
+                        <div className="flex gap-2">
+                          <PixelButton variant="ghost" size="sm" className="flex-1" onClick={cancelEdit}>
+                            취소
+                          </PixelButton>
+                          <PixelButton
+                            variant="gold"
+                            size="sm"
+                            className="flex-1"
+                            disabled={editSaving || !editTitle.trim() || !editContent.trim()}
+                            onClick={handleUpdate}
+                          >
+                            {editSaving ? '저장 중...' : '저장'}
+                          </PixelButton>
+                        </div>
+                      </div>
+                    ) : (
+                      /* 읽기 뷰 */
+                      <>
+                        <div className="speech-bubble m-3 border-panel-border">
+                          <p className="t-body whitespace-pre-wrap">{n.content}</p>
+                        </div>
+                        <div className="flex gap-2 justify-end px-3 pb-3">
+                          <PixelButton
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => { startEdit(n) }}
+                          >
+                            수정
+                          </PixelButton>
+                          <PixelButton
+                            variant="danger"
+                            size="sm"
+                            onClick={() => setDeleteConfirm({ id: n.id, title: n.title })}
+                          >
+                            삭제
+                          </PixelButton>
+                        </div>
+                      </>
+                    )}
                   </div>
                 )}
               </div>

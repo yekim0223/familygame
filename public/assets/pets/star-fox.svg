@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 별빛 후광 -->
+  <rect x="0" y="4" width="2" height="2" fill="#FFFFAA"/>
+  <rect x="14" y="4" width="2" height="2" fill="#FFFFAA"/>
+  <rect x="2" y="0" width="1" height="2" fill="#FFD700"/>
+  <rect x="13" y="0" width="1" height="2" fill="#FFD700"/>
+  <!-- 귀 (뾰족, 별빛) -->
+  <rect x="2" y="1" width="4" height="5" fill="#FFD700"/>
+  <rect x="10" y="1" width="4" height="5" fill="#FFD700"/>
+  <rect x="3" y="2" width="2" height="3" fill="#FFFFAA"/>
+  <rect x="11" y="2" width="2" height="3" fill="#FFFFAA"/>
+  <!-- 얼굴 (금빛) -->
+  <rect x="3" y="4" width="10" height="8" fill="#E8A820"/>
+  <rect x="2" y="5" width="12" height="6" fill="#F0B828"/>
+  <rect x="4" y="4" width="8" height="1" fill="#FFD040"/>
+  <!-- 흰 주둥이 -->
+  <rect x="5" y="9" width="6" height="3" fill="#FFF8D0"/>
+  <!-- 눈 (별 모양 반짝) -->
+  <rect x="4" y="6" width="3" height="2" fill="#1A0808"/>
+  <rect x="9" y="6" width="3" height="2" fill="#1A0808"/>
+  <rect x="4" y="6" width="3" height="1" fill="#FFD700"/>
+  <rect x="9" y="6" width="3" height="1" fill="#FFD700"/>
+  <rect x="4" y="6" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="9" y="6" width="1" height="1" fill="#FFFFFF"/>
+  <!-- 별 무늬 (이마) -->
+  <rect x="7" y="4" width="2" height="1" fill="#FFFFAA"/>
+  <rect x="7" y="5" width="2" height="1" fill="#FFFFAA"/>
+  <rect x="6" y="5" width="4" height="1" fill="#FFFFAA"/>
+  <!-- 코 -->
+  <rect x="6" y="9" width="4" height="2" fill="#1A0808"/>
+  <!-- 입 -->
+  <rect x="7" y="11" width="2" height="1" fill="#8B4020"/>
+</svg>

@@ -55,12 +55,12 @@ const DAY_KR = ['일', '월', '화', '수', '목', '금', '토']
 // 다크 패널 입력창 공통 클래스 (단일행 — py-3 기준 ~48px)
 const INPUT_CLS =
   'w-full bg-panel-darkest border-2 border-panel-border text-cream ' +
-  'font-korean text-sm px-3 py-3 focus:outline-none focus:border-gold placeholder:text-stone'
+  'font-korean text-sm px-3 py-3 focus:outline-none focus:border-gold placeholder:text-cream/70'
 
 // 다크 패널 textarea 클래스 (다행)
 const TEXTAREA_CLS =
   'w-full bg-panel-darkest border-2 border-panel-border text-cream ' +
-  'font-korean text-sm px-3 py-2.5 resize-none focus:outline-none focus:border-gold placeholder:text-stone'
+  'font-korean text-sm px-3 py-2.5 resize-none focus:outline-none focus:border-gold placeholder:text-cream/70'
 
 // 다크 패널 select 클래스
 const SELECT_CLS =

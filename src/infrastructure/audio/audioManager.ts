@@ -508,6 +508,39 @@ class AudioManager {
     ])
   }
 
+  // ════════════════════════════════════════════════════════════════
+  // 두더지잡기 SFX
+  // ════════════════════════════════════════════════════════════════
+
+  /** 두더지 타격 성공 — 경쾌한 상승 팝 */
+  whacHit(): void {
+    this.sfxSeq([
+      [659, 0.04, 'triangle', 0.30],
+      [880, 0.07, 'triangle', 0.26],
+    ])
+  }
+
+  /** 두더지 놓침 — 낮은 실패음 */
+  whacMiss(): void {
+    this.sfxSeq([
+      [294, 0.06, 'sawtooth', 0.22],
+      [196, 0.10, 'sawtooth', 0.18],
+    ])
+  }
+
+  /** 폭탄 탭 실수 — 폭발 노이즈 */
+  whacBomb(): void {
+    this.sfxNoise(0.30, 0.55, 0.04)
+  }
+
+  /** 콤보 달성 — level 3: 3음 아르페지오 / level 5+: 4음 페버 */
+  whacCombo(level: number): void {
+    const seq: Array<[number, number, OscillatorType?, number?]> = level >= 5
+      ? [[C5, 0.07, 'triangle', 0.26], [E5, 0.07, 'triangle', 0.27], [G5, 0.07, 'triangle', 0.28], [C6, 0.20, 'triangle', 0.32]]
+      : [[C5, 0.07, 'triangle', 0.25], [E5, 0.08, 'triangle', 0.26], [G5, 0.16, 'triangle', 0.30]]
+    this.sfxSeq(seq)
+  }
+
   /** BGM 자동 시작 (로그인 성공 후 호출 — 팡파르 종료 후 seamless 전환) */
   startAfterLogin(): void {
     if (this.theme === 'MUTE' || this.running) return

@@ -15,11 +15,37 @@ import { PixelButton } from '@/presentation/components/pixel/PixelButton'
 import { PixelModal } from '@/presentation/components/pixel/PixelModal'
 import type { Message } from '@/domain/entities/Message'
 import type { Member } from '@/domain/entities/Member'
+import { toDateKey } from '@/utils/dateUtils'
+import { EffectOverlay } from '@/presentation/components/effects/EffectOverlay'
+import type { EffectType } from '@/presentation/components/effects/EffectOverlay'
+
+// ── 특수 이모지 감지 (모듈 레벨 — MessageBubble + T7 공유) ──────────
+const SPECIAL_EMOJI_MAP: Record<string, { effect: EffectType; label: string; auraColor: string }> = {
+  '🎉': { effect: 'confetti', label: '🎉 폭죽',  auraColor: '#FFD700' },
+  '🎊': { effect: 'confetti', label: '🎉 폭죽',  auraColor: '#FFD700' },
+  '❤️': { effect: 'hearts',   label: '❤️ 하트',   auraColor: '#FF6B6B' },
+  '💖': { effect: 'hearts',   label: '💖 하트',   auraColor: '#E8A0BF' },
+  '💕': { effect: 'hearts',   label: '💕 하트',   auraColor: '#E8A0BF' },
+  '💗': { effect: 'hearts',   label: '💗 하트',   auraColor: '#E8A0BF' },
+  '🥰': { effect: 'hearts',   label: '🥰 하트',   auraColor: '#E8A0BF' },
+  '⭐': { effect: 'stars',    label: '⭐ 별',     auraColor: '#FFE082' },
+  '🌟': { effect: 'stars',    label: '🌟 별',     auraColor: '#FFE082' },
+  '✨': { effect: 'stars',    label: '✨ 별',     auraColor: '#B39DDB' },
+  '🔥': { effect: 'fire',     label: '🔥 불꽃',   auraColor: '#FB8C00' },
+}
+
+function detectSpecialEmoji(content: string): { effect: EffectType; label: string; auraColor: string } | null {
+  for (const [emoji, meta] of Object.entries(SPECIAL_EMOJI_MAP)) {
+    if (content.includes(emoji)) return meta
+  }
+  return null
+}
 
 type MessageTab = 'group' | 'direct'
-type EmojiCat = '감정' | '동물' | '사물' | '음식'
+type EmojiCat = '감정' | '동물' | '사물' | '음식' | '✨이펙트'
 
 const EMOJI_CATS: Record<EmojiCat, string[]> = {
+  '✨이펙트': ['🎉','🎊','❤️','💖','💕','💗','🥰','⭐','🌟','✨','🔥'],
   '감정': [
     '😄','😆','🥰','😎','🤣','😅','😭','😤',
     '🥺','😱','🤩','😴','🤔','😏','👻','😡',
@@ -51,17 +77,6 @@ const REACTION_EMOJIS = ['👍', '👎', '😲', '😭', '🔥'] as const
 
 // ── 헬퍼 ──────────────────────────────────────────────────────────
 
-function getMemberInfo(id: string): { name: string; role: string; characterId: string } {
-  try {
-    const raw = localStorage.getItem('fq_member_cache')
-    if (!raw) return { name: '', role: '', characterId: 'warrior' }
-    const { members } = JSON.parse(raw)
-    const m = (members as any[]).find(m => m.id === id)
-    return m
-      ? { name: m.name || m.realName || '', role: m.role || '', characterId: m.character?.characterId || 'warrior' }
-      : { name: '', role: '', characterId: 'warrior' }
-  } catch { return { name: '', role: '', characterId: 'warrior' } }
-}
 
 const CHILD_COLORS = ['bg-approved text-white', 'bg-gold text-pixel-dark']
 function childColorCls(id: string): string {
@@ -87,9 +102,7 @@ function getBubbleBorderCls(role: string, id: string): string {
   return 'border-panel-border'
 }
 
-function toDateKey(d: Date) {
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
-}
+
 function formatDateLabel(dk: string) {
   const [, m, d] = dk.split('-'); return `${m}월 ${d}일`
 }
@@ -174,7 +187,7 @@ function ReactionChips({
   const entries = Object.entries(reactions).filter(([, ids]) => ids.length > 0)
   if (entries.length === 0) return null
 
-  const getName = (id: string) => members.find(m => m.id === id)?.name ?? getMemberInfo(id).name ?? id
+  const getName = (id: string) => members.find(m => m.id === id)?.name ?? id
 
   return (
     <div className="flex flex-wrap gap-1 mt-1">
@@ -230,7 +243,14 @@ function MessageBubble({
   members: Member[]
   onDelete: (id: string) => void
 }) {
-  const { name, role, characterId } = getMemberInfo(message.senderId)
+  // members 실시간 데이터 우선 사용 (getMemberInfo 캐시 제거)
+  const senderMember = members.find(m => m.id === message.senderId)
+  const nick        = senderMember?.name ?? ''
+  const real        = senderMember?.realName ?? ''
+  // 닉네임과 실명이 다르면 "닉네임 (실명)" 형태로 표시
+  const name        = real && real !== nick ? `${nick} (${real})` : nick
+  const role        = senderMember?.role ?? ''
+  const characterId = senderMember?.character?.characterId ?? 'warrior'
   const timeStr = new Date(message.createdAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
   const tagCls  = senderTagCls(role, message.senderId)
 
@@ -253,24 +273,29 @@ function MessageBubble({
 
   return (
     <div
-      className={`flex items-end gap-1.5 ${isMine ? 'flex-row-reverse' : 'flex-row'} mb-3`}
+      className={`flex mb-2 ${isMine ? 'justify-end' : 'justify-start'}`}
       onClick={() => showPicker && setShowPicker(false)}
     >
-      {!isMine && showName && (
-        <div className="flex-shrink-0 self-end mb-4">
-          <CharacterSprite characterId={characterId} role={role as any} size="sm" variant="job" />
-        </div>
-      )}
-      {!isMine && !showName && <div className="w-8 flex-shrink-0" />}
+      <div className={`max-w-[76%] min-w-0 flex flex-col relative ${isMine ? 'items-end' : 'items-start'}`}>
 
-      <div className={`max-w-[72%] min-w-0 flex flex-col relative ${isMine ? 'items-end' : 'items-start'}`}>
+        {/* 발신자: 스프라이트 + 이름 한 줄 (처음 메시지에만) */}
         {showName && name && (
-          <span className={`font-korean text-xs font-bold px-2 py-0.5 mb-1 border-2 border-black t-pixel-shadow ${tagCls}`}>
-            {name}
-          </span>
+          <div className="flex items-center gap-1.5 mb-1">
+            <CharacterSprite
+              characterId={characterId}
+              role={role as any}
+              size="sm"
+              variant="job"
+              petId={null}
+              weapon={null}
+            />
+            <span className={`font-korean text-xs px-2 py-0.5 border border-black/60 ${tagCls}`}>
+              {name}
+            </span>
+          </div>
         )}
 
-        {/* 리액션 피커 팝업 — 말풍선 위 */}
+        {/* 리액션 피커 팝업 */}
         {showPicker && (
           <div className={`absolute ${isMine ? 'right-0' : 'left-0'} bottom-full mb-1 z-50`}>
             <ReactionPicker
@@ -285,24 +310,43 @@ function MessageBubble({
           </div>
         )}
 
-        {/* 말풍선 — 보라색(내 메시지) vs 역할별 테두리(상대방) — 탭색(sky/pink)과 명도 대비 확보 */}
-        <div
-          className={[
-            'speech-bubble break-words min-w-0 cursor-pointer select-none',
-            isMine
-              ? 'bg-purple text-white border-purple/80 shadow-[inset_2px_2px_0px_#ffffff20]'
-              : `${getBubbleBorderCls(role, message.senderId)} shadow-[inset_2px_2px_0px_#ffffff15,inset_-2px_-2px_0px_#00000060]`,
-          ].join(' ')}
-          onTouchStart={startLongPress}
-          onTouchEnd={cancelLongPress}
-          onTouchCancel={cancelLongPress}
-          onContextMenu={e => { e.preventDefault(); setShowPicker(p => !p) }}
-          onMouseDown={startLongPress}
-          onMouseUp={cancelLongPress}
-          onMouseLeave={cancelLongPress}
-        >
-          {message.content}
-        </div>
+        {/* 말풍선 */}
+        {(() => {
+          const special = detectSpecialEmoji(message.content)
+          return (
+            <div className="relative">
+              {special && (
+                <span
+                  className="absolute -top-2 -right-2 z-10 font-korean text-xs font-bold
+                             bg-panel-darkest border border-gold/60 px-1 leading-tight
+                             animate-effect-badge pointer-events-none select-none"
+                  style={{ color: special.auraColor }}
+                >
+                  {special.label}
+                </span>
+              )}
+              <div
+                className={[
+                  'speech-bubble break-words min-w-0 cursor-pointer select-none',
+                  isMine
+                    ? 'bg-purple text-white border-purple/80 shadow-[inset_2px_2px_0px_#ffffff20]'
+                    : `${getBubbleBorderCls(role, message.senderId)} shadow-[inset_2px_2px_0px_#ffffff15,inset_-2px_-2px_0px_#00000060]`,
+                  special ? 'animate-special-bubble' : '',
+                ].join(' ')}
+                style={special ? { '--aura-color': special.auraColor } as React.CSSProperties : undefined}
+                onTouchStart={startLongPress}
+                onTouchEnd={cancelLongPress}
+                onTouchCancel={cancelLongPress}
+                onContextMenu={e => { e.preventDefault(); setShowPicker(p => !p) }}
+                onMouseDown={startLongPress}
+                onMouseUp={cancelLongPress}
+                onMouseLeave={cancelLongPress}
+              >
+                {message.content}
+              </div>
+            </div>
+          )
+        })()}
 
         {/* 리액션 칩 */}
         {Object.keys(reactions).length > 0 && (
@@ -334,21 +378,35 @@ function EmojiPanel({ onPick, emojiCat, setEmojiCat }: {
   emojiCat: EmojiCat
   setEmojiCat: (c: EmojiCat) => void
 }) {
+  const isEffect = emojiCat === '✨이펙트'
   return (
     <div className="border-b-2 border-black bg-panel-darkest">
       <div className="flex border-b-2 border-black">
-        {(Object.keys(EMOJI_CATS) as EmojiCat[]).map(cat => (
-          <button key={cat} type="button" onClick={() => setEmojiCat(cat)}
-            className={`flex-1 py-2 font-korean text-sm font-bold border-r-2 border-black last:border-r-0 transition-colors
-              ${emojiCat === cat ? 'bg-sky text-pixel-dark' : 'bg-panel-dark text-cream hover:bg-sky/20'}`}>
-            {cat}
-          </button>
-        ))}
+        {(Object.keys(EMOJI_CATS) as EmojiCat[]).map(cat => {
+          const isEffectTab = cat === '✨이펙트'
+          const isActive = emojiCat === cat
+          return (
+            <button key={cat} type="button" onClick={() => setEmojiCat(cat)}
+              className={`flex-1 py-2 font-korean text-xs font-bold border-r-2 border-black last:border-r-0 transition-colors
+                ${isActive
+                  ? isEffectTab ? 'bg-gold text-pixel-dark' : 'bg-sky text-pixel-dark'
+                  : isEffectTab ? 'bg-panel-dark text-gold hover:bg-gold/20' : 'bg-panel-dark text-cream hover:bg-sky/20'
+                }`}>
+              {cat}
+            </button>
+          )
+        })}
       </div>
-      <div className="grid grid-cols-8">
+      {isEffect && (
+        <p className="font-korean text-xs text-gold/70 text-center py-1 bg-gold/5">
+          보내면 화면에 이펙트가 펑! 터져요 🎆
+        </p>
+      )}
+      <div className={`grid ${isEffect ? 'grid-cols-6' : 'grid-cols-8'}`}>
         {EMOJI_CATS[emojiCat].map(e => (
           <button key={e} type="button" onClick={() => onPick(e)}
-            className="aspect-square flex items-center justify-center text-2xl hover:bg-gold/20 active:bg-gold/40 transition-colors">
+            className={`aspect-square flex items-center justify-center hover:bg-gold/20 active:bg-gold/40 transition-colors
+              ${isEffect ? 'text-3xl' : 'text-2xl'}`}>
             {e}
           </button>
         ))}
@@ -380,6 +438,8 @@ function MessageInputBar({ onSend, disabled, showEmojiPanel, setShowEmojiPanel, 
     setSending(false)
   }
 
+  const liveSpecial = detectSpecialEmoji(text)
+
   return (
     <div className="flex-shrink-0 border-t-4 border-black bg-panel-darkest">
       {showEmojiPanel && (
@@ -389,9 +449,17 @@ function MessageInputBar({ onSend, disabled, showEmojiPanel, setShowEmojiPanel, 
           onPick={e => setText(prev => prev + e)}
         />
       )}
-      <div className="flex gap-2 p-2">
+      {/* 입력 중 특수 이모지 감지 표시 */}
+      {liveSpecial && (
+        <div className="flex items-center gap-1 px-3 py-1 bg-panel-dark/80 border-t border-panel-border">
+          <span className="font-korean text-xs font-bold animate-effect-badge" style={{ color: liveSpecial.auraColor }}>
+            {liveSpecial.label} 이펙트 발동 예정!
+          </span>
+        </div>
+      )}
+      <div className="flex items-stretch gap-2 p-2">
         <button type="button" onClick={() => setShowEmojiPanel(!showEmojiPanel)}
-          className={`w-10 h-10 border-4 flex items-center justify-center text-xl flex-shrink-0
+          className={`w-11 flex-shrink-0 border-4 flex items-center justify-center text-xl
             ${showEmojiPanel ? 'bg-sky/20 border-sky' : 'bg-panel-dark border-black hover:border-sky'}`}>
           😊
         </button>
@@ -399,7 +467,7 @@ function MessageInputBar({ onSend, disabled, showEmojiPanel, setShowEmojiPanel, 
           onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSend()}
           placeholder="메시지 입력..."
           className="flex-1 min-w-0 bg-panel-darkest text-gold font-korean text-sm
-                     border-4 border-black px-3 py-2
+                     border-4 border-black px-3 py-2.5
                      focus:outline-none focus:border-sky
                      shadow-[inset_3px_3px_0px_#00000090]" />
         <PixelButton
@@ -407,7 +475,7 @@ function MessageInputBar({ onSend, disabled, showEmojiPanel, setShowEmojiPanel, 
           size="md"
           disabled={sending || !text.trim() || disabled}
           onClick={handleSend}
-          className="flex-shrink-0"
+          className="flex-shrink-0 !py-0"
         >
           전송
         </PixelButton>
@@ -438,10 +506,12 @@ function renderMessageList(
           <span>{formatDateLabel(dk)}까지 메시지입니다</span>
         </div>
       )
-      lastDate = dk; lastSenderId = ''
+      lastDate = dk
+      // 날짜가 바뀌어도 lastSenderId 유지 — 연속된 같은 발신자는 이름 반복 표시 안 함
     }
     const isMine   = msg.senderId === myId
-    const showName = !isMine && msg.senderId !== lastSenderId
+    // DM 모드는 헤더에 이미 상대 이름이 있으므로 버블 이름 태그 숨김
+    const showName = !isDM && !isMine && msg.senderId !== lastSenderId
 
     let unreadCount = 0
     if (isMine) {
@@ -483,6 +553,23 @@ export default function MessagesPage() {
   const [showEmojiPanel,  setShowEmojiPanel]  = useState(false)
   const [emojiCat,        setEmojiCat]        = useState<EmojiCat>('감정')
   const [deleteConfirm,   setDeleteConfirm]   = useState<string | null>(null)
+  const [chatEffect,      setChatEffect]      = useState<EffectType | null>(null)
+  const triggeredMsgIds = useRef<Set<string>>(new Set())
+
+  // T7: 그룹 채팅 신규 메시지 감지 → 이펙트 발동 (모듈 레벨 detectSpecialEmoji 재사용)
+  useEffect(() => {
+    if (!groupMessages.length) return
+    const now = Date.now()
+    const recent = groupMessages.filter(m =>
+      !triggeredMsgIds.current.has(m.id) &&
+      now - m.createdAt.getTime() < 4000
+    )
+    for (const msg of recent) {
+      triggeredMsgIds.current.add(msg.id)
+      const special = detectSpecialEmoji(msg.content)
+      if (special) { setChatEffect(special.effect); break }
+    }
+  }, [groupMessages])
 
   // ── 그룹 채팅 ────────────────────────────────────────────────
   const groupRef = useRef<HTMLDivElement>(null)
@@ -585,6 +672,9 @@ export default function MessagesPage() {
   // ════════════════════════════════════════════════════════════
   return (
     <div className="flex flex-col h-[calc(100vh-112px)] overflow-hidden">
+      {chatEffect && (
+        <EffectOverlay type={chatEffect} count={20} onEnd={() => setChatEffect(null)} />
+      )}
 
       {/* ── 탭 바 — sky(그룹) / pink(DM): 보라색 말풍선과 명도 3:1+ 대비 ── */}
       <div className="flex border-b-4 border-black flex-shrink-0 bg-panel-darkest">
@@ -669,6 +759,7 @@ export default function MessagesPage() {
                         role={member.role}
                         size="md"
                         variant="job"
+                        petId={null}
                       />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -704,45 +795,40 @@ export default function MessagesPage() {
       {/* ── 1:1 채팅 — 대화 화면 ──────────────────────────── */}
       {activeTab === 'direct' && partnerId && (
         <>
-          {/* 헤더 — 상대방 크고 직관적으로 앵커 */}
-          <div className="flex-shrink-0 bg-panel-darkest border-b-4 border-pink/60">
-            {/* 뒤로가기 + 안내 */}
-            <div className="flex items-center px-3 py-2 border-b border-panel-border/30">
-              <button type="button"
-                onClick={() => { setPartnerId(null); setShowEmojiPanel(false) }}
-                className="flex items-center gap-1 px-3 py-1.5 bg-panel-dark border-4 border-panel-border
-                           font-korean text-sm font-bold text-cream
-                           hover:border-pink active:scale-95 transition-all">
-                ← 뒤로
-              </button>
-              <span className="ml-auto font-korean text-xs text-cream/40">
-                가족만 볼 수 있어요
-              </span>
-            </div>
-
-            {/* 상대방 프로필 — 크고 직관적 */}
+          {/* 헤더 — 컴팩트 1줄 바 */}
+          <div className="flex-shrink-0 flex items-center gap-2 px-3 h-11
+                          bg-panel-darkest border-b-4 border-pink/60">
+            <button type="button"
+              onClick={() => { setPartnerId(null); setShowEmojiPanel(false) }}
+              className="w-8 h-8 flex items-center justify-center
+                         bg-black/30 border-2 border-black/50
+                         hover:border-pink active:scale-95 transition-all flex-shrink-0"
+              aria-label="뒤로가기">
+              <span style={{ fontSize: '16px', lineHeight: 1, filter: 'drop-shadow(0 0 3px #FFD700)' }}>⬅️</span>
+            </button>
             {partner && (
-              <div className="flex flex-col items-center py-4 gap-2">
-                <div className="scale-125 mb-1">
+              <>
+                <div className="flex-shrink-0">
                   <CharacterSprite
                     characterId={partner.character.characterId}
                     role={partner.role}
-                    size="lg"
+                    size="sm"
                     variant="job"
+                    petId={null}
                   />
                 </div>
-                <div className="text-center">
-                  <p className="t-heading text-cream t-pixel-shadow">{partner.name}</p>
-                  {partner.realName && partner.realName !== partner.name && (
-                    <p className="font-korean text-xs text-panel-sub mt-0.5">({partner.realName})</p>
-                  )}
-                  <span className={`inline-block mt-1.5 font-korean text-xs font-bold px-2 py-0.5 border border-black
-                    ${ROLE_COLOR[partner.role] ?? 'bg-stone text-white'}`}>
-                    {ROLE_LABEL[partner.role] ?? partner.role}
-                  </span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-korean text-sm font-bold text-cream truncate">{partner.name}</span>
+                    <span className={`font-korean text-xs font-bold px-1.5 py-0.5 border border-black flex-shrink-0
+                      ${ROLE_COLOR[partner.role] ?? 'bg-stone text-white'}`}>
+                      {ROLE_LABEL[partner.role] ?? partner.role}
+                    </span>
+                  </div>
                 </div>
-              </div>
+              </>
             )}
+            <span className="ml-auto font-korean text-xs text-cream/30 flex-shrink-0">가족 전용</span>
           </div>
 
           {/* 메시지 목록 */}

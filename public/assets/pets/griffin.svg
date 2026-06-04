@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 날개 -->
+  <rect x="0" y="4" width="5" height="6" fill="#D0A020"/>
+  <rect x="11" y="4" width="5" height="6" fill="#D0A020"/>
+  <rect x="1" y="4" width="4" height="5" fill="#E8C030"/>
+  <rect x="11" y="4" width="4" height="5" fill="#E8C030"/>
+  <!-- 독수리 머리 (흰) -->
+  <rect x="5" y="1" width="6" height="5" fill="#FFFFFF"/>
+  <rect x="4" y="2" width="8" height="4" fill="#FFFFFF"/>
+  <rect x="6" y="1" width="4" height="1" fill="#EEEEEE"/>
+  <!-- 부리 (노랑) -->
+  <rect x="10" y="4" width="4" height="2" fill="#FFD700"/>
+  <rect x="11" y="6" width="3" height="1" fill="#CC9900"/>
+  <!-- 눈 (날카롭게) -->
+  <rect x="6" y="3" width="3" height="2" fill="#FFD700"/>
+  <rect x="7" y="3" width="2" height="2" fill="#1A0808"/>
+  <rect x="7" y="3" width="1" height="1" fill="#FFFFFF"/>
+  <!-- 사자 몸 (황금) -->
+  <rect x="4" y="6" width="8" height="7" fill="#D0A020"/>
+  <rect x="3" y="7" width="10" height="5" fill="#E8C030"/>
+  <rect x="5" y="6" width="6" height="1" fill="#F0D040"/>
+  <!-- 꼬리 (사자) -->
+  <rect x="0" y="9" width="4" height="3" fill="#D0A020"/>
+  <rect x="0" y="11" width="3" height="3" fill="#8B6010"/>
+  <!-- 발톱 (독수리) -->
+  <rect x="4" y="13" width="3" height="2" fill="#D0A020"/>
+  <rect x="9" y="13" width="3" height="2" fill="#D0A020"/>
+  <rect x="3" y="14" width="2" height="2" fill="#888888"/>
+  <rect x="11" y="14" width="2" height="2" fill="#888888"/>
+</svg>

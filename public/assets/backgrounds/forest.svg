@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <!-- 하늘 (어두운 초록 캐노피) -->
+  <rect x="0" y="0" width="32" height="16" fill="#1A4A10"/>
+  <!-- 나무 캐노피 -->
+  <rect x="0" y="0" width="8" height="6" fill="#2A6A18"/>
+  <rect x="6" y="0" width="8" height="7" fill="#1A5A10"/>
+  <rect x="12" y="0" width="8" height="5" fill="#2A6A18"/>
+  <rect x="18" y="0" width="8" height="7" fill="#1A5A10"/>
+  <rect x="24" y="0" width="8" height="6" fill="#2A6A18"/>
+  <!-- 빛 필터 -->
+  <rect x="5" y="1" width="1" height="4" fill="#4A9A30"/>
+  <rect x="16" y="0" width="2" height="4" fill="#4A9A30"/>
+  <rect x="28" y="1" width="1" height="5" fill="#4A9A30"/>
+  <!-- 바닥 -->
+  <rect x="0" y="10" width="32" height="6" fill="#2A4A10"/>
+  <rect x="0" y="10" width="32" height="2" fill="#3A5A18"/>
+  <!-- 나무 줄기 -->
+  <rect x="4" y="7" width="2" height="9" fill="#5A3010"/>
+  <rect x="14" y="6" width="2" height="10" fill="#5A3010"/>
+  <rect x="24" y="7" width="2" height="9" fill="#5A3010"/>
+  <!-- 버섯 -->
+  <rect x="8" y="13" width="2" height="2" fill="#FF6666"/>
+  <rect x="8" y="12" width="3" height="1" fill="#FF4444"/>
+  <rect x="20" y="12" width="2" height="3" fill="#FFAA44"/>
+  <rect x="19" y="11" width="4" height="1" fill="#FF8822"/>
+  <!-- 이끼 -->
+  <rect x="10" y="10" width="4" height="1" fill="#4A9A30"/>
+  <rect x="22" y="11" width="3" height="1" fill="#4A9A30"/>
+</svg>

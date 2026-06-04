@@ -38,7 +38,7 @@ const C = {
 
 // ── 타입 ─────────────────────────────────────────────────────────────
 interface Obstacle { id: number; x: number; y: number; w: number; h: number; type: 'log' | 'bird' }
-interface Coin     { id: number; x: number; y: number; collected: boolean }
+interface Coin     { id: number; x: number; y: number; collected: boolean; red?: boolean }
 interface Cloud    { x: number; y: number; w: number; h: number; spd: number }
 
 interface GS {
@@ -108,89 +108,58 @@ function drawClouds(ctx: CanvasRenderingContext2D, clouds: Cloud[]) {
 }
 
 // ── 너구리 드로우 (pInv 깜빡임 + 무기 비주얼) ────────────────────────
-function drawRaccoon(
+// 캐릭터 SVG drawImage + 너구리 발 속도 계승 (sin*0.35)
+// 점수/DB 로직 무관 — 렌더 레이어만 변경
+function drawPlayer(
   ctx: CanvasRenderingContext2D,
   ry: number, frame: number, dead: boolean,
   pInv: number, weapon: WeaponType,
+  charImg: HTMLImageElement | null,
 ) {
-  // 무적 깜빡임: 6프레임마다 토글
   if (pInv > 0 && Math.floor(pInv / 6) % 2 === 0) return
 
   const rx = RACCOON_X
   ctx.save()
   ctx.translate(rx, ry)
 
-  // 다리 애니
+  // 발 애니 — 기존 너구리 속도 sin(frame * 0.35) 그대로 계승
   if (!dead) {
     const legPhase = Math.sin(frame * 0.35)
     ctx.fillStyle = '#5a5a5a'
-    ctx.fillRect(-12, RACCOON_H / 2 - 5, 10, 10 + legPhase * 4)
-    ctx.fillRect(2,   RACCOON_H / 2 - 5, 10, 10 - legPhase * 4)
+    ctx.fillRect(-RACCOON_W / 2 + 2, RACCOON_H / 2 - 3, 9, 10 + legPhase * 4)
+    ctx.fillRect(RACCOON_W / 2 - 11, RACCOON_H / 2 - 3, 9, 10 - legPhase * 4)
   }
 
-  // 꼬리
-  ctx.fillStyle = C.racTail
-  ctx.beginPath(); ctx.ellipse(RACCOON_W / 2 + 6, 4, 14, 8, 0.4, 0, Math.PI * 2); ctx.fill()
-  ctx.fillStyle = '#888'
-  ctx.beginPath(); ctx.ellipse(RACCOON_W / 2 + 6, 4, 10, 5, 0.4, 0, Math.PI * 2); ctx.fill()
+  // 캐릭터 SVG
+  if (charImg && charImg.complete && charImg.naturalWidth > 0) {
+    if (dead) { ctx.globalAlpha = 0.55; ctx.filter = 'grayscale(1)' }
+    ctx.drawImage(charImg, -RACCOON_W / 2, -RACCOON_H / 2, RACCOON_W, RACCOON_H)
+    ctx.globalAlpha = 1; ctx.filter = 'none'
+  } else {
+    // charImg 미로드 시 단순 보라 사각형 대체 (너구리 도형 제거)
+    ctx.fillStyle = dead ? '#FF6B6B' : '#7B5EA7'
+    ctx.fillRect(-RACCOON_W / 2, -RACCOON_H / 2, RACCOON_W, RACCOON_H)
+  }
 
-  // 몸통
-  ctx.fillStyle = dead ? '#FF6B6B' : C.raccoon
-  ctx.beginPath(); ctx.ellipse(0, 0, RACCOON_W / 2, RACCOON_H / 2, 0, 0, Math.PI * 2); ctx.fill()
-  ctx.fillStyle = '#aaaaaa'
-  ctx.beginPath(); ctx.ellipse(0, 4, RACCOON_W / 3.5, RACCOON_H / 3.5, 0, 0, Math.PI * 2); ctx.fill()
-
-  // 눈
-  ctx.fillStyle = '#fff'
-  ctx.fillRect(-10, -12, 8, 7); ctx.fillRect(2, -12, 8, 7)
-  ctx.fillStyle = C.racEye
-  ctx.fillRect(-8, -11, 5, 5); ctx.fillRect(4, -11, 5, 5)
-  ctx.fillStyle = '#333'; ctx.fillRect(-12, -14, 24, 2)
-
-  // 코·입
-  ctx.fillStyle = '#FF8C69'
-  ctx.beginPath(); ctx.arc(-1, -3, 4, 0, Math.PI * 2); ctx.fill()
-  ctx.fillStyle = '#FF6B6B'
-  ctx.beginPath(); ctx.arc(-1, -2, 2, 0, Math.PI); ctx.fill()
-
-  // 귀
-  ctx.fillStyle = C.raccoon
-  ctx.fillRect(-RACCOON_W / 2 + 2, -RACCOON_H / 2 - 10, 10, 12)
-  ctx.fillRect(RACCOON_W / 2 - 12, -RACCOON_H / 2 - 10, 10, 12)
-  ctx.fillStyle = '#ffb6c1'
-  ctx.fillRect(-RACCOON_W / 2 + 4, -RACCOON_H / 2 - 7, 6, 8)
-  ctx.fillRect(RACCOON_W / 2 - 10, -RACCOON_H / 2 - 7, 6, 8)
-
-  // ── 장착 무기 비주얼 (손에 들고 달리는 이미지) ──────────────────
+  // 무기 비주얼 (기존 로직 완전 유지)
   if (!dead) {
-    const hx = RACCOON_W / 2 - 4   // 손 위치 (앞쪽)
+    const hx = RACCOON_W / 2 - 4
     const hy = 2
     switch (weapon) {
       case 'laser':
-        // 레이저 건 — 청록색 총
-        ctx.fillStyle = '#4ECDC4'
-        ctx.fillRect(hx, hy - 2, 14, 4)
-        ctx.fillStyle = '#A8E6CF'
-        ctx.fillRect(hx - 2, hy - 3, 5, 6)
-        ctx.globalAlpha = 0.5
-        ctx.fillStyle = '#4ECDC4'
-        ctx.fillRect(hx + 14, hy - 1, 18, 2)   // 레이저 빔
-        ctx.globalAlpha = 1
+        ctx.fillStyle = '#4ECDC4'; ctx.fillRect(hx, hy - 2, 14, 4)
+        ctx.fillStyle = '#A8E6CF'; ctx.fillRect(hx - 2, hy - 3, 5, 6)
+        ctx.globalAlpha = 0.5; ctx.fillStyle = '#4ECDC4'
+        ctx.fillRect(hx + 14, hy - 1, 18, 2); ctx.globalAlpha = 1
         break
       case 'double':
-        // 더블 총 — 위아래 두 자루
         ctx.fillStyle = '#FFD700'
-        ctx.fillRect(hx, hy - 7, 11, 4)
-        ctx.fillRect(hx, hy + 3, 11, 4)
-        ctx.fillStyle = '#FF6B9D'
-        ctx.fillRect(hx - 2, hy - 8, 4, 15)   // 손잡이
+        ctx.fillRect(hx, hy - 7, 11, 4); ctx.fillRect(hx, hy + 3, 11, 4)
+        ctx.fillStyle = '#FF6B9D'; ctx.fillRect(hx - 2, hy - 8, 4, 15)
         break
       default:
-        // basic: 단검
-        ctx.fillStyle = '#9B6DFF'
-        ctx.fillRect(hx, hy - 1.5, 14, 3)
-        ctx.fillStyle = '#FFD700'
-        ctx.fillRect(hx - 2, hy - 3.5, 4, 7)  // 가드
+        ctx.fillStyle = '#9B6DFF'; ctx.fillRect(hx, hy - 1.5, 14, 3)
+        ctx.fillStyle = '#FFD700'; ctx.fillRect(hx - 2, hy - 3.5, 4, 7)
     }
   }
 
@@ -223,32 +192,53 @@ function drawObstacle(ctx: CanvasRenderingContext2D, obs: Obstacle) {
 function drawCoin(ctx: CanvasRenderingContext2D, coin: Coin, frame: number) {
   if (coin.collected) return
   const bob = Math.sin(frame * 0.08 + coin.id * 0.8) * 3
-  ctx.fillStyle = C.coin
-  ctx.shadowBlur = 6; ctx.shadowColor = C.coin
+  // 빨간 코인(20%): 2배 점수, 빨간색으로 구분
+  const color = coin.red ? '#FF3333' : C.coin
+  const shadow = coin.red ? '#FF6666' : C.coin
+  ctx.fillStyle = color
+  ctx.shadowBlur = 8; ctx.shadowColor = shadow
   ctx.beginPath(); ctx.arc(coin.x, coin.y + bob, 10, 0, Math.PI * 2); ctx.fill()
   ctx.shadowBlur = 0
   ctx.fillStyle = '#FFF8F0'; ctx.font = '9px monospace'
-  ctx.fillText('$', coin.x - 4, coin.y + bob + 4)
+  ctx.fillText(coin.red ? '★' : '$', coin.x - 4, coin.y + bob + 4)
 }
 
 // ── 컴포넌트 ─────────────────────────────────────────────────────────
-export interface PonpokoProps { onGameOver: (score: number) => void; onBack: () => void }
+export interface PonpokoProps { onGameOver: (score: number) => void; charSvgUrl?: string; onBack?: () => void }
 
-export function PonpokoGame({ onGameOver, onBack }: PonpokoProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const gs        = useRef<GS>(initGS())
-  const cbRef     = useRef(onGameOver)
-  cbRef.current   = onGameOver
-  const jumpPend  = useRef(false)
+export function PonpokoGame({ onGameOver, charSvgUrl = '/assets/characters/base-observer.svg', onBack }: PonpokoProps) {
+  const canvasRef  = useRef<HTMLCanvasElement>(null)
+  const gs         = useRef<GS>(initGS())
+  const cbRef      = useRef(onGameOver)
+  cbRef.current    = onGameOver
+  const jumpPend   = useRef(false)
+  const charImgRef = useRef<HTMLImageElement | null>(null)
 
-  const [uiScore, setUiScore] = useState(0)
-  const [uiLives, setUiLives] = useState(MAX_LIVES)
-  const [uiStage, setUiStage] = useState(1)
-  const [uiPhase, setUiPhase] = useState<'playing' | 'gameover'>('playing')
+  // 캐릭터 SVG 프리로드 (UI 에셋만, 게임 로직 무관)
+  useEffect(() => {
+    const img = new Image()
+    img.src = charSvgUrl
+    charImgRef.current = img
+  }, [charSvgUrl])
+
+  const [uiScore,  setUiScore]  = useState(0)
+  const [_uiLives, setUiLives]  = useState(MAX_LIVES)
+  const [uiStage,  setUiStage]  = useState(1)
+  const [uiPhase,  setUiPhase]  = useState<'playing' | 'gameover'>('playing')
+  const [uiPaused, setUiPaused] = useState(false)
+  const pausedRef  = useRef(false)
 
   const currentWeapon = useInventoryStore(state => state.currentWeapon)
 
-  const doJump = () => { audioManager.resume(); jumpPend.current = true }
+  const doJump = () => {
+    if (pausedRef.current) return
+    audioManager.resume(); jumpPend.current = true
+  }
+  const togglePause = () => {
+    pausedRef.current = !pausedRef.current
+    setUiPaused(p => !p)
+    if (!pausedRef.current) audioManager.resume()
+  }
 
   useEffect(() => {
     const canvas = canvasRef.current; if (!canvas) return
@@ -263,12 +253,15 @@ export function PonpokoGame({ onGameOver, onBack }: PonpokoProps) {
       rafId = requestAnimationFrame(tick)
       const g = gs.current
 
+      // 일시정지: 프레임 스킵 (캔버스 마지막 프레임 유지)
+      if (pausedRef.current) return
+
       // 게임 오버 화면 유지
       if (g.phase !== 'playing') {
         ctx.fillStyle = '#0F0A04'; ctx.fillRect(0, 0, CW, CH)
         drawBackground(ctx, g.frame)
         drawGround(ctx, groundOffset)
-        drawRaccoon(ctx, g.ry, g.frame, true, 0, useInventoryStore.getState().currentWeapon)
+        drawPlayer(ctx, g.ry, g.frame, true, 0, useInventoryStore.getState().currentWeapon, charImgRef.current)
         return
       }
 
@@ -316,10 +309,11 @@ export function PonpokoGame({ onGameOver, onBack }: PonpokoProps) {
         g.nextObstacle = g.frame + 70 + Math.floor(Math.random() * 60) - Math.floor(g.frame / 600)
       }
 
-      // 코인 생성
+      // 코인 생성 (80% 노란, 20% 빨간 2배 점수)
       if (g.frame >= g.nextCoin) {
         const coinY = GROUND_Y - 40 - Math.random() * 60
-        g.coins.push({ id: g.nextId++, x: CW + 10, y: coinY, collected: false })
+        const isRed = Math.random() < 0.10
+        g.coins.push({ id: g.nextId++, x: CW + 10, y: coinY, collected: false, red: isRed })
         g.nextCoin = g.frame + 45 + Math.floor(Math.random() * 35)
       }
 
@@ -341,7 +335,7 @@ export function PonpokoGame({ onGameOver, onBack }: PonpokoProps) {
               g.phase = 'gameover'
               setUiPhase('gameover'); setUiScore(g.score)
               audioManager.gameOver()
-              cbRef.current(g.score)
+              setTimeout(() => cbRef.current(g.score), 5000)
               return false
             }
             g.pInv = INV_FRAMES
@@ -359,7 +353,8 @@ export function PonpokoGame({ onGameOver, onBack }: PonpokoProps) {
         if (!coin.collected) {
           if (Math.abs(coin.x - RACCOON_X) < 20 && Math.abs(coin.y - g.ry) < 28) {
             coin.collected = true
-            g.score += 10
+            const pts = coin.red ? 20 : 10   // 빨간 코인 2배
+            g.score += pts
             g.stageCoins++
             audioManager.coinCollect()
 
@@ -386,7 +381,7 @@ export function PonpokoGame({ onGameOver, onBack }: PonpokoProps) {
       drawGround(ctx, groundOffset)
       g.obstacles.forEach(obs => drawObstacle(ctx, obs))
       g.coins.forEach(coin => drawCoin(ctx, coin, g.frame))
-      drawRaccoon(ctx, g.ry, g.frame, false, g.pInv, weapon)
+      drawPlayer(ctx, g.ry, g.frame, false, g.pInv, weapon, charImgRef.current)
 
       // HUD
       ctx.fillStyle = C.score; ctx.font = '11px monospace'
@@ -436,20 +431,47 @@ export function PonpokoGame({ onGameOver, onBack }: PonpokoProps) {
 
   return (
     <div className="flex flex-col h-full bg-[#0F0A04]" style={{ touchAction: 'none', userSelect: 'none' }}>
-      {/* 스코어 바 */}
-      <div className="flex-shrink-0 h-[32px] bg-panel-darkest border-b-2 border-black
+      {/* 스코어 바 + PAUSE/EXIT */}
+      <div className="flex-shrink-0 h-[44px] bg-panel-darkest border-b-2 border-black
                       flex items-center justify-between px-3">
         <span className="font-pixel text-xs text-gold">SCORE {uiScore.toLocaleString()}</span>
-        <span className="font-korean text-xs text-cream/60">🦝 STG {uiStage}</span>
-        <span className="font-pixel text-xs text-purple">{'♥'.repeat(uiLives)}</span>
+        <span className="font-korean text-xs text-cream/60">STG {uiStage}</span>
+        <div className="flex items-center gap-2">
+          <button type="button"
+            onTouchStart={togglePause} onMouseDown={togglePause}
+            className="min-w-[54px] h-9 px-2 bg-purple border-2 border-purple/60
+                       flex items-center justify-center font-pixel text-xs
+                       active:scale-95 select-none text-white">
+            {uiPaused ? '▶' : 'PAUSE'}
+          </button>
+          {onBack && (
+            <button type="button"
+              onTouchStart={onBack} onMouseDown={onBack}
+              className="min-w-[54px] h-9 px-2 bg-rejected border-2 border-rejected/60
+                         flex items-center justify-center font-pixel text-xs
+                         active:scale-95 select-none text-white">
+              EXIT
+            </button>
+          )}
+        </div>
       </div>
 
       {/* 캔버스 */}
-      <div className="flex-1 flex items-center justify-center overflow-hidden bg-[#0F0A04]">
+      <div className="flex-1 flex items-center justify-center overflow-hidden bg-[#0F0A04] relative">
+        {uiPaused && (
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/65 pointer-events-none">
+            <p className="font-pixel text-2xl text-gold t-pixel-shadow">PAUSED</p>
+            <p className="font-korean text-sm text-cream/70 mt-2">위 PAUSE 버튼으로 계속하기</p>
+          </div>
+        )}
         {uiPhase === 'gameover' && (
-          <div className="absolute z-10 pointer-events-none flex flex-col items-center gap-3">
-            <p className="font-pixel text-xl text-rejected" style={{ textShadow: '2px 2px 0 #000' }}>GAME OVER</p>
-            <p className="font-pixel text-base text-gold">{uiScore.toLocaleString()} PTS</p>
+          <div className="absolute z-10 pointer-events-none flex flex-col items-center gap-3
+                          bg-black/70 px-8 py-6 border-4 border-rejected">
+            <p className="font-pixel text-2xl text-rejected" style={{ textShadow: '3px 3px 0 #000' }}>
+              GAME OVER
+            </p>
+            <p className="font-pixel text-lg text-gold">{uiScore.toLocaleString()} PTS</p>
+            <p className="font-pixel text-xs text-cream/60 mt-1">결과 화면으로 이동 중...</p>
           </div>
         )}
         <canvas ref={canvasRef} width={CW} height={CH}
@@ -465,16 +487,9 @@ export function PonpokoGame({ onGameOver, onBack }: PonpokoProps) {
             <span className="text-xl">{WEAPON_ICON[currentWeapon]}</span>
             <span className="font-korean text-xs text-panel-sub">장착중</span>
           </div>
-          <span className="font-korean text-xs text-cream/40">이단점프 가능 🦝</span>
-          <span className="font-korean text-xs text-cream/40">코인 {stageTarget(uiStage)}개 → 다음 스테이지</span>
+          <span className="font-korean text-xs text-gold">💡 공중에서 한 번 더 탭!</span>
+          <span className="font-korean text-xs text-cream/70">코인 {stageTarget(uiStage)}개 → 다음 STG</span>
         </div>
-
-        {/* 나가기 */}
-        <button type="button" onClick={onBack}
-          className="font-korean text-xs text-panel-sub border border-panel-border
-                     px-2 py-1.5 bg-panel-dark active:opacity-70">
-          나가기
-        </button>
 
         {/* 점프 버튼 */}
         <button type="button"

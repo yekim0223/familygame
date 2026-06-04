@@ -41,12 +41,12 @@ export function PixelBarChart({ data, maxValue, unit = '', height = 120, classNa
       <div className="flex gap-1.5">
         {data.map((d, i) => (
           <div key={i} className="flex-1 text-center">
-            <span className="font-korean text-xs text-stone truncate block">{d.label}</span>
+            <span className="font-korean text-xs text-cream/70 truncate block">{d.label}</span>
           </div>
         ))}
       </div>
       {unit && (
-        <p className="font-korean text-xs text-stone text-right">단위: {unit}</p>
+        <p className="font-korean text-xs text-cream/70 text-right">단위: {unit}</p>
       )}
     </div>
   )

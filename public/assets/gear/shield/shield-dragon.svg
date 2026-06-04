@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated">
+  <!-- 용 방패 (붉은 용 비늘) -->
+  <rect x="4"  y="2"  width="24" height="20" fill="#880000"/>
+  <rect x="2"  y="4"  width="28" height="16" fill="#880000"/>
+  <rect x="4"  y="22" width="24" height="4"  fill="#880000"/>
+  <rect x="8"  y="26" width="16" height="3"  fill="#660000"/>
+  <rect x="12" y="29" width="8"  height="2"  fill="#440000"/>
+  <!-- 비늘 패턴 -->
+  <rect x="6"  y="4"  width="6"  height="4"  fill="#AA1100"/>
+  <rect x="14" y="4"  width="6"  height="4"  fill="#AA1100"/>
+  <rect x="22" y="4"  width="4"  height="4"  fill="#AA1100"/>
+  <rect x="10" y="8"  width="6"  height="4"  fill="#AA1100"/>
+  <rect x="18" y="8"  width="6"  height="4"  fill="#AA1100"/>
+  <rect x="6"  y="12" width="6"  height="4"  fill="#AA1100"/>
+  <rect x="14" y="12" width="6"  height="4"  fill="#AA1100"/>
+  <rect x="22" y="12" width="4"  height="4"  fill="#AA1100"/>
+  <rect x="10" y="16" width="6"  height="4"  fill="#AA1100"/>
+  <rect x="18" y="16" width="6"  height="4"  fill="#AA1100"/>
+  <!-- 하이라이트 -->
+  <rect x="4"  y="3"  width="4"  height="8"  fill="#CC2200"/>
+  <rect x="8"  y="3"  width="6"  height="2"  fill="#CC2200"/>
+  <!-- 중앙 용 눈 문장 -->
+  <rect x="13" y="11" width="6"  height="4"  fill="#FF4400"/>
+  <rect x="14" y="10" width="4"  height="6"  fill="#FF4400"/>
+  <rect x="15" y="11" width="2"  height="4"  fill="#FF8800"/>
+  <rect x="15" y="12" width="2"  height="2"  fill="#FFFF00"/>
+  <!-- 리벳 (금) -->
+  <rect x="4"  y="4"  width="2"  height="2"  fill="#FF6600"/>
+  <rect x="26" y="4"  width="2"  height="2"  fill="#FF6600"/>
+  <rect x="4"  y="18" width="2"  height="2"  fill="#FF6600"/>
+  <rect x="26" y="18" width="2"  height="2"  fill="#FF6600"/>
+</svg>

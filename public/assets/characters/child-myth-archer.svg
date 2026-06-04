@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated;image-rendering:crisp-edges">
+  <!-- 신화궁수 — 황금 엘프 티아라 -->
+  <rect x="10" y="1" width="12" height="2" fill="#FFD700"/>
+  <rect x="9"  y="2" width="14" height="2" fill="#E8C040"/>
+  <rect x="14" y="0" width="4"  height="3" fill="#FFD700"/>
+  <rect x="15" y="0" width="2"  height="2" fill="#FFEE88"/>
+  <!-- 보석 -->
+  <rect x="15" y="1" width="2"  height="1" fill="#00AAFF"/>
+
+  <!-- 엘프 귀 (황금색) -->
+  <rect x="4"  y="7" width="5"  height="2" fill="#E8A060"/>
+  <rect x="3"  y="6" width="5"  height="3" fill="#F0C080"/>
+  <rect x="23" y="7" width="5"  height="2" fill="#E8A060"/>
+  <rect x="24" y="6" width="5"  height="3" fill="#F0C080"/>
+
+  <!-- ══ 머리 (황금빛 장발) ══ -->
+  <rect x="8"  y="3" width="16" height="3" fill="#E8C840"/>
+  <rect x="7"  y="5" width="2"  height="8" fill="#E8C840"/>
+  <rect x="23" y="5" width="2"  height="8" fill="#E8C840"/>
+  <rect x="6"  y="7" width="2"  height="7" fill="#D0A830"/>
+  <rect x="24" y="7" width="2"  height="7" fill="#D0A830"/>
+  <rect x="7"  y="13" width="4" height="3" fill="#E8C840"/>
+  <rect x="21" y="13" width="4" height="3" fill="#E8C840"/>
+
+  <!-- ══ 얼굴 ══ -->
+  <rect x="9"  y="5"  width="14" height="9" fill="#FFEEDD"/>
+  <rect x="10" y="14" width="12" height="1" fill="#FFEEDD"/>
+  <rect x="11" y="15" width="10" height="1" fill="#FFEEDD"/>
+
+  <!-- ══ 눈썹 (엘프) ══ -->
+  <rect x="10" y="6"  width="6" height="1" fill="#9A6820"/>
+  <rect x="16" y="6"  width="6" height="1" fill="#9A6820"/>
+  <rect x="15" y="5"  width="2" height="1" fill="#9A6820"/>
+
+  <!-- ══ 눈 (황금 엘프) ══ -->
+  <rect x="10" y="8"  width="5" height="4" fill="#1A0828"/>
+  <rect x="10" y="8"  width="5" height="3" fill="#906800"/>
+  <rect x="10" y="8"  width="5" height="1" fill="#FFD700"/>
+  <rect x="14" y="8"  width="1" height="1" fill="#FFFFFF"/>
+  <rect x="17" y="8"  width="5" height="4" fill="#1A0828"/>
+  <rect x="17" y="8"  width="5" height="3" fill="#906800"/>
+  <rect x="17" y="8"  width="5" height="1" fill="#FFD700"/>
+  <rect x="17" y="8"  width="1" height="1" fill="#FFFFFF"/>
+
+  <!-- ══ 볼·입 ══ -->
+  <rect x="9"  y="11" width="3" height="1" fill="#FFCCAA"/>
+  <rect x="20" y="11" width="3" height="1" fill="#FFCCAA"/>
+  <rect x="13" y="12" width="6" height="1" fill="#CC8844"/>
+  <rect x="14" y="13" width="4" height="1" fill="#AA6622"/>
+
+  <!-- ══ 목 ══ -->
+  <rect x="14" y="16" width="4" height="2" fill="#FFEEDD"/>
+
+  <!-- ══ 신화 궁수 의상 ══ -->
+  <!-- 황금 가죽갑옷 -->
+  <rect x="9"  y="18" width="14" height="2" fill="#C8A020"/>
+  <rect x="9"  y="18" width="14" height="1" fill="#FFD700"/>
+  <!-- 망토 (녹+금) -->
+  <rect x="5"  y="19" width="5"  height="10" fill="#2A6020"/>
+  <rect x="22" y="19" width="5"  height="10" fill="#2A6020"/>
+  <rect x="5"  y="19" width="5"  height="1"  fill="#FFD700"/>
+  <!-- 어깨 금 파울드론 -->
+  <rect x="7"  y="18" width="5"  height="5" fill="#E8C040"/>
+  <rect x="20" y="18" width="5"  height="5" fill="#E8C040"/>
+  <rect x="7"  y="18" width="5"  height="1" fill="#FFD700"/>
+  <rect x="20" y="18" width="5"  height="1" fill="#FFD700"/>
+  <!-- 칼라 -->
+  <rect x="11" y="18" width="10" height="1" fill="#FFD700"/>
+  <!-- 가슴 가죽갑 -->
+  <rect x="9"  y="20" width="14" height="6" fill="#7A5828"/>
+  <rect x="10" y="20" width="5"  height="3" fill="#9A7840"/>
+  <!-- 신화 기호 (가슴) -->
+  <rect x="13" y="23" width="6"  height="3" fill="#FFD700"/>
+  <rect x="12" y="24" width="8"  height="2" fill="#FFD700"/>
+  <rect x="15" y="22" width="2"  height="4" fill="#FFEE88"/>
+  <!-- 화살통 + 화살 (오른쪽) -->
+  <rect x="21" y="16" width="4"  height="10" fill="#8B5A1A"/>
+  <rect x="21" y="16" width="4"  height="1"  fill="#C8A060"/>
+  <rect x="22" y="14" width="1"  height="5" fill="#FF6666"/>
+  <rect x="23" y="13" width="1"  height="5" fill="#FF9999"/>
+
+  <!-- ══ 벨트 ══ -->
+  <rect x="9"  y="26" width="14" height="2" fill="#5A3A18"/>
+  <rect x="9"  y="26" width="14" height="1" fill="#8B5A28"/>
+  <rect x="14" y="25" width="4"  height="3" fill="#FFD700"/>
+
+  <!-- ══ 다리·부츠 ══ -->
+  <rect x="10" y="28" width="5" height="2" fill="#3A5020"/>
+  <rect x="17" y="28" width="5" height="2" fill="#3A5020"/>
+  <rect x="9"  y="30" width="6" height="2" fill="#5A3A18"/>
+  <rect x="9"  y="30" width="6" height="1" fill="#8B5A28"/>
+  <rect x="17" y="30" width="6" height="2" fill="#5A3A18"/>
+  <rect x="17" y="30" width="6" height="1" fill="#8B5A28"/>
+</svg>

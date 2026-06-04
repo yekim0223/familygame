@@ -6,7 +6,6 @@ import {
   type BeggingRequest
 } from '@/infrastructure/firebase/collections/begging'
 import { createNotification } from '@/infrastructure/firebase/collections/notifications'
-import { sendManualReward } from '@/infrastructure/firebase/collections/rewards'
 import { PixelButton } from '@/presentation/components/pixel/PixelButton'
 
 const STATUS_CHIP: Record<string, string> = {
@@ -56,14 +55,6 @@ export default function BeggingManagePage() {
     const isFinalApproval = action === 'APPROVE' && newDadApproved && newMomApproved
 
     await reviewBegging(familyId, req.id, role, action, req)
-
-    if (isFinalApproval && currentMember) {
-      await sendManualReward(
-        familyId, req.submitterId, currentMember.id,
-        'CUSTOM', 1,
-        `[조르기] ${req.content.slice(0, 30)}`
-      )
-    }
 
     const resultMsg = action === 'APPROVE'
       ? isFinalApproval

@@ -1,11 +1,12 @@
 // 엄마의 칭찬 스티커 화이트보드 — 아이별 누적 노출
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { PixelModal } from '@/presentation/components/pixel/PixelModal'
 import {
   subscribePraiseStickers,
   STICKER_INFO,
   type PraiseSticker,
 } from '@/infrastructure/firebase/collections/praiseStickers'
+import { EffectOverlay } from '@/presentation/components/effects/EffectOverlay'
 
 interface Props {
   familyId: string
@@ -48,12 +49,21 @@ function StickerPost({
 }
 
 export function PraiseWhiteboard({ familyId, memberId }: Props) {
-  const [stickers,   setStickers]   = useState<PraiseSticker[]>([])
-  const [showAll,    setShowAll]    = useState(false)
+  const [stickers,      setStickers]      = useState<PraiseSticker[]>([])
+  const [showAll,       setShowAll]       = useState(false)
+  const [showEffect,    setShowEffect]    = useState(false)
+  const prevCountRef  = useRef<number>(-1)
 
   useEffect(() => {
     if (!familyId || !memberId) return
-    return subscribePraiseStickers(familyId, memberId, setStickers)
+    return subscribePraiseStickers(familyId, memberId, (incoming) => {
+      setStickers(incoming)
+      // 최초 로드(-1)를 건너뛰고, 신규 스티커 수신 시 이펙트 발동
+      if (prevCountRef.current >= 0 && incoming.length > prevCountRef.current) {
+        setShowEffect(true)
+      }
+      prevCountRef.current = incoming.length
+    })
   }, [familyId, memberId])
 
   const visible = stickers.slice(0, MAX_VISIBLE)
@@ -61,6 +71,9 @@ export function PraiseWhiteboard({ familyId, memberId }: Props) {
 
   return (
     <div className="card-pixel p-3">
+      {showEffect && (
+        <EffectOverlay type="hearts" count={22} onEnd={() => setShowEffect(false)} />
+      )}
       {/* 헤더 */}
       <div className="flex items-center justify-between mb-2">
         <p className="t-sub text-gold t-pixel-shadow">📌 엄마의 칭찬 보드</p>

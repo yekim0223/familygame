@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 귀 깃털 -->
+  <rect x="3" y="1" width="3" height="3" fill="#8B6030"/>
+  <rect x="10" y="1" width="3" height="3" fill="#8B6030"/>
+  <rect x="4" y="1" width="1" height="2" fill="#C8A060"/>
+  <rect x="11" y="1" width="1" height="2" fill="#C8A060"/>
+  <!-- 머리/얼굴 -->
+  <rect x="3" y="3" width="10" height="7" fill="#8B6030"/>
+  <rect x="2" y="4" width="12" height="5" fill="#A07840"/>
+  <!-- 얼굴 디스크 -->
+  <rect x="3" y="4" width="10" height="6" fill="#C8A060"/>
+  <!-- 눈 (크고 동그랗게) -->
+  <rect x="4" y="5" width="3" height="3" fill="#FFD700"/>
+  <rect x="9" y="5" width="3" height="3" fill="#FFD700"/>
+  <rect x="5" y="5" width="2" height="3" fill="#1A0808"/>
+  <rect x="10" y="5" width="2" height="3" fill="#1A0808"/>
+  <rect x="5" y="5" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="10" y="5" width="1" height="1" fill="#FFFFFF"/>
+  <!-- 부리 -->
+  <rect x="7" y="7" width="2" height="2" fill="#FF8800"/>
+  <rect x="7" y="7" width="2" height="1" fill="#FFA030"/>
+  <!-- 몸통 -->
+  <rect x="4" y="9" width="8" height="5" fill="#8B6030"/>
+  <rect x="3" y="10" width="10" height="4" fill="#A07840"/>
+  <!-- 가슴 무늬 -->
+  <rect x="6" y="10" width="4" height="3" fill="#C8A060"/>
+  <rect x="6" y="11" width="4" height="1" fill="#A07840"/>
+  <!-- 날개선 -->
+  <rect x="3" y="10" width="2" height="4" fill="#7A5020"/>
+  <rect x="11" y="10" width="2" height="4" fill="#7A5020"/>
+</svg>

@@ -105,9 +105,9 @@ function calcScore(stage: number, elapsed: number, conf: StageConf): number {
 }
 
 // ════════════════════════════════════════════════════════════════════
-interface Props { onGameOver: (score: number) => void; onBack: () => void }
+interface Props { onGameOver: (score: number) => void; onBack: () => void; petSvgUrl?: string }
 
-export function MinesweeperGame({ onGameOver, onBack }: Props) {
+export function MinesweeperGame({ onGameOver, onBack, petSvgUrl = '/assets/pets/cat.svg' }: Props) {
   const [stage,    setStage]    = useState(1)
   const [conf,     setConf]     = useState<StageConf>(getStageConf(1))
   const [board,    setBoard]    = useState<Cell[][] | null>(null)   // null = first tap not yet
@@ -117,26 +117,36 @@ export function MinesweeperGame({ onGameOver, onBack }: Props) {
   const [score,    setScore]    = useState(0)
   const [stageMsg, setStageMsg] = useState('')
   const [showBoom, setShowBoom] = useState(false)
+  const [paused,   setPaused]   = useState(false)
 
-  const timerRef  = useRef<ReturnType<typeof setInterval> | null>(null)
-  const startTime = useRef(Date.now())
+  const timerRef      = useRef<ReturnType<typeof setInterval> | null>(null)
+  const startTime     = useRef(Date.now())
+  const savedElapsed  = useRef(0)
+
+  const togglePause = () => {
+    setPaused(p => {
+      if (!p) savedElapsed.current = elapsed  // 현재 경과 저장
+      return !p
+    })
+  }
 
   // ── 타이머 ──────────────────────────────────────────────────────
   useEffect(() => {
-    if (phase !== 'playing') {
+    if (phase !== 'playing' || paused) {
       if (timerRef.current) clearInterval(timerRef.current)
       return
     }
-    startTime.current = Date.now()
+    // 재개 시: 저장된 elapsed 기준으로 startTime 보정
+    startTime.current = Date.now() - savedElapsed.current * 1000
     timerRef.current = setInterval(() => {
       setElapsed(Math.floor((Date.now() - startTime.current) / 1000))
     }, 1000)
     return () => { if (timerRef.current) clearInterval(timerRef.current) }
-  }, [phase, stage])
+  }, [phase, stage, paused])
 
   // ── 셀 탭 ───────────────────────────────────────────────────────
   const handleCellTap = useCallback((r: number, c: number) => {
-    if (phase !== 'playing') return
+    if (phase !== 'playing' || paused) return
     audioManager.resume()
 
     setBoard(prev => {
@@ -200,7 +210,7 @@ export function MinesweeperGame({ onGameOver, onBack }: Props) {
   // ── 게임오버 전달 ─────────────────────────────────────────────
   useEffect(() => {
     if (phase === 'lost') {
-      const timer = setTimeout(() => onGameOver(score), 1800)
+      const timer = setTimeout(() => onGameOver(score), 5000)
       return () => clearTimeout(timer)
     }
   }, [phase, score, onGameOver])
@@ -211,9 +221,9 @@ export function MinesweeperGame({ onGameOver, onBack }: Props) {
   function cellStyle(cell: Cell, isBlast: boolean) {
     if (!cell.revealed) {
       return {
-        background: '#2A1F0E',
+        background: '#3D2800',  // panel-surface, 이전 #2A1F0E보다 밝아 구분 명확
         border: '2px solid',
-        borderColor: '#4a3520 #1a0f00 #1a0f00 #4a3520',
+        borderColor: '#9A7C40 #3a2510 #3a2510 #9A7C40',  // gold 계열 3D 하이라이트
         cursor: 'pointer',
       } as React.CSSProperties
     }
@@ -224,8 +234,8 @@ export function MinesweeperGame({ onGameOver, onBack }: Props) {
       } as React.CSSProperties
     }
     return {
-      background: '#1a1208',
-      border: '2px inset #0a0800',
+      background: '#1A1208',  // panel-dark
+      border: '2px solid #2A1F0E',  // panel-mid — 오픈 셀 구분선
     } as React.CSSProperties
   }
 
@@ -234,24 +244,44 @@ export function MinesweeperGame({ onGameOver, onBack }: Props) {
   const minesLeft  = conf.mines - flagCount
 
   return (
-    <div className="flex flex-col h-full bg-panel-darkest select-none" style={{ touchAction: 'none' }}>
+    <div className="relative flex flex-col h-full bg-panel-darkest select-none" style={{ touchAction: 'none' }}>
 
       {/* HUD */}
       <div className="flex items-center justify-between px-3 py-2 bg-panel-darkest border-b-2 border-gold/30">
         <div className="flex items-center gap-3">
           <span className="font-pixel text-xs text-gold">S{stage}</span>
-          <span className="font-pixel text-xs text-rejected">💣{minesLeft}</span>
+          <span className="flex items-center gap-1">
+            <img src={petSvgUrl} alt="pet" draggable={false}
+              style={{ width: 16, height: 16, imageRendering: 'pixelated', objectFit: 'contain' }} />
+            <span className="font-pixel text-xs text-rejected">{minesLeft}</span>
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <span className="font-pixel text-xs text-cream">⏱{elapsed}s</span>
           <span className="font-pixel text-xs text-gold">{score.toLocaleString()}pt</span>
         </div>
-        <button type="button" onClick={onBack}
-          className="font-korean text-xs text-panel-sub border border-panel-border px-2 py-1
-                     active:scale-95 transition-transform">
-          ✕
-        </button>
+        <div className="flex items-center gap-1.5">
+          <button type="button" onClick={togglePause}
+            className="min-w-[54px] h-9 px-2 bg-purple border-2 border-purple/60
+                       font-pixel text-xs text-white flex items-center justify-center
+                       active:scale-95 transition-transform">
+            {paused ? '▶' : 'PAUSE'}
+          </button>
+          <button type="button" onClick={onBack}
+            className="min-w-[54px] h-9 px-2 bg-rejected border-2 border-rejected/60
+                       font-pixel text-xs text-white flex items-center justify-center
+                       active:scale-95 transition-transform">
+            EXIT
+          </button>
+        </div>
       </div>
+      {/* 일시정지 오버레이 */}
+      {paused && (
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/65">
+          <p className="font-pixel text-2xl text-gold t-pixel-shadow">PAUSED</p>
+          <p className="font-korean text-sm text-cream/70 mt-2">▶ 버튼으로 계속하기</p>
+        </div>
+      )}
 
       {/* 스테이지 클리어 메시지 */}
       {stageMsg && (
@@ -266,6 +296,19 @@ export function MinesweeperGame({ onGameOver, onBack }: Props) {
           <p className="font-pixel text-4xl text-rejected" style={{ textShadow: '0 0 20px #ff0000' }}>
             💥 BOOM
           </p>
+        </div>
+      )}
+
+      {/* 게임오버 오버레이 (boom 사라진 후) */}
+      {phase === 'lost' && !showBoom && (
+        <div className="absolute inset-0 z-40 flex items-center justify-center pointer-events-none">
+          <div className="flex flex-col items-center gap-3 bg-black/70 px-8 py-6 border-4 border-rejected">
+            <p className="font-pixel text-2xl text-rejected" style={{ textShadow: '3px 3px 0 #000' }}>
+              GAME OVER
+            </p>
+            <p className="font-pixel text-lg text-gold">{score.toLocaleString()} PTS</p>
+            <p className="font-pixel text-xs text-cream/60 mt-1">결과 화면으로 이동 중...</p>
+          </div>
         </div>
       )}
 
@@ -298,7 +341,8 @@ export function MinesweeperGame({ onGameOver, onBack }: Props) {
                 >
                   {cell.revealed
                     ? cell.mine
-                      ? '💣'
+                      ? <img src={petSvgUrl} alt="pet" draggable={false}
+                          style={{ width: cellSize * 0.8, height: cellSize * 0.8, imageRendering: 'pixelated', objectFit: 'contain' }} />
                       : cell.adj > 0
                         ? <span style={{ color: ADJ_COLOR[cell.adj] }}>{cell.adj}</span>
                         : ''
@@ -319,7 +363,7 @@ export function MinesweeperGame({ onGameOver, onBack }: Props) {
           type="button"
           onPointerDown={e => { e.preventDefault(); audioManager.resume(); audioManager.keyClick(); setFlagMode(f => !f) }}
           className={[
-            'w-16 h-14 border-4 font-pixel text-[10px] leading-tight text-center',
+            'w-20 h-16 border-4 font-pixel text-xs leading-tight text-center',
             'flex flex-col items-center justify-center gap-0.5',
             'shadow-[inset_2px_2px_0px_#ffffff30,inset_-2px_-2px_0px_#00000060]',
             'active:scale-95 transition-transform',
@@ -328,11 +372,11 @@ export function MinesweeperGame({ onGameOver, onBack }: Props) {
               : 'bg-panel-dark border-panel-border text-gold',
           ].join(' ')}
         >
-          <span className="text-lg">{flagMode ? '🚩' : '⛏'}</span>
+          <span className="text-xl">{flagMode ? '🚩' : '⛏'}</span>
           <span>{flagMode ? 'FLAG' : 'MINE'}</span>
         </button>
 
-        {/* 새 게임 (게임오버/클리어 아닐 때 재시작) */}
+        {/* 새 게임 */}
         <button
           type="button"
           onPointerDown={e => {
@@ -347,21 +391,22 @@ export function MinesweeperGame({ onGameOver, onBack }: Props) {
             setConf(getStageConf(1))
             setFlagMode(false)
           }}
-          className="w-16 h-14 border-4 border-panel-border bg-panel-dark text-gold
-                     font-pixel text-[10px] flex flex-col items-center justify-center gap-0.5
+          className="w-20 h-16 border-4 border-panel-border bg-panel-dark text-gold
+                     font-pixel text-xs flex flex-col items-center justify-center gap-0.5
                      shadow-[inset_2px_2px_0px_#ffffff30,inset_-2px_-2px_0px_#00000060]
                      active:scale-95 transition-transform"
         >
-          <span className="text-lg">🔄</span>
+          <span className="text-xl">🔄</span>
           <span>RESET</span>
         </button>
 
         {/* 힌트: 남은 지뢰 */}
-        <div className="w-16 h-14 border-4 border-panel-border bg-panel-darkest
+        <div className="w-20 h-16 border-4 border-panel-border bg-panel-darkest
                         flex flex-col items-center justify-center gap-0.5">
-          <span className="font-pixel text-xs text-rejected">💣</span>
-          <span className="font-pixel text-[10px] text-cream">{minesLeft}</span>
-          <span className="font-pixel text-[8px] text-panel-sub">LEFT</span>
+          <img src={petSvgUrl} alt="pet" draggable={false}
+            style={{ width: 20, height: 20, imageRendering: 'pixelated', objectFit: 'contain' }} />
+          <span className="font-pixel text-xs text-cream">{minesLeft}</span>
+          <span className="font-pixel text-xs text-panel-sub">LEFT</span>
         </div>
       </div>
     </div>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 말풍선 (밝은 노랑/흰색) -->
+  <rect x="1"  y="2" width="14" height="10" fill="#FFCC00"/>
+  <rect x="1"  y="2" width="14" height="1"  fill="#FFEE55"/>
+  <rect x="0"  y="3" width="16" height="8"  fill="#FFCC00"/>
+  <!-- 말풍선 꼬리 -->
+  <rect x="3"  y="12" width="4" height="1" fill="#FFCC00"/>
+  <rect x="3"  y="13" width="3" height="1" fill="#FFCC00"/>
+  <rect x="3"  y="14" width="2" height="1" fill="#FFCC00"/>
+  <!-- 텍스트 줄 (진한 갈색) -->
+  <rect x="3"  y="5" width="10" height="2" fill="#664400"/>
+  <rect x="3"  y="8" width="7"  height="2" fill="#664400"/>
+  <!-- 하이라이트 -->
+  <rect x="2"  y="3" width="3" height="1" fill="#FFFF88"/>
+</svg>

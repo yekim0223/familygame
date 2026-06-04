@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- leather cap dome -->
+  <rect x="3"  y="3" width="10" height="7" fill="#8B5A1A"/>
+  <rect x="2"  y="5" width="12" height="5" fill="#8B5A1A"/>
+  <rect x="4"  y="2" width="8"  height="3" fill="#9B6A28"/>
+  <rect x="6"  y="1" width="4"  height="2" fill="#AB7A38"/>
+  <rect x="7"  y="0" width="2"  height="2" fill="#BB8A48"/>
+  <!-- brim -->
+  <rect x="1"  y="9" width="14" height="3" fill="#6B3A0A"/>
+  <rect x="2"  y="9" width="12" height="1" fill="#8B5A1A"/>
+  <!-- highlight -->
+  <rect x="5"  y="2" width="4"  height="1" fill="#CB9A58"/>
+  <rect x="6"  y="1" width="2"  height="1" fill="#DB9A50"/>
+  <!-- stitch lines -->
+  <rect x="8"  y="3" width="1" height="5" fill="#7A4A0A"/>
+  <rect x="5"  y="5" width="1" height="3" fill="#7A4A0A"/>
+</svg>

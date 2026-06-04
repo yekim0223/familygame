@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <rect x="0" y="0" width="32" height="16" fill="#000000"/>
+  <!-- 창세의 빛 (빅뱅 초기, 중앙에서 퍼짐) -->
+  <!-- 가장 바깥 (붉은 새벽빛) -->
+  <rect x="0"  y="5" width="32" height="6" fill="#110000"/>
+  <rect x="2"  y="3" width="28" height="10" fill="#220000"/>
+  <rect x="4"  y="2" width="24" height="12" fill="#330000"/>
+  <!-- 중간 레이어 -->
+  <rect x="6"  y="3" width="20" height="10" fill="#551100"/>
+  <rect x="8"  y="4" width="16" height="8"  fill="#772200"/>
+  <rect x="9"  y="4" width="14" height="8"  fill="#994400"/>
+  <!-- 내부 (뜨거운 빛) -->
+  <rect x="10" y="5" width="12" height="6" fill="#CC6600"/>
+  <rect x="11" y="5" width="10" height="6" fill="#FFAA00"/>
+  <rect x="12" y="5" width="8"  height="6" fill="#FFCC44"/>
+  <!-- 핵심 (창세의 불꽃) -->
+  <rect x="13" y="5" width="6"  height="6" fill="#FFEE88"/>
+  <rect x="14" y="5" width="4"  height="6" fill="#FFFFAA"/>
+  <rect x="14" y="6" width="4"  height="4" fill="#FFFFFF"/>
+  <!-- 중심 (순수한 빛) -->
+  <rect x="15" y="6" width="2"  height="4" fill="#FFFFFF"/>
+  <rect x="14" y="7" width="4"  height="2" fill="#FFFFFF"/>
+  <rect x="15" y="7" width="2"  height="2" fill="#FFFFFF"/>
+  <!-- 첫 번째 별 입자들 -->
+  <rect x="4"  y="4" width="1" height="1" fill="#FF8800"/>
+  <rect x="27" y="5" width="1" height="1" fill="#FF6600"/>
+  <rect x="6"  y="11" width="1" height="1" fill="#FF8800"/>
+  <rect x="25" y="10" width="1" height="1" fill="#FFAA00"/>
+  <rect x="2"  y="8" width="1" height="1" fill="#FF5500"/>
+  <rect x="29" y="7" width="1" height="1" fill="#FF7700"/>
+</svg>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <rect x="0" y="0" width="32" height="16" fill="#1A0808"/>
+  <!-- 붉은 하늘 -->
+  <rect x="0" y="0" width="32" height="8" fill="#3A1008"/>
+  <rect x="0" y="0" width="32" height="4" fill="#4A1810"/>
+  <!-- 화염 구름 -->
+  <rect x="0"  y="1" width="10" height="4" fill="#5A1A10"/>
+  <rect x="14" y="0" width="10" height="3" fill="#4A1010"/>
+  <rect x="22" y="1" width="10" height="4" fill="#5A1A10"/>
+  <!-- 화산 산 -->
+  <rect x="0"  y="6" width="14" height="10" fill="#3A1808"/>
+  <rect x="4"  y="4" width="8"  height="6"  fill="#4A2010"/>
+  <rect x="7"  y="2" width="3"  height="4"  fill="#5A2818"/>
+  <rect x="8"  y="1" width="1"  height="2"  fill="#FF4400"/>
+  <rect x="18" y="7" width="14" height="9"  fill="#3A1808"/>
+  <rect x="20" y="5" width="10" height="6"  fill="#4A2010"/>
+  <rect x="23" y="3" width="5"  height="4"  fill="#5A2818"/>
+  <rect x="25" y="2" width="2"  height="2"  fill="#FF4400"/>
+  <!-- 용 실루엣 -->
+  <rect x="12" y="4" width="8"  height="4"  fill="#1A0808"/>
+  <rect x="10" y="5" width="3"  height="3"  fill="#1A0808"/>
+  <rect x="20" y="3" width="3"  height="2"  fill="#1A0808"/>
+  <rect x="14" y="2" width="2"  height="3"  fill="#1A0808"/>
+  <rect x="17" y="2" width="2"  height="3"  fill="#1A0808"/>
+  <!-- 용 눈 -->
+  <rect x="20" y="3" width="1"  height="1"  fill="#FF8800"/>
+  <!-- 불꽃 -->
+  <rect x="8"  y="0" width="2"  height="2"  fill="#FF8800"/>
+  <rect x="25" y="1" width="2"  height="2"  fill="#FF6600"/>
+  <rect x="15" y="3" width="2"  height="2"  fill="#FFAA00"/>
+</svg>

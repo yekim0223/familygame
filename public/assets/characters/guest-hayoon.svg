@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated">
+  <!-- 하윤 — 성기사(Paladin) + 현자(Sage) (조용한 리더) -->
+  <!-- 헤어 (다크 네이비, 차분한 스타일) -->
+  <rect x="9"  y="1"  width="14" height="2"  fill="#0A0A2A"/>
+  <rect x="7"  y="3"  width="18" height="4"  fill="#141430"/>
+  <rect x="5"  y="4"  width="3"  height="8"  fill="#0A0A2A"/>
+  <rect x="24" y="4"  width="3"  height="8"  fill="#0A0A2A"/>
+  <rect x="5"  y="6"  width="4"  height="5"  fill="#1A1A40"/>
+  <rect x="23" y="6"  width="4"  height="5"  fill="#1A1A40"/>
+  <!-- 얼굴 -->
+  <rect x="8"  y="6"  width="16" height="12" fill="#FFE0CC"/>
+  <!-- 깊고 사파이어 블루 눈 (현자의 통찰) -->
+  <rect x="10" y="8"  width="5"  height="4"  fill="#FFFFFF"/>
+  <rect x="18" y="8"  width="5"  height="4"  fill="#FFFFFF"/>
+  <rect x="11" y="9"  width="2"  height="2"  fill="#2244AA"/>
+  <rect x="19" y="9"  width="2"  height="2"  fill="#2244AA"/>
+  <rect x="13" y="9"  width="1"  height="1"  fill="#FFFFFF"/>
+  <rect x="21" y="9"  width="1"  height="1"  fill="#FFFFFF"/>
+  <!-- 눈썹 (차분함) -->
+  <rect x="10" y="7"  width="5"  height="1"  fill="#0A0A2A"/>
+  <rect x="18" y="7"  width="5"  height="1"  fill="#0A0A2A"/>
+  <!-- 조용한 결의의 입 -->
+  <rect x="12" y="14" width="8"  height="2"  fill="#AA6655"/>
+  <rect x="13" y="15" width="6"  height="1"  fill="#CC8866"/>
+  <!-- 목 -->
+  <rect x="13" y="18" width="6"  height="2"  fill="#FFE0CC"/>
+  <!-- 블루 실버 팔라딘 갑옷 -->
+  <rect x="5"  y="20" width="22" height="12" fill="#224488"/>
+  <rect x="5"  y="20" width="22" height="2"  fill="#2A5AA0"/>
+  <!-- 실버 갑옷 트림 -->
+  <rect x="5"  y="20" width="22" height="1"  fill="#C0C8E0"/>
+  <rect x="5"  y="24" width="22" height="1"  fill="#C0C8E0"/>
+  <!-- 가슴 크리스탈 (현자) -->
+  <rect x="13" y="22" width="6"  height="6"  fill="#4488CC"/>
+  <rect x="14" y="23" width="4"  height="4"  fill="#88CCFF"/>
+  <rect x="15" y="24" width="2"  height="2"  fill="#CCEEFF"/>
+  <!-- 책 (현자 심볼) -->
+  <rect x="22" y="24" width="5"  height="6"  fill="#8B5A1A"/>
+  <rect x="23" y="25" width="3"  height="4"  fill="#AA7733"/>
+  <rect x="23" y="25" width="1"  height="4"  fill="#FFEE88"/>
+</svg>

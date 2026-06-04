@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 행복 이모지 -->
+  <rect x="3" y="1" width="10" height="14" fill="#FFD700"/>
+  <rect x="1" y="3" width="14" height="10" fill="#FFD700"/>
+  <rect x="2" y="2" width="12" height="12" fill="#FFD700"/>
+  <rect x="3" y="1" width="1" height="1" fill="#FFE84D"/>
+  <rect x="12" y="1" width="1" height="1" fill="#FFE84D"/>
+  <!-- 눈 -->
+  <rect x="5" y="5" width="2" height="3" fill="#1A1208"/>
+  <rect x="9" y="5" width="2" height="3" fill="#1A1208"/>
+  <!-- 미소 -->
+  <rect x="4" y="10" width="8" height="2" fill="#CC8800"/>
+  <rect x="5" y="11" width="6" height="1" fill="#AA6600"/>
+  <rect x="4" y="10" width="1" height="1" fill="#FFD700"/>
+  <rect x="11" y="10" width="1" height="1" fill="#FFD700"/>
+  <!-- 볼터치 -->
+  <rect x="3" y="9" width="2" height="1" fill="#FF9090"/>
+  <rect x="11" y="9" width="2" height="1" fill="#FF9090"/>
+</svg>

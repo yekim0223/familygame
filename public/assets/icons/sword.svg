@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 쌍칼 X형 — 완전 직선 (2px 계단 대각선) -->
+
+  <!-- ── 칼 1: 좌상→우하 (\) ── -->
+  <!-- 날 (은색, 2px 계단) -->
+  <rect x="0"  y="0"  width="2" height="2" fill="#FFFFFF"/>
+  <rect x="2"  y="2"  width="2" height="2" fill="#E8F0FF"/>
+  <rect x="4"  y="4"  width="2" height="2" fill="#D8E4F8"/>
+  <!-- 가드 (황금, 좌우 짧게) -->
+  <rect x="3"  y="6"  width="5" height="2" fill="#FFD700"/>
+  <rect x="3"  y="6"  width="5" height="1" fill="#FFE84D"/>
+  <!-- 손잡이 (갈색, 2px 계단 계속) -->
+  <rect x="8"  y="8"  width="2" height="2" fill="#8B4A18"/>
+  <rect x="10" y="10" width="2" height="2" fill="#8B4A18"/>
+  <!-- 끝장식 (황금) -->
+  <rect x="12" y="12" width="3" height="2" fill="#FFD700"/>
+  <rect x="13" y="14" width="2" height="2" fill="#FFD700"/>
+
+  <!-- ── 칼 2: 우상→좌하 (/) ── -->
+  <!-- 날 (은색, 반대 2px 계단) -->
+  <rect x="14" y="0"  width="2" height="2" fill="#FFFFFF"/>
+  <rect x="12" y="2"  width="2" height="2" fill="#E8F0FF"/>
+  <rect x="10" y="4"  width="2" height="2" fill="#D8E4F8"/>
+  <!-- 가드 (황금) -->
+  <rect x="8"  y="6"  width="5" height="2" fill="#FFD700"/>
+  <rect x="8"  y="6"  width="5" height="1" fill="#FFE84D"/>
+  <!-- 손잡이 (갈색, 반대 2px 계단) -->
+  <rect x="6"  y="8"  width="2" height="2" fill="#8B4A18"/>
+  <rect x="4"  y="10" width="2" height="2" fill="#8B4A18"/>
+  <!-- 끝장식 (황금) -->
+  <rect x="1"  y="12" width="3" height="2" fill="#FFD700"/>
+  <rect x="1"  y="14" width="2" height="2" fill="#FFD700"/>
+
+  <!-- 교차 중심 금색 강조 -->
+  <rect x="7"  y="7"  width="2" height="2" fill="#FFE84D"/>
+</svg>

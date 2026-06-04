@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 선물상자 (황금/빨강) -->
+  <!-- 리본 세로 -->
+  <rect x="7"  y="2"  width="2"  height="14" fill="#FF3366"/>
+  <!-- 리본 가로 (뚜껑 위) -->
+  <rect x="1"  y="5"  width="14" height="2"  fill="#FF3366"/>
+  <rect x="2"  y="5"  width="12" height="1"  fill="#FF6688"/>
+  <!-- 매듭 (가운데) -->
+  <rect x="5"  y="2"  width="6"  height="4"  fill="#FF3366"/>
+  <rect x="6"  y="1"  width="4"  height="5"  fill="#FF5577"/>
+  <rect x="7"  y="1"  width="2"  height="3"  fill="#FF88AA"/>
+  <!-- 상자 뚜껑 -->
+  <rect x="1"  y="4"  width="14" height="3"  fill="#FFD700"/>
+  <rect x="2"  y="4"  width="12" height="2"  fill="#FFE84D"/>
+  <!-- 상자 몸통 -->
+  <rect x="1"  y="7"  width="14" height="9"  fill="#FFB800"/>
+  <rect x="2"  y="8"  width="12" height="7"  fill="#FFCC00"/>
+  <!-- 상자 테두리 -->
+  <rect x="1"  y="7"  width="14" height="1"  fill="#CC8800"/>
+  <rect x="1"  y="15" width="14" height="1"  fill="#CC8800"/>
+  <!-- 하이라이트 -->
+  <rect x="2"  y="8"  width="3"  height="4"  fill="#FFE84D"/>
+</svg>

@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated;image-rendering:crisp-edges">
+  <!-- ══ HAIR dark purple ══ -->
+  <rect x="10" y="1" width="12" height="1" fill="#3D1870"/>
+  <rect x="9"  y="2" width="14" height="2" fill="#3D1870"/>
+  <rect x="8"  y="4" width="2"  height="9" fill="#3D1870"/>
+  <rect x="22" y="4" width="2"  height="9" fill="#3D1870"/>
+  <rect x="9"  y="4" width="14" height="1" fill="#3D1870"/>
+  <!-- hair bottom tufts -->
+  <rect x="9"  y="14" width="3" height="2" fill="#3D1870"/>
+  <rect x="20" y="14" width="3" height="2" fill="#3D1870"/>
+
+  <!-- ══ FACE skin ══ -->
+  <rect x="9"  y="5"  width="14" height="10" fill="#F5C17A"/>
+  <!-- chin -->
+  <rect x="10" y="15" width="12" height="1"  fill="#F5C17A"/>
+  <rect x="11" y="16" width="10" height="1"  fill="#F5C17A"/>
+
+  <!-- ══ EYEBROWS (serious warrior) ══ -->
+  <rect x="10" y="6" width="5" height="1" fill="#2A1040"/>
+  <rect x="17" y="6" width="5" height="1" fill="#2A1040"/>
+
+  <!-- ══ EYES LEFT ══ -->
+  <rect x="10" y="7" width="5" height="4" fill="#1A0828"/>
+  <rect x="10" y="7" width="5" height="3" fill="#5030A8"/>
+  <rect x="10" y="7" width="5" height="1" fill="#7060C8"/>
+  <rect x="14" y="7" width="1" height="1" fill="#FFFFFF"/>
+
+  <!-- ══ EYES RIGHT ══ -->
+  <rect x="17" y="7" width="5" height="4" fill="#1A0828"/>
+  <rect x="17" y="7" width="5" height="3" fill="#5030A8"/>
+  <rect x="17" y="7" width="5" height="1" fill="#7060C8"/>
+  <rect x="21" y="7" width="1" height="1" fill="#FFFFFF"/>
+
+  <!-- ══ NOSE shadow ══ -->
+  <rect x="15" y="10" width="2" height="1" fill="#DDA055"/>
+
+  <!-- ══ CHEEKS ══ -->
+  <rect x="9"  y="11" width="3" height="1" fill="#F0A090"/>
+  <rect x="20" y="11" width="3" height="1" fill="#F0A090"/>
+
+  <!-- ══ MOUTH (determined) ══ -->
+  <rect x="13" y="12" width="6" height="1" fill="#CC5533"/>
+  <rect x="14" y="13" width="4" height="1" fill="#AA3311"/>
+
+  <!-- ══ NECK ══ -->
+  <rect x="14" y="17" width="4" height="2" fill="#F5C17A"/>
+
+  <!-- ══ SHOULDER ARMOR ══ -->
+  <rect x="5"  y="18" width="5"  height="4" fill="#3A78C8"/>
+  <rect x="22" y="18" width="5"  height="4" fill="#3A78C8"/>
+  <rect x="5"  y="18" width="5"  height="1" fill="#6AA8E8"/>
+  <rect x="22" y="18" width="5"  height="1" fill="#6AA8E8"/>
+  <!-- gold shoulder trim -->
+  <rect x="5"  y="22" width="5"  height="1" fill="#FFD700"/>
+  <rect x="22" y="22" width="5"  height="1" fill="#FFD700"/>
+
+  <!-- ══ COLLAR (gold) ══ -->
+  <rect x="10" y="18" width="12" height="1" fill="#FFD700"/>
+
+  <!-- ══ CHEST ARMOR ══ -->
+  <rect x="9"  y="19" width="14" height="7" fill="#3A78C8"/>
+  <rect x="10" y="19" width="5"  height="2" fill="#6AA8E8"/>
+  <!-- center emblem -->
+  <rect x="14" y="21" width="4" height="4" fill="#FFD700"/>
+  <rect x="15" y="21" width="2" height="4" fill="#C8A000"/>
+
+  <!-- ══ BELT ══ -->
+  <rect x="9"  y="26" width="14" height="2" fill="#C8A000"/>
+  <rect x="9"  y="26" width="14" height="1" fill="#FFD700"/>
+  <rect x="14" y="26" width="4"  height="2" fill="#FFD700"/>
+
+  <!-- ══ LEGS (dark navy) ══ -->
+  <rect x="10" y="28" width="5" height="2" fill="#1A2848"/>
+  <rect x="17" y="28" width="5" height="2" fill="#1A2848"/>
+
+  <!-- ══ BOOTS ══ -->
+  <rect x="9"  y="30" width="6" height="2" fill="#4E342E"/>
+  <rect x="9"  y="30" width="6" height="1" fill="#6D4C41"/>
+  <rect x="17" y="30" width="6" height="2" fill="#4E342E"/>
+  <rect x="17" y="30" width="6" height="1" fill="#6D4C41"/>
+</svg>

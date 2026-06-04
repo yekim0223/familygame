@@ -65,7 +65,7 @@ export function MissionCard({ mission, onFavoriteToggle }: MissionCardProps) {
                mission.difficulty === 3 ? '⚡' :
                mission.difficulty === 4 ? '🔥' : '💥'}
             </span>
-            <span className="font-pixel text-[8px] leading-none text-white">
+            <span className="font-pixel text-xs leading-none text-white">
               {mission.difficulty}
             </span>
           </div>

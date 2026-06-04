@@ -1,6 +1,6 @@
 // Design Ref: §4.1 Firestore — messages 컬렉션 (채팅 + 응원)
 import { where, orderBy } from 'firebase/firestore'
-import { fsAdd, fsUpdate, fsDelete, fsSubscribe, toDate } from '../firestore'
+import { fsAdd, fsUpdate, fsDelete, fsSubscribe, fsQuery, toDate } from '../firestore'
 import { createNotification } from './notifications'
 import type { Message } from '@/domain/entities/Message'
 
@@ -152,6 +152,17 @@ export async function markGroupMessagesRead(
   await Promise.all(
     unread.map(m => markMessageRead(familyId, m.id, memberId, m.readBy))
   )
+}
+
+// 가족 전체 채팅 기록 일괄 삭제 (DAD 전용 초기화)
+export async function clearAllFamilyMessages(
+  familyId: string
+): Promise<{ error: string | null }> {
+  const { data, error } = await fsQuery<{ id: string }>(col(familyId), [])
+  if (error) return { error }
+  const errors = await Promise.all((data ?? []).map(m => fsDelete(`${col(familyId)}/${m.id}`)))
+  const firstErr = errors.find(r => r.error)
+  return { error: firstErr?.error ?? null }
 }
 
 // 메시지 삭제 (본인이 보낸 메시지만)

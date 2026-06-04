@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated;image-rendering:crisp-edges">
+  <!-- ══ 어두운 후드 ══ -->
+  <rect x="8"  y="1" width="16" height="5" fill="#181020"/>
+  <rect x="7"  y="3" width="18" height="4" fill="#201828"/>
+  <rect x="9"  y="1" width="14" height="2" fill="#281C30"/>
+  <!-- 후드 그림자 -->
+  <rect x="9"  y="5" width="14" height="4" fill="#181020"/>
+  <rect x="8"  y="6" width="16" height="3" fill="#100A18"/>
+
+  <!-- ══ 머리 ══ -->
+  <rect x="7"  y="4" width="2"  height="10" fill="#181020"/>
+  <rect x="23" y="4" width="2"  height="10" fill="#181020"/>
+
+  <!-- ══ 얼굴 (마스크로 가림) ══ -->
+  <rect x="9"  y="8"  width="14" height="7" fill="#E8A860"/>
+  <!-- 마스크 하단부 -->
+  <rect x="9"  y="11" width="14" height="4" fill="#181020"/>
+
+  <!-- ══ 눈만 노출 (자홍빛) ══ -->
+  <rect x="10" y="8" width="5" height="3" fill="#1A0828"/>
+  <rect x="10" y="8" width="5" height="2" fill="#801840"/>
+  <rect x="10" y="8" width="5" height="1" fill="#C02060"/>
+  <rect x="14" y="8" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="17" y="8" width="5" height="3" fill="#1A0828"/>
+  <rect x="17" y="8" width="5" height="2" fill="#801840"/>
+  <rect x="17" y="8" width="5" height="1" fill="#C02060"/>
+  <rect x="17" y="8" width="1" height="1" fill="#FFFFFF"/>
+
+  <!-- ══ 목 ══ -->
+  <rect x="14" y="15" width="4" height="2" fill="#E8A860"/>
+
+  <!-- ══ 암살자 복장 (어둠) ══ -->
+  <!-- 후드 뒤 -->
+  <rect x="6"  y="17" width="20" height="3" fill="#181020"/>
+  <rect x="6"  y="17" width="20" height="1" fill="#281828"/>
+  <!-- 어깨 -->
+  <rect x="5"  y="19" width="6"  height="5" fill="#1A1228"/>
+  <rect x="21" y="19" width="6"  height="5" fill="#1A1228"/>
+  <!-- 가슴 -->
+  <rect x="9"  y="20" width="14" height="6" fill="#181020"/>
+  <rect x="10" y="20" width="4"  height="3" fill="#222030"/>
+  <!-- X 가죽 끈 -->
+  <rect x="9"  y="20" width="2"  height="6" fill="#3A2840"/>
+  <rect x="21" y="20" width="2"  height="6" fill="#3A2840"/>
+  <!-- 단검 (왼쪽 허리) -->
+  <rect x="7"  y="23" width="2"  height="5" fill="#8888A0"/>
+  <rect x="7"  y="22" width="3"  height="2" fill="#C8A060"/>
+  <!-- 단검 (오른쪽 허리) -->
+  <rect x="23" y="23" width="2"  height="5" fill="#8888A0"/>
+  <rect x="22" y="22" width="3"  height="2" fill="#C8A060"/>
+  <!-- 벨트 파우치 -->
+  <rect x="9"  y="25" width="5"  height="2" fill="#4A3848"/>
+  <rect x="18" y="25" width="5"  height="2" fill="#4A3848"/>
+
+  <!-- ══ 다리·부츠 ══ -->
+  <rect x="10" y="27" width="5" height="3" fill="#1A1228"/>
+  <rect x="17" y="27" width="5" height="3" fill="#1A1228"/>
+  <rect x="9"  y="30" width="6" height="2" fill="#100A18"/>
+  <rect x="9"  y="30" width="6" height="1" fill="#201828"/>
+  <rect x="17" y="30" width="6" height="2" fill="#100A18"/>
+  <rect x="17" y="30" width="6" height="1" fill="#201828"/>
+</svg>

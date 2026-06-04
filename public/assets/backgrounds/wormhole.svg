@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <rect x="0" y="0" width="32" height="16" fill="#050212"/>
+  <!-- 별 -->
+  <rect x="1"  y="1" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="29" y="2" width="1" height="1" fill="#CCCCFF"/>
+  <rect x="2"  y="13" width="1" height="1" fill="#AAAAFF"/>
+  <rect x="30" y="14" width="1" height="1" fill="#FFFFFF"/>
+  <!-- 웜홀 외부 링 (바깥쪽부터) -->
+  <rect x="4"  y="2" width="24" height="12" fill="#110028"/>
+  <rect x="6"  y="3" width="20" height="10" fill="#220044"/>
+  <rect x="8"  y="4" width="16" height="8"  fill="#4400AA"/>
+  <rect x="10" y="4" width="12" height="8"  fill="#6600CC"/>
+  <rect x="10" y="5" width="12" height="6"  fill="#8800EE"/>
+  <!-- 중간 링 -->
+  <rect x="11" y="5" width="10" height="6" fill="#AA44FF"/>
+  <rect x="12" y="5" width="8"  height="6" fill="#CC88FF"/>
+  <!-- 내부 터널 (다른 차원) -->
+  <rect x="13" y="6" width="6"  height="4" fill="#EECCFF"/>
+  <rect x="14" y="6" width="4"  height="4" fill="#FFFFFF"/>
+  <!-- 터널 끝 (빛) -->
+  <rect x="14" y="7" width="4"  height="2" fill="#AAFFFF"/>
+  <rect x="15" y="7" width="2"  height="2" fill="#FFFFFF"/>
+  <!-- 왜곡 효과 -->
+  <rect x="5"  y="6" width="2" height="4" fill="#330066"/>
+  <rect x="25" y="6" width="2" height="4" fill="#330066"/>
+  <rect x="8"  y="3" width="2" height="2" fill="#440088"/>
+  <rect x="22" y="11" width="2" height="2" fill="#440088"/>
+</svg>

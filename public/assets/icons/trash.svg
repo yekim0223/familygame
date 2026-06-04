@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 휴지통 (삭제 — 빨강) -->
+  <!-- 뚜껑 -->
+  <rect x="2"  y="1"  width="12" height="2"  fill="#CC2222"/>
+  <rect x="3"  y="0"  width="10" height="2"  fill="#EE3333"/>
+  <rect x="3"  y="1"  width="10" height="1"  fill="#FF5555"/>
+  <!-- 손잡이 (뚜껑) -->
+  <rect x="6"  y="0"  width="4"  height="1"  fill="#CC2222"/>
+  <!-- 몸통 -->
+  <rect x="1"  y="3"  width="14" height="12" fill="#CC2222"/>
+  <rect x="2"  y="4"  width="12" height="10" fill="#DD3333"/>
+  <rect x="2"  y="3"  width="12" height="2"  fill="#EE4444"/>
+  <!-- 세로줄 (칸막이) -->
+  <rect x="5"  y="5"  width="2"  height="8"  fill="#AA1111"/>
+  <rect x="9"  y="5"  width="2"  height="8"  fill="#AA1111"/>
+  <!-- 하이라이트 -->
+  <rect x="2"  y="4"  width="2"  height="4"  fill="#FF6666"/>
+  <!-- 하단 -->
+  <rect x="1"  y="14" width="14" height="1"  fill="#AA1111"/>
+</svg>

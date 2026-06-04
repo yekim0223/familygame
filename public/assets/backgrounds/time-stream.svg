@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <rect x="0" y="0" width="32" height="16" fill="#020210"/>
+  <!-- 시간 흐름 (수평 금빛 선) -->
+  <rect x="0"  y="3" width="32" height="1" fill="#331100"/>
+  <rect x="0"  y="7" width="32" height="2" fill="#443300"/>
+  <rect x="0"  y="11" width="32" height="1" fill="#331100"/>
+  <!-- 시간 흐름 코어 (밝음) -->
+  <rect x="0"  y="7" width="32" height="1" fill="#886600"/>
+  <rect x="4"  y="7" width="24" height="1" fill="#AAAA00"/>
+  <rect x="8"  y="7" width="16" height="1" fill="#DDBB00"/>
+  <!-- 시계들 (픽셀 시계) -->
+  <rect x="2"  y="9"  width="5" height="5" fill="#334466"/>
+  <rect x="3"  y="10" width="3" height="3" fill="#445577"/>
+  <rect x="4"  y="10" width="1" height="2" fill="#AABBCC"/>
+  <rect x="4"  y="11" width="2" height="1" fill="#AABBCC"/>
+  <!-- 시계 2 -->
+  <rect x="13" y="1"  width="5" height="5" fill="#334466"/>
+  <rect x="14" y="2"  width="3" height="3" fill="#445577"/>
+  <rect x="15" y="2"  width="1" height="2" fill="#AABBCC"/>
+  <rect x="15" y="3"  width="2" height="1" fill="#AABBCC"/>
+  <!-- 시계 3 -->
+  <rect x="25" y="9"  width="5" height="5" fill="#334466"/>
+  <rect x="26" y="10" width="3" height="3" fill="#445577"/>
+  <rect x="27" y="10" width="1" height="2" fill="#AABBCC"/>
+  <rect x="27" y="11" width="2" height="1" fill="#AABBCC"/>
+  <!-- 과거/미래 잔상 (희미한 복제) -->
+  <rect x="8"  y="4"  width="4" height="4" fill="#221133"/>
+  <rect x="20" y="8"  width="4" height="4" fill="#221133"/>
+  <!-- 황금 소용돌이 입자 -->
+  <rect x="1"  y="6" width="1" height="1" fill="#FFCC00"/>
+  <rect x="6"  y="8" width="1" height="1" fill="#FFDD44"/>
+  <rect x="11" y="6" width="1" height="1" fill="#FFCC00"/>
+  <rect x="20" y="8" width="1" height="1" fill="#FFDD44"/>
+  <rect x="25" y="6" width="1" height="1" fill="#FFCC00"/>
+  <rect x="30" y="8" width="1" height="1" fill="#FFDD44"/>
+</svg>

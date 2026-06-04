@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated">
+  <!-- 서윤 — 바드(Bard) + 레인저 (밝은 에너지, 모험가) -->
+  <!-- 헤어 (밝은 오번/황금, 리본) -->
+  <rect x="8"  y="0"  width="16" height="2"  fill="#CC7722"/>
+  <rect x="6"  y="2"  width="20" height="4"  fill="#DD8833"/>
+  <rect x="4"  y="3"  width="4"  height="7"  fill="#CC7722"/>
+  <rect x="24" y="3"  width="4"  height="7"  fill="#CC7722"/>
+  <rect x="4"  y="7"  width="4"  height="4"  fill="#EE9944"/>
+  <rect x="24" y="7"  width="4"  height="4"  fill="#EE9944"/>
+  <!-- 리본 핀 -->
+  <rect x="22" y="4"  width="4"  height="3"  fill="#FF6688"/>
+  <rect x="23" y="5"  width="2"  height="2"  fill="#FF88AA"/>
+  <!-- 얼굴 -->
+  <rect x="8"  y="5"  width="16" height="11" fill="#FFDDC8"/>
+  <!-- 반짝이는 녹색 눈 -->
+  <rect x="10" y="7"  width="5"  height="4"  fill="#FFFFFF"/>
+  <rect x="18" y="7"  width="5"  height="4"  fill="#FFFFFF"/>
+  <rect x="11" y="8"  width="2"  height="2"  fill="#44BB44"/>
+  <rect x="19" y="8"  width="2"  height="2"  fill="#44BB44"/>
+  <rect x="13" y="8"  width="1"  height="1"  fill="#FFFFFF"/>
+  <rect x="21" y="8"  width="1"  height="1"  fill="#FFFFFF"/>
+  <!-- 밝은 미소 -->
+  <rect x="11" y="12" width="10" height="2"  fill="#CC5544"/>
+  <rect x="12" y="13" width="8"  height="1"  fill="#FFAAAA"/>
+  <rect x="11" y="12" width="2"  height="1"  fill="#FFDDC8"/>
+  <rect x="19" y="12" width="2"  height="1"  fill="#FFDDC8"/>
+  <!-- 볼 홍조 (생기넘침) -->
+  <rect x="9"  y="11" width="3"  height="2"  fill="#FF9090"/>
+  <rect x="21" y="11" width="3"  height="2"  fill="#FF9090"/>
+  <!-- 목 -->
+  <rect x="13" y="16" width="6"  height="2"  fill="#FFDDC8"/>
+  <!-- 레인저 초록 복장 -->
+  <rect x="5"  y="18" width="22" height="14" fill="#3A6A22"/>
+  <rect x="5"  y="18" width="22" height="2"  fill="#4A8A2A"/>
+  <!-- 갈색 가죽 벨트 -->
+  <rect x="5"  y="24" width="22" height="2"  fill="#7A4A18"/>
+  <rect x="5"  y="24" width="22" height="1"  fill="#9A6A28"/>
+  <!-- 분홍 강조 (개성) -->
+  <rect x="13" y="18" width="6"  height="2"  fill="#FF8899"/>
+  <!-- 음표 (바드) -->
+  <rect x="25" y="14" width="2"  height="5"  fill="#FF8833"/>
+  <rect x="23" y="14" width="4"  height="2"  fill="#FF8833"/>
+  <rect x="23" y="16" width="3"  height="3"  fill="#FF8833"/>
+  <!-- 잎사귀 (레인저) -->
+  <rect x="4"  y="16" width="3"  height="2"  fill="#44BB44"/>
+  <rect x="3"  y="17" width="2"  height="2"  fill="#33AA33"/>
+</svg>

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 귀 -->
+  <rect x="2" y="2" width="4" height="4" fill="#E87820"/>
+  <rect x="10" y="2" width="4" height="4" fill="#E87820"/>
+  <rect x="3" y="2" width="2" height="2" fill="#1A0808"/>
+  <rect x="11" y="2" width="2" height="2" fill="#1A0808"/>
+  <!-- 얼굴 -->
+  <rect x="3" y="4" width="10" height="8" fill="#F09040"/>
+  <rect x="2" y="5" width="12" height="6" fill="#F09040"/>
+  <!-- 호랑이 줄무늬 -->
+  <rect x="5" y="4" width="1" height="4" fill="#1A0808"/>
+  <rect x="7" y="3" width="2" height="3" fill="#1A0808"/>
+  <rect x="10" y="4" width="1" height="4" fill="#1A0808"/>
+  <rect x="3" y="6" width="1" height="3" fill="#1A0808"/>
+  <rect x="12" y="6" width="1" height="3" fill="#1A0808"/>
+  <!-- 눈 -->
+  <rect x="5" y="6" width="2" height="2" fill="#1A0808"/>
+  <rect x="9" y="6" width="2" height="2" fill="#1A0808"/>
+  <rect x="5" y="6" width="2" height="1" fill="#30A030"/>
+  <rect x="9" y="6" width="2" height="1" fill="#30A030"/>
+  <rect x="5" y="6" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="9" y="6" width="1" height="1" fill="#FFFFFF"/>
+  <!-- 코 주변 (흰) -->
+  <rect x="5" y="9" width="6" height="3" fill="#FFFFFF"/>
+  <!-- 코 -->
+  <rect x="6" y="9" width="4" height="2" fill="#1A0808"/>
+  <rect x="7" y="9" width="2" height="1" fill="#333333"/>
+  <!-- 수염 -->
+  <rect x="2" y="10" width="3" height="1" fill="#DDDDDD"/>
+  <rect x="11" y="10" width="3" height="1" fill="#DDDDDD"/>
+  <!-- 입 -->
+  <rect x="7" y="11" width="1" height="1" fill="#AA4444"/>
+  <rect x="8" y="11" width="1" height="1" fill="#AA4444"/>
+</svg>

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <!-- 어두운 동굴 -->
+  <rect x="0" y="0" width="32" height="16" fill="#0A0A0A"/>
+  <!-- 돌 벽 -->
+  <rect x="0" y="0" width="32" height="4" fill="#2A2A2A"/>
+  <rect x="0" y="12" width="32" height="4" fill="#2A2A2A"/>
+  <!-- 종유석 위 -->
+  <rect x="3" y="3" width="2" height="4" fill="#484848"/>
+  <rect x="10" y="3" width="3" height="5" fill="#383838"/>
+  <rect x="18" y="3" width="2" height="6" fill="#484848"/>
+  <rect x="26" y="3" width="2" height="4" fill="#383838"/>
+  <!-- 석순 아래 -->
+  <rect x="6"  y="10" width="2" height="5" fill="#484848"/>
+  <rect x="14" y="9"  width="3" height="6" fill="#383838"/>
+  <rect x="22" y="10" width="2" height="5" fill="#484848"/>
+  <!-- 광석 발광 -->
+  <rect x="5"  y="6" width="2" height="2" fill="#4040E8"/>
+  <rect x="20" y="5" width="2" height="2" fill="#40E840"/>
+  <rect x="28" y="7" width="2" height="2" fill="#E84040"/>
+  <!-- 물 웅덩이 -->
+  <rect x="8" y="13" width="5" height="1" fill="#1A5A8A"/>
+  <rect x="9" y="13" width="3" height="1" fill="#2A7AAA"/>
+  <!-- 작은 빛 -->
+  <rect x="14" y="6" width="1" height="1" fill="#FFDD88"/>
+  <rect x="24" y="8" width="1" height="1" fill="#FFDD88"/>
+</svg>

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <rect x="0" y="0" width="32" height="16" fill="#87CEEB"/>
+  <rect x="0" y="0" width="32" height="5" fill="#6AB4D8"/>
+  <!-- 큰 구름 땅 -->
+  <rect x="0" y="9" width="32" height="7" fill="#FFFFFF"/>
+  <rect x="0" y="8" width="32" height="2" fill="#F0F0FF"/>
+  <rect x="4" y="7" width="8" height="3"  fill="#FFFFFF"/>
+  <rect x="18" y="7" width="10" height="3" fill="#FFFFFF"/>
+  <rect x="6" y="6" width="5" height="2"  fill="#F8F8FF"/>
+  <rect x="20" y="6" width="6" height="2" fill="#F8F8FF"/>
+  <!-- 구름 집들 -->
+  <rect x="3"  y="8"  width="6" height="4" fill="#E0E8FF"/>
+  <rect x="4"  y="7"  width="4" height="2" fill="#FFFFFF"/>
+  <rect x="5"  y="6"  width="2" height="2" fill="#FFD700"/>
+  <rect x="20" y="8"  width="7" height="4" fill="#E0E8FF"/>
+  <rect x="21" y="7"  width="5" height="2" fill="#FFFFFF"/>
+  <rect x="23" y="6"  width="2" height="2" fill="#FFD700"/>
+  <!-- 무지개 -->
+  <rect x="12" y="1" width="8" height="1" fill="#FF0000"/>
+  <rect x="11" y="2" width="10" height="1" fill="#FF8800"/>
+  <rect x="10" y="3" width="12" height="1" fill="#FFEE00"/>
+  <rect x="10" y="4" width="12" height="1" fill="#00AA00"/>
+  <rect x="11" y="5" width="10" height="1" fill="#0000FF"/>
+  <!-- 새 -->
+  <rect x="24" y="2" width="2" height="1" fill="#1A1A1A"/>
+  <rect x="28" y="4" width="2" height="1" fill="#1A1A1A"/>
+</svg>

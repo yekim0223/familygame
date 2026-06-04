@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 귀 (뾰족) -->
+  <rect x="3" y="0" width="3" height="5" fill="#504060"/>
+  <rect x="10" y="0" width="3" height="5" fill="#504060"/>
+  <rect x="4" y="1" width="1" height="3" fill="#DDAACC"/>
+  <rect x="11" y="1" width="1" height="3" fill="#DDAACC"/>
+  <!-- 달빛 광채 (뒤) -->
+  <rect x="4" y="1" width="8" height="8" fill="#7060808"/>
+  <!-- 얼굴 -->
+  <rect x="4" y="3" width="8" height="8" fill="#504060"/>
+  <rect x="3" y="4" width="10" height="7" fill="#604870"/>
+  <rect x="5" y="3" width="6" height="1" fill="#7060808"/>
+  <!-- 눈 (달처럼 노랑) -->
+  <rect x="5" y="5" width="3" height="2" fill="#1A0828"/>
+  <rect x="8" y="5" width="3" height="2" fill="#1A0828"/>
+  <rect x="5" y="5" width="3" height="1" fill="#FFD700"/>
+  <rect x="8" y="5" width="3" height="1" fill="#FFD700"/>
+  <rect x="6" y="5" width="1" height="1" fill="#1A0828"/>
+  <rect x="9" y="5" width="1" height="1" fill="#1A0828"/>
+  <rect x="5" y="5" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="8" y="5" width="1" height="1" fill="#FFFFFF"/>
+  <!-- 코 주둥이 (어두운) -->
+  <rect x="5" y="8" width="6" height="3" fill="#3A2848"/>
+  <!-- 코 -->
+  <rect x="6" y="8" width="4" height="2" fill="#1A0818"/>
+  <!-- 이빨 (날카로운) -->
+  <rect x="6" y="11" width="1" height="2" fill="#FFFFFF"/>
+  <rect x="9" y="11" width="1" height="2" fill="#FFFFFF"/>
+  <!-- 몸 -->
+  <rect x="3" y="11" width="10" height="5" fill="#504060"/>
+  <rect x="2" y="12" width="12" height="4" fill="#604870"/>
+</svg>

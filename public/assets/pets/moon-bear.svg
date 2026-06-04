@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 달빛 후광 -->
+  <rect x="0" y="5" width="2" height="4" fill="#FFEE80"/>
+  <rect x="14" y="5" width="2" height="4" fill="#FFEE80"/>
+  <rect x="1" y="3" width="1" height="8" fill="#FFD700"/>
+  <rect x="14" y="3" width="1" height="8" fill="#FFD700"/>
+  <!-- 귀 -->
+  <rect x="3" y="2" width="3" height="3" fill="#2A1A3A"/>
+  <rect x="10" y="2" width="3" height="3" fill="#2A1A3A"/>
+  <rect x="4" y="3" width="1" height="2" fill="#FFD700"/>
+  <rect x="11" y="3" width="1" height="2" fill="#FFD700"/>
+  <!-- 얼굴 (밤색 곰) -->
+  <rect x="4" y="3" width="8" height="9" fill="#2A1A3A"/>
+  <rect x="3" y="4" width="10" height="8" fill="#3A2848"/>
+  <rect x="5" y="3" width="6" height="1" fill="#4A3858"/>
+  <!-- 달 문양 (가슴) -->
+  <rect x="6" y="8" width="4" height="3" fill="#FFD700"/>
+  <rect x="7" y="7" width="2" height="5" fill="#FFD700"/>
+  <rect x="6" y="8" width="1" height="2" fill="#FFA000"/>
+  <!-- 눈 (달빛색) -->
+  <rect x="5" y="5" width="2" height="2" fill="#FFD700"/>
+  <rect x="9" y="5" width="2" height="2" fill="#FFD700"/>
+  <rect x="5" y="5" width="2" height="1" fill="#FF8800"/>
+  <rect x="9" y="5" width="2" height="1" fill="#FF8800"/>
+  <rect x="5" y="5" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="9" y="5" width="1" height="1" fill="#FFFFFF"/>
+  <!-- 코 -->
+  <rect x="6" y="8" width="4" height="2" fill="#1A0A2A"/>
+  <!-- 입 -->
+  <rect x="7" y="10" width="2" height="1" fill="#4A2060"/>
+</svg>

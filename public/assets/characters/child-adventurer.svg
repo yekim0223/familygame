@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated;image-rendering:crisp-edges">
+  <!-- ══ HAIR warm brown ══ -->
+  <rect x="9"  y="1" width="14" height="1" fill="#6B3A1A"/>
+  <rect x="8"  y="2" width="16" height="3" fill="#6B3A1A"/>
+  <rect x="7"  y="4" width="2"  height="9" fill="#6B3A1A"/>
+  <rect x="23" y="4" width="2"  height="9" fill="#6B3A1A"/>
+  <!-- explorer side pouf -->
+  <rect x="6"  y="5" width="2"  height="5" fill="#8B5030"/>
+  <rect x="24" y="5" width="2"  height="5" fill="#8B5030"/>
+  <!-- hair bottom -->
+  <rect x="8"  y="13" width="4" height="2" fill="#6B3A1A"/>
+  <rect x="20" y="13" width="4" height="2" fill="#6B3A1A"/>
+
+  <!-- ══ FACE skin ══ -->
+  <rect x="9"  y="4"  width="14" height="10" fill="#F5C17A"/>
+  <rect x="10" y="14" width="12" height="1"  fill="#F5C17A"/>
+  <rect x="11" y="15" width="10" height="1"  fill="#F5C17A"/>
+
+  <!-- ══ EYEBROWS (curious, raised) ══ -->
+  <rect x="10" y="5" width="5" height="1" fill="#4A2510"/>
+  <rect x="17" y="5" width="5" height="1" fill="#4A2510"/>
+
+  <!-- ══ EYES LEFT (green - curious explorer) ══ -->
+  <rect x="10" y="7" width="5" height="4" fill="#1A0828"/>
+  <rect x="10" y="7" width="5" height="3" fill="#286828"/>
+  <rect x="10" y="7" width="5" height="1" fill="#48A848"/>
+  <rect x="14" y="7" width="1" height="1" fill="#FFFFFF"/>
+
+  <!-- ══ EYES RIGHT ══ -->
+  <rect x="17" y="7" width="5" height="4" fill="#1A0828"/>
+  <rect x="17" y="7" width="5" height="3" fill="#286828"/>
+  <rect x="17" y="7" width="5" height="1" fill="#48A848"/>
+  <rect x="21" y="7" width="1" height="1" fill="#FFFFFF"/>
+
+  <!-- ══ NOSE ══ -->
+  <rect x="15" y="10" width="2" height="1" fill="#DDA055"/>
+
+  <!-- ══ CHEEKS ══ -->
+  <rect x="9"  y="10" width="3" height="1" fill="#F0A090"/>
+  <rect x="20" y="10" width="3" height="1" fill="#F0A090"/>
+
+  <!-- ══ SMILE (wide, adventurous!) ══ -->
+  <rect x="12" y="12" width="8" height="1" fill="#CC5533"/>
+  <rect x="11" y="12" width="1" height="1" fill="#CC5533"/>
+  <rect x="11" y="11" width="1" height="1" fill="#CC5533"/>
+  <rect x="20" y="11" width="1" height="1" fill="#CC5533"/>
+  <rect x="13" y="13" width="6" height="1" fill="#AA3311"/>
+
+  <!-- ══ NECK ══ -->
+  <rect x="14" y="16" width="4" height="2" fill="#F5C17A"/>
+
+  <!-- ══ SCARF (orange) ══ -->
+  <rect x="9"  y="17" width="14" height="2" fill="#D06010"/>
+  <rect x="9"  y="17" width="14" height="1" fill="#E08020"/>
+  <!-- scarf tail -->
+  <rect x="9"  y="19" width="4"  height="3" fill="#D06010"/>
+
+  <!-- ══ TUNIC (forest green) ══ -->
+  <rect x="9"  y="19" width="14" height="7" fill="#3A7A30"/>
+  <rect x="10" y="19" width="5"  height="2" fill="#5A9A50"/>
+  <!-- tunic laces -->
+  <rect x="14" y="20" width="4" height="5" fill="#2A5A20"/>
+  <rect x="15" y="20" width="2" height="5" fill="#1A3A10"/>
+
+  <!-- ══ BELT (leather tan) ══ -->
+  <rect x="9"  y="26" width="14" height="2" fill="#806030"/>
+  <rect x="9"  y="26" width="14" height="1" fill="#A08040"/>
+  <rect x="14" y="26" width="4"  height="2" fill="#C0A060"/>
+
+  <!-- ══ LEGS ══ -->
+  <rect x="10" y="28" width="5" height="2" fill="#3A2818"/>
+  <rect x="17" y="28" width="5" height="2" fill="#3A2818"/>
+
+  <!-- ══ BOOTS ══ -->
+  <rect x="9"  y="30" width="6" height="2" fill="#5D4037"/>
+  <rect x="9"  y="30" width="6" height="1" fill="#7D6047"/>
+  <rect x="17" y="30" width="6" height="2" fill="#5D4037"/>
+  <rect x="17" y="30" width="6" height="1" fill="#7D6047"/>
+</svg>

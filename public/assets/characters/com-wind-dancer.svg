@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated;image-rendering:crisp-edges">
+  <!-- 바람 무희 — 흐르는 하늘빛 머리 -->
+  <rect x="9"  y="1" width="14" height="2" fill="#88CCFF"/>
+  <rect x="8"  y="2" width="16" height="3" fill="#AADDFF"/>
+  <rect x="7"  y="4" width="2"  height="9" fill="#88CCFF"/>
+  <rect x="23" y="4" width="2"  height="9" fill="#88CCFF"/>
+  <rect x="5"  y="6" width="3"  height="7" fill="#66AAEE"/>
+  <rect x="24" y="6" width="3"  height="7" fill="#66AAEE"/>
+  <!-- 바람 리본 -->
+  <rect x="4"  y="8" width="4"  height="1" fill="#CCEEFF"/>
+  <rect x="24" y="10" width="4" height="1" fill="#CCEEFF"/>
+  <rect x="8"  y="13" width="4" height="3" fill="#88CCFF"/>
+  <rect x="20" y="13" width="4" height="3" fill="#88CCFF"/>
+  <!-- ══ 얼굴 ══ -->
+  <rect x="9"  y="4"  width="14" height="10" fill="#EEDDCC"/>
+  <rect x="10" y="14" width="12" height="1"  fill="#EEDDCC"/>
+  <rect x="11" y="15" width="10" height="1"  fill="#EEDDCC"/>
+  <!-- 눈썹·눈 -->
+  <rect x="10" y="5"  width="4" height="1" fill="#6699BB"/>
+  <rect x="18" y="5"  width="4" height="1" fill="#6699BB"/>
+  <rect x="10" y="7"  width="5" height="4" fill="#1A0828"/>
+  <rect x="10" y="7"  width="5" height="3" fill="#2080B0"/>
+  <rect x="10" y="7"  width="5" height="1" fill="#60C0FF"/>
+  <rect x="14" y="7"  width="1" height="1" fill="#FFFFFF"/>
+  <rect x="17" y="7"  width="5" height="4" fill="#1A0828"/>
+  <rect x="17" y="7"  width="5" height="3" fill="#2080B0"/>
+  <rect x="17" y="7"  width="5" height="1" fill="#60C0FF"/>
+  <rect x="17" y="7"  width="1" height="1" fill="#FFFFFF"/>
+  <!-- 볼·입 -->
+  <rect x="9"  y="10" width="3" height="1" fill="#C0E0F0"/>
+  <rect x="20" y="10" width="3" height="1" fill="#C0E0F0"/>
+  <rect x="13" y="12" width="6" height="1" fill="#8899BB"/>
+  <!-- 목 -->
+  <rect x="14" y="16" width="4" height="2" fill="#EEDDCC"/>
+  <!-- ══ 바람 의상 ══ -->
+  <!-- 흐르는 소매 -->
+  <rect x="3"  y="17" width="6"  height="12" fill="#88CCFF"/>
+  <rect x="23" y="17" width="6"  height="12" fill="#88CCFF"/>
+  <rect x="3"  y="17" width="6"  height="1"  fill="#AADDFF"/>
+  <rect x="23" y="17" width="6"  height="1"  fill="#AADDFF"/>
+  <!-- 몸통 (연청) -->
+  <rect x="9"  y="17" width="14" height="2" fill="#66AAEE"/>
+  <rect x="9"  y="17" width="14" height="1" fill="#88CCFF"/>
+  <rect x="9"  y="19" width="14" height="7" fill="#5090D0"/>
+  <rect x="8"  y="20" width="16" height="6" fill="#6090C8"/>
+  <rect x="10" y="19" width="5"  height="3" fill="#88CCFF"/>
+  <!-- 바람 소용돌이 -->
+  <rect x="14" y="22" width="4"  height="4" fill="#AADDFF"/>
+  <rect x="13" y="23" width="6"  height="2" fill="#AADDFF"/>
+  <rect x="15" y="21" width="2"  height="5" fill="#CCEEFF"/>
+  <!-- 스커트 -->
+  <rect x="8"  y="26" width="16" height="2" fill="#66AAEE"/>
+  <rect x="6"  y="28" width="20" height="2" fill="#5090D0"/>
+  <!-- 다리·부츠 -->
+  <rect x="11" y="28" width="4" height="2" fill="#D0E8FF"/>
+  <rect x="17" y="28" width="4" height="2" fill="#D0E8FF"/>
+  <rect x="10" y="30" width="5" height="2" fill="#88CCFF"/>
+  <rect x="17" y="30" width="5" height="2" fill="#88CCFF"/>
+</svg>

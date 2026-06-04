@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated;image-rendering:crisp-edges">
+  <!-- 챔피언 — 투구+깃발 -->
+  <rect x="8"  y="1" width="16" height="5" fill="#C87820"/>
+  <rect x="7"  y="3" width="18" height="4" fill="#E89030"/>
+  <rect x="9"  y="1" width="14" height="1" fill="#FFAA40"/>
+  <!-- 깃발 -->
+  <rect x="22" y="0" width="3"  height="8" fill="#CC0020"/>
+  <rect x="22" y="0" width="3"  height="1" fill="#EE2040"/>
+  <rect x="22" y="3" width="3"  height="2" fill="#FFFFFF"/>
+  <!-- 투구 슬릿 -->
+  <rect x="9"  y="5" width="14" height="3" fill="#A86010"/>
+  <rect x="10" y="6" width="5"  height="1" fill="#FFD700"/>
+  <rect x="17" y="6" width="5"  height="1" fill="#FFD700"/>
+  <!-- 목 -->
+  <rect x="11" y="8" width="10" height="3" fill="#A86010"/>
+  <rect x="14" y="11" width="4" height="2" fill="#D09050"/>
+  <!-- ══ 챔피언 갑옷 (황금) ══ -->
+  <rect x="4"  y="17" width="4" height="12" fill="#C87820"/>
+  <rect x="24" y="17" width="4" height="12" fill="#C87820"/>
+  <!-- 어깨 -->
+  <rect x="5"  y="17" width="7"  height="6" fill="#C87820"/>
+  <rect x="20" y="17" width="7"  height="6" fill="#C87820"/>
+  <rect x="5"  y="17" width="7"  height="1" fill="#FFD700"/>
+  <rect x="20" y="17" width="7"  height="1" fill="#FFD700"/>
+  <rect x="5"  y="22" width="7"  height="1" fill="#A86010"/>
+  <rect x="20" y="22" width="7"  height="1" fill="#A86010"/>
+  <rect x="11" y="17" width="10" height="1" fill="#FFD700"/>
+  <!-- 가슴 -->
+  <rect x="9"  y="18" width="14" height="7" fill="#C87820"/>
+  <rect x="10" y="18" width="5"  height="3" fill="#E8A030"/>
+  <!-- 트로피 문양 -->
+  <rect x="13" y="21" width="6"  height="4" fill="#FFD700"/>
+  <rect x="12" y="22" width="8"  height="2" fill="#FFD700"/>
+  <rect x="14" y="21" width="4"  height="1" fill="#FFEE88"/>
+  <rect x="15" y="21" width="2"  height="4" fill="#FFEE88"/>
+  <!-- ══ 벨트·다리·부츠 ══ -->
+  <rect x="9"  y="25" width="14" height="2" fill="#A86010"/>
+  <rect x="9"  y="25" width="14" height="1" fill="#C87820"/>
+  <rect x="10" y="27" width="5"  height="3" fill="#A06018"/>
+  <rect x="17" y="27" width="5"  height="3" fill="#A06018"/>
+  <rect x="9"  y="30" width="6"  height="2" fill="#C87820"/>
+  <rect x="9"  y="30" width="6"  height="1" fill="#FFD700"/>
+  <rect x="17" y="30" width="6"  height="2" fill="#C87820"/>
+  <rect x="17" y="30" width="6"  height="1" fill="#FFD700"/>
+</svg>

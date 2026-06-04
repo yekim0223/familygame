@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Family Quest — SVG 에셋 카탈로그</title>
+<style>
+  :root {
+    --bg: #0F0A04; --bg2: #1A1208; --bg3: #2A1F0E;
+    --gold: #FFD700; --cream: #FFF8F0; --pink: #E8A0BF;
+    --sky: #4FC3F7; --approved: #43A047; --rejected: #E53935;
+    --sub: #8A7A6A; --border: #3A2F1E;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--cream); font-family: 'Courier New', monospace; }
+  .page-header {
+    background: var(--bg2); border-bottom: 3px solid var(--gold);
+    padding: 24px 32px; display: flex; align-items: center; gap: 16px;
+  }
+  .page-header h1 { font-size: 22px; color: var(--gold); text-shadow: 2px 2px 0 #000; }
+  .page-header p { font-size: 12px; color: var(--sub); margin-top: 4px; }
+  .toc {
+    background: var(--bg3); border: 2px solid var(--border);
+    margin: 24px 32px; padding: 16px; display: flex; flex-wrap: wrap; gap: 12px;
+  }
+  .toc a {
+    color: var(--sky); text-decoration: none; font-size: 12px; padding: 4px 8px;
+    border: 1px solid var(--sky); transition: background 0.15s;
+  }
+  .toc a:hover { background: var(--sky); color: #000; }
+  .section { margin: 32px 32px 0; }
+  .section-header {
+    background: var(--bg2); border: 2px solid var(--gold);
+    padding: 10px 16px; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-header h2 { font-size: 16px; color: var(--gold); }
+  .section-header .count { font-size: 11px; color: var(--sub); margin-left: auto; }
+  .subsection { margin-bottom: 24px; }
+  .subsection-title {
+    font-size: 12px; color: var(--pink); border-bottom: 1px solid var(--border);
+    padding-bottom: 6px; margin-bottom: 12px;
+  }
+  .grid {
+    display: grid; gap: 8px;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  }
+  .grid.large { grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); }
+  .item {
+    background: var(--bg2); border: 2px solid var(--border);
+    padding: 8px 4px; display: flex; flex-direction: column;
+    align-items: center; gap: 4px; text-align: center;
+    transition: border-color 0.15s; cursor: default;
+  }
+  .item:hover { border-color: var(--gold); }
+  .item img { width: 40px; height: 40px; image-rendering: pixelated; object-fit: contain; }
+  .item.large img { width: 56px; height: 56px; }
+  .item-name {
+    font-size: 8px; color: var(--sub); word-break: break-all; line-height: 1.2;
+    max-width: 72px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .badge {
+    display: inline-block; font-size: 9px; padding: 2px 5px;
+    background: var(--bg3); border: 1px solid var(--border); color: var(--sub);
+    margin-bottom: 8px;
+  }
+  hr { border: none; border-top: 1px solid var(--border); margin: 8px 0 24px; }
+  @media print {
+    body { background: #fff; color: #000; }
+    .page-header { background: #f5f5f5; border-bottom: 2px solid #ccc; }
+    .page-header h1 { color: #333; text-shadow: none; }
+    .toc { display: none; }
+    .section-header { background: #f5f5f5; border-color: #ccc; }
+    .section-header h2 { color: #333; }
+    .item { background: #fafafa; border-color: #ddd; break-inside: avoid; }
+    .item:hover { border-color: #ddd; }
+    .item-name { color: #666; }
+    .subsection-title { color: #888; }
+    .section { margin: 16px; }
+    .badge { background: #eee; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div>
+    <h1>⛏ Family Quest — SVG 에셋 카탈로그</h1>
+    <p>전체 에셋 시각 카탈로그 | 경로: /public/assets/ | PDF 저장: Ctrl+P → 인쇄 → PDF로 저장</p>
+  </div>
+</div>
+
+<!-- ══ 에셋 스펙 정보 패널 ════════════════════════════════════════ -->
+<div style="margin:16px 32px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">
+
+  <!-- 에셋 현황 -->
+  <div style="background:#2A1F0E;border:2px solid #3A2F1E;padding:14px;">
+    <p style="color:#FFD700;font-size:12px;font-weight:bold;margin-bottom:8px;text-shadow:1px 1px 0 #000;">📦 에셋 현황</p>
+    <table style="width:100%;border-collapse:collapse;font-size:11px;">
+      <tr><td style="color:#8A7A6A;padding:2px 0;">UI 아이콘</td><td style="color:#FFF8F0;text-align:right;">29종</td></tr>
+      <tr><td style="color:#8A7A6A;padding:2px 0;">장비</td><td style="color:#FFF8F0;text-align:right;">25종 (무기10·투구5·방패5·갑옷5)</td></tr>
+      <tr><td style="color:#8A7A6A;padding:2px 0;">캐릭터</td><td style="color:#FFF8F0;text-align:right;">103종</td></tr>
+      <tr><td style="color:#8A7A6A;padding:2px 0;">&nbsp;&nbsp;ㄴ 기본5 / 아이직업50 / 확장직업45 / 게스트3</td><td style="color:#4FC3F7;text-align:right;font-size:10px;"></td></tr>
+      <tr><td style="color:#8A7A6A;padding:2px 0;">반려동물</td><td style="color:#FFF8F0;text-align:right;">50종</td></tr>
+      <tr><td style="color:#8A7A6A;padding:2px 0;">내 땅 배경</td><td style="color:#FFF8F0;text-align:right;">50종</td></tr>
+      <tr style="border-top:1px solid #3A2F1E;"><td style="color:#FFD700;padding-top:4px;font-weight:bold;">합계</td><td style="color:#FFD700;text-align:right;font-weight:bold;padding-top:4px;">257+ SVG</td></tr>
+    </table>
+  </div>
+
+  <!-- 픽셀 사양 -->
+  <div style="background:#2A1F0E;border:2px solid #3A2F1E;padding:14px;">
+    <p style="color:#FFD700;font-size:12px;font-weight:bold;margin-bottom:8px;text-shadow:1px 1px 0 #000;">📐 픽셀 사양 (viewBox → UI 렌더)</p>
+    <table style="width:100%;border-collapse:collapse;font-size:11px;">
+      <thead><tr>
+        <th style="color:#4FC3F7;text-align:left;padding-bottom:4px;">카테고리</th>
+        <th style="color:#4FC3F7;text-align:right;padding-bottom:4px;">viewBox</th>
+        <th style="color:#4FC3F7;text-align:right;padding-bottom:4px;">렌더 크기</th>
+      </tr></thead>
+      <tr><td style="color:#8A7A6A;padding:2px 0;">캐릭터 (base / child / com)</td><td style="color:#FFF8F0;text-align:right;">32×32</td><td style="color:#E8A0BF;text-align:right;">40–112 px</td></tr>
+      <tr><td style="color:#8A7A6A;padding:2px 0;">반려동물</td><td style="color:#FFF8F0;text-align:right;">16×16</td><td style="color:#E8A0BF;text-align:right;">32–48 px</td></tr>
+      <tr><td style="color:#8A7A6A;padding:2px 0;">내 땅 배경</td><td style="color:#FFF8F0;text-align:right;">32×16 <span style="color:#666;">(2:1)</span></td><td style="color:#E8A0BF;text-align:right;">full card bg</td></tr>
+      <tr><td style="color:#8A7A6A;padding:2px 0;">UI 아이콘</td><td style="color:#FFF8F0;text-align:right;">16×16</td><td style="color:#E8A0BF;text-align:right;">20–36 px</td></tr>
+      <tr><td style="color:#8A7A6A;padding:2px 0;">장비 오버레이</td><td style="color:#FFF8F0;text-align:right;">32×32</td><td style="color:#E8A0BF;text-align:right;">17–38 px</td></tr>
+      <tr><td style="color:#8A7A6A;padding:2px 0;">게스트 포트레이트</td><td style="color:#FFF8F0;text-align:right;">32×32</td><td style="color:#E8A0BF;text-align:right;">56 px (고정)</td></tr>
+    </table>
+  </div>
+
+  <!-- 기술 스펙 -->
+  <div style="background:#2A1F0E;border:2px solid #3A2F1E;padding:14px;">
+    <p style="color:#FFD700;font-size:12px;font-weight:bold;margin-bottom:8px;text-shadow:1px 1px 0 #000;">⚙️ 기술 스펙</p>
+    <table style="width:100%;border-collapse:collapse;font-size:11px;">
+      <tr><td style="color:#8A7A6A;padding:2px 0;width:40%;">포맷</td><td style="color:#FFF8F0;">SVG (벡터, 무손실)</td></tr>
+      <tr><td style="color:#8A7A6A;padding:2px 0;">렌더 속성</td><td style="color:#FFF8F0;">image-rendering: pixelated</td></tr>
+      <tr><td style="color:#8A7A6A;padding:2px 0;">색상 공간</td><td style="color:#FFF8F0;">sRGB (hex #RRGGBB)</td></tr>
+      <tr><td style="color:#8A7A6A;padding:2px 0;">애니메이션</td><td style="color:#FFF8F0;">CSS keyframes (앱 내 적용)</td></tr>
+      <tr><td style="color:#8A7A6A;padding:2px 0;">디자인 테마</td><td style="color:#FFF8F0;">마인크래프트 오마주 픽셀 아트</td></tr>
+      <tr><td style="color:#8A7A6A;padding:2px 0;">경로 기준</td><td style="color:#4FC3F7;">/public/assets/</td></tr>
+      <tr><td style="color:#8A7A6A;padding:2px 0;">전체 경로 예시</td><td style="color:#4FC3F7;font-size:10px;">/assets/characters/base-dad.svg</td></tr>
+    </table>
+  </div>
+
+  <!-- 컬러 팔레트 -->
+  <div style="background:#2A1F0E;border:2px solid #3A2F1E;padding:14px;">
+    <p style="color:#FFD700;font-size:12px;font-weight:bold;margin-bottom:8px;text-shadow:1px 1px 0 #000;">🎨 디자인 컬러 팔레트</p>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;">
+      <div style="text-align:center;">
+        <div style="width:32px;height:20px;background:#5C8A1E;border:1px solid #000;"></div>
+        <span style="font-size:9px;color:#8A7A6A;">grass</span>
+      </div>
+      <div style="text-align:center;">
+        <div style="width:32px;height:20px;background:#8B5E3C;border:1px solid #000;"></div>
+        <span style="font-size:9px;color:#8A7A6A;">dirt</span>
+      </div>
+      <div style="text-align:center;">
+        <div style="width:32px;height:20px;background:#9E9E9E;border:1px solid #000;"></div>
+        <span style="font-size:9px;color:#8A7A6A;">stone</span>
+      </div>
+      <div style="text-align:center;">
+        <div style="width:32px;height:20px;background:#FFD700;border:1px solid #000;"></div>
+        <span style="font-size:9px;color:#8A7A6A;">gold</span>
+      </div>
+      <div style="text-align:center;">
+        <div style="width:32px;height:20px;background:#4FC3F7;border:1px solid #000;"></div>
+        <span style="font-size:9px;color:#8A7A6A;">sky</span>
+      </div>
+      <div style="text-align:center;">
+        <div style="width:32px;height:20px;background:#7B5EA7;border:1px solid #000;"></div>
+        <span style="font-size:9px;color:#8A7A6A;">purple</span>
+      </div>
+      <div style="text-align:center;">
+        <div style="width:32px;height:20px;background:#E8A0BF;border:1px solid #000;"></div>
+        <span style="font-size:9px;color:#8A7A6A;">pink</span>
+      </div>
+      <div style="text-align:center;">
+        <div style="width:32px;height:20px;background:#FFF8F0;border:1px solid #000;"></div>
+        <span style="font-size:9px;color:#8A7A6A;">cream</span>
+      </div>
+      <div style="text-align:center;">
+        <div style="width:32px;height:20px;background:#1A1A1A;border:1px solid #444;"></div>
+        <span style="font-size:9px;color:#8A7A6A;">pixel-dark</span>
+      </div>
+      <div style="text-align:center;">
+        <div style="width:32px;height:20px;background:#43A047;border:1px solid #000;"></div>
+        <span style="font-size:9px;color:#8A7A6A;">approved</span>
+      </div>
+      <div style="text-align:center;">
+        <div style="width:32px;height:20px;background:#E53935;border:1px solid #000;"></div>
+        <span style="font-size:9px;color:#8A7A6A;">rejected</span>
+      </div>
+      <div style="text-align:center;">
+        <div style="width:32px;height:20px;background:#FB8C00;border:1px solid #000;"></div>
+        <span style="font-size:9px;color:#8A7A6A;">hold</span>
+      </div>
+    </div>
+    <p style="color:#8A7A6A;font-size:10px;margin-top:8px;">배경 패널 다크: #0F0A04 / #1A1208 / #2A1F0E<br>테두리: #3A2F1E · 서브텍스트: #8A7A6A</p>
+  </div>
+
+</div>
+<!-- ── 사용 규칙 1줄 ── -->
+<div style="margin:0 32px 16px;padding:8px 14px;background:#2A1F0E;border:1px solid #3A2F1E;font-size:10px;color:#8A7A6A;display:flex;flex-wrap:wrap;gap:16px;">
+  <span>⚠️ 장비 오버레이 Z순서: 갑옷(8) &lt; 투구(10) &lt; 방패(12) &lt; 무기(13)</span>
+  <span>⚠️ 최소 렌더 크기: 아이콘 20px / 캐릭터 40px (이하 가독성 저하)</span>
+  <span>⚠️ 배경 SVG는 object-fit: cover + objectPosition: center 권장</span>
+  <span>⚠️ petId / weaponId 미사용 시 <code style="color:#4FC3F7;">null</code> 명시 (스토어 폴백 방지)</span>
+</div>
+
+<div class="toc">
+  <strong style="color:var(--sub);font-size:12px;">이동:</strong>
+  <a href="#family-profiles">👨‍👩‍👧‍👧 가족 스토리</a>
+  <a href="#icons">🎮 UI 아이콘 (29)</a>
+  <a href="#gear">⚔️ 장비 (25)</a>
+  <a href="#characters">👤 캐릭터 (100)</a>
+  <a href="#pets">🐾 반려동물 (50)</a>
+  <a href="#backgrounds">🌍 내 땅 배경 (50)</a>
+</div>
+
+<!-- ══ 1. UI 아이콘 ══════════════════════════════════════════════════════ -->
+<div class="section" id="icons">
+  <div class="section-header">
+    <h2>🎮 UI 아이콘</h2>
+    <span class="count">/assets/icons/ · 29종 (Nav6+설정10+오디오3+감정5+액션5) · viewBox 16×16 · 렌더 20–36px</span>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">BottomNav (6종)</div>
+    <div class="grid">
+      <div class="item"><img src="../../public/assets/icons/home.svg"><span class="item-name">home</span></div>
+      <div class="item"><img src="../../public/assets/icons/sword.svg"><span class="item-name">sword</span></div>
+      <div class="item"><img src="../../public/assets/icons/calendar.svg"><span class="item-name">calendar</span></div>
+      <div class="item"><img src="../../public/assets/icons/message.svg"><span class="item-name">message</span></div>
+      <div class="item"><img src="../../public/assets/icons/trophy.svg"><span class="item-name">trophy</span></div>
+      <div class="item"><img src="../../public/assets/icons/gamepad.svg"><span class="item-name">gamepad</span></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">설정·행동 (10종)</div>
+    <div class="grid">
+      <div class="item"><img src="../../public/assets/icons/gift.svg"><span class="item-name">gift</span></div>
+      <div class="item"><img src="../../public/assets/icons/begging.svg"><span class="item-name">begging</span></div>
+      <div class="item"><img src="../../public/assets/icons/letter.svg"><span class="item-name">letter</span></div>
+      <div class="item"><img src="../../public/assets/icons/star.svg"><span class="item-name">star</span></div>
+      <div class="item"><img src="../../public/assets/icons/megaphone.svg"><span class="item-name">megaphone</span></div>
+      <div class="item"><img src="../../public/assets/icons/trophy.svg"><span class="item-name">trophy</span></div>
+      <div class="item"><img src="../../public/assets/icons/trash.svg"><span class="item-name">trash</span></div>
+      <div class="item"><img src="../../public/assets/icons/lightning.svg"><span class="item-name">lightning</span></div>
+      <div class="item"><img src="../../public/assets/icons/save.svg"><span class="item-name">save</span></div>
+      <div class="item"><img src="../../public/assets/icons/skull.svg"><span class="item-name">skull</span></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">오디오·기타 (3종)</div>
+    <div class="grid">
+      <div class="item"><img src="../../public/assets/icons/bell.svg"><span class="item-name">bell</span></div>
+      <div class="item"><img src="../../public/assets/icons/music.svg"><span class="item-name">music</span></div>
+      <div class="item"><img src="../../public/assets/icons/music-mute.svg"><span class="item-name">music-mute</span></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">감정 아이콘 (5종)</div>
+    <div class="grid">
+      <div class="item"><img src="../../public/assets/icons/emotion-happy.svg"><span class="item-name">행복</span></div>
+      <div class="item"><img src="../../public/assets/icons/emotion-love.svg"><span class="item-name">사랑</span></div>
+      <div class="item"><img src="../../public/assets/icons/emotion-sad.svg"><span class="item-name">슬픔</span></div>
+      <div class="item"><img src="../../public/assets/icons/emotion-angry.svg"><span class="item-name">화남</span></div>
+      <div class="item"><img src="../../public/assets/icons/emotion-surprise.svg"><span class="item-name">놀람</span></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">UI 액션 (5종)</div>
+    <div class="grid">
+      <div class="item"><img src="../../public/assets/icons/search.svg"><span class="item-name">검색</span></div>
+      <div class="item"><img src="../../public/assets/icons/filter.svg"><span class="item-name">필터</span></div>
+      <div class="item"><img src="../../public/assets/icons/share.svg"><span class="item-name">공유</span></div>
+      <div class="item"><img src="../../public/assets/icons/check-circle.svg"><span class="item-name">완료</span></div>
+      <div class="item"><img src="../../public/assets/icons/close-x.svg"><span class="item-name">닫기</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 2. 장비 ════════════════════════════════════════════════════════════ -->
+<div class="section" id="gear">
+  <div class="section-header">
+    <h2>⚔️ 장비</h2>
+    <span class="count">/assets/gear/ · 25종 (무기10·투구5·방패5·갑옷5) · viewBox 32×32 · 오버레이 17–38px</span>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">무기 — weapon/ (10종)</div>
+    <div class="grid">
+      <div class="item"><img src="../../public/assets/gear/weapon/sword-basic.svg"><span class="item-name">나무검 Lv1</span></div>
+      <div class="item"><img src="../../public/assets/gear/weapon/bow-basic.svg"><span class="item-name">기본활 Lv3</span></div>
+      <div class="item"><img src="../../public/assets/gear/weapon/axe-iron.svg"><span class="item-name">철도끼 Lv5</span></div>
+      <div class="item"><img src="../../public/assets/gear/weapon/sword-iron.svg"><span class="item-name">철검 Lv8</span></div>
+      <div class="item"><img src="../../public/assets/gear/weapon/hammer-war.svg"><span class="item-name">전쟁해머 Lv10</span></div>
+      <div class="item"><img src="../../public/assets/gear/weapon/staff-magic.svg"><span class="item-name">마법지팡이 Lv12</span></div>
+      <div class="item"><img src="../../public/assets/gear/weapon/sword-dark.svg"><span class="item-name">암흑검 Lv15</span></div>
+      <div class="item"><img src="../../public/assets/gear/weapon/sword-gold.svg"><span class="item-name">황금검 Lv20</span></div>
+      <div class="item"><img src="../../public/assets/gear/weapon/lance-dragon.svg"><span class="item-name">용창 Lv25</span></div>
+      <div class="item"><img src="../../public/assets/gear/weapon/sword-crystal.svg"><span class="item-name">수정검 Lv30</span></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">투구 — helmet/ (5종)</div>
+    <div class="grid">
+      <div class="item"><img src="../../public/assets/gear/helmet/helmet-leather.svg"><span class="item-name">가죽투구 Lv2</span></div>
+      <div class="item"><img src="../../public/assets/gear/helmet/helmet-iron.svg"><span class="item-name">철투구 Lv10</span></div>
+      <div class="item"><img src="../../public/assets/gear/helmet/helmet-gold.svg"><span class="item-name">황금왕관 Lv18</span></div>
+      <div class="item"><img src="../../public/assets/gear/helmet/helmet-magic.svg"><span class="item-name">마법투구 Lv22</span></div>
+      <div class="item"><img src="../../public/assets/gear/helmet/helmet-dragon.svg"><span class="item-name">용투구 Lv28</span></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">방패 — shield/ (5종)</div>
+    <div class="grid">
+      <div class="item"><img src="../../public/assets/gear/shield/shield-wood.svg"><span class="item-name">나무방패 Lv4</span></div>
+      <div class="item"><img src="../../public/assets/gear/shield/shield-iron.svg"><span class="item-name">철방패 Lv14</span></div>
+      <div class="item"><img src="../../public/assets/gear/shield/shield-gold.svg"><span class="item-name">황금방패 Lv22</span></div>
+      <div class="item"><img src="../../public/assets/gear/shield/shield-magic.svg"><span class="item-name">마법방패 Lv28</span></div>
+      <div class="item"><img src="../../public/assets/gear/shield/shield-dragon.svg"><span class="item-name">용방패 Lv32</span></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">갑옷 — armor/ (5종)</div>
+    <div class="grid">
+      <div class="item"><img src="../../public/assets/gear/armor/armor-leather.svg"><span class="item-name">가죽갑옷 Lv2</span></div>
+      <div class="item"><img src="../../public/assets/gear/armor/armor-iron.svg"><span class="item-name">철갑옷 Lv8</span></div>
+      <div class="item"><img src="../../public/assets/gear/armor/armor-chain.svg"><span class="item-name">사슬갑옷 Lv14</span></div>
+      <div class="item"><img src="../../public/assets/gear/armor/armor-gold.svg"><span class="item-name">황금갑옷 Lv20</span></div>
+      <div class="item"><img src="../../public/assets/gear/armor/armor-dragon.svg"><span class="item-name">드래곤갑옷 Lv28</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 3. 캐릭터 ══════════════════════════════════════════════════════════ -->
+<div class="section" id="characters">
+  <div class="section-header">
+    <h2>👤 캐릭터</h2>
+    <span class="count">/assets/characters/ · 103종 (기본5·아이직업50·확장45·게스트3) · viewBox 32×32 · 렌더 40–112px</span>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">기본 캐릭터 (5종) — 역할별 고정</div>
+    <div class="grid large">
+      <div class="item large"><img src="../../public/assets/characters/base-dad.svg"><span class="item-name">base-dad 아빠</span></div>
+      <div class="item large"><img src="../../public/assets/characters/base-mom.svg"><span class="item-name">base-mom 엄마</span></div>
+      <div class="item large"><img src="../../public/assets/characters/base-child-1.svg"><span class="item-name">base-child-1 핑크공주</span></div>
+      <div class="item large"><img src="../../public/assets/characters/base-child-2.svg"><span class="item-name">base-child-2 보라전사</span></div>
+      <div class="item large"><img src="../../public/assets/characters/base-observer.svg"><span class="item-name">base-observer 관찰자</span></div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">아이 직업 (50종) — Lv1~50 단계 해금 [game: CHILD 전용]</div>
+    <div class="grid large">
+      <script>
+        const childChars = [
+          'child-adventurer','child-mage-apprentice','child-ninja','child-archer','child-detective',
+          'child-warrior','child-rogue','child-fairy','child-student','child-hero',
+          'child-knight','child-paladin','child-bard','child-ranger','child-mage',
+          'child-druid','child-monk','child-priest','child-gladiator','child-assassin',
+          'child-alchemist','child-shaman','child-dragon-rider','child-holy-knight','child-dark-blade',
+          'child-ice-mage','child-dark-knight','child-elf-archer','child-necromancer','child-spell-blade',
+          'child-archmage','child-summoner','child-angel-warrior','child-blood-mage','child-shadow-knight',
+          'child-berserker','child-time-mage','child-holy-sword','child-hero-king','child-sage',
+          'child-conqueror','child-prophet','child-celestial-knight','child-demon-slayer','child-star-mage',
+          'child-myth-archer','child-divine-warrior','child-absolute-mage','child-undead-king','child-cosmos-hero'
+        ];
+        document.write(childChars.map(id =>
+          `<div class="item large"><img src="../../public/assets/characters/${id}.svg"><span class="item-name">${id.replace('child-','')}</span></div>`
+        ).join(''));
+      </script>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">확장 직업 (45종) — Lv51~99 해금 [game: CHILD Lv51+, 부모 자유선택]</div>
+    <div class="grid large">
+      <script>
+        const comChars = [
+          'com-healer','com-chef','com-witch','com-scholar','com-dancer',
+          'com-cleric','com-merchant','com-jester','com-miner','com-blacksmith',
+          'com-wanderer','com-enchanter','com-artisan','com-seer','com-templar',
+          'com-warden','com-ice-queen','com-fire-mage','com-guardian','com-champion',
+          'com-witch-hunter','com-oracle','com-trickster','com-crusader','com-wind-dancer',
+          'com-earth-sage','com-sea-witch','com-thunder-mage','com-void-mage','com-storm-caller',
+          'com-lava-knight','com-frost-archer','com-warlord','com-sea-king','com-runemaster',
+          'com-lunar-mage','com-solar-knight','com-chrono-mage','com-golem-master','com-dream-weaver',
+          'com-phoenix-mage','com-chaos-knight','com-balance-keeper','com-void-sovereign','com-eternal-legend'
+        ];
+        document.write(comChars.map(id =>
+          `<div class="item large"><img src="../../public/assets/characters/${id}.svg"><span class="item-name">${id.replace('com-','')}</span></div>`
+        ).join(''));
+      </script>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 4. 반려동물 ════════════════════════════════════════════════════════ -->
+<div class="section" id="pets">
+  <div class="section-header">
+    <h2>🐾 반려동물</h2>
+    <span class="count">/assets/pets/ · 50종 · viewBox 16×16 · 렌더 32–48px</span>
+  </div>
+  <div class="subsection">
+    <div class="subsection-title">Lv1~9 — 친근한 동물</div>
+    <div class="grid large">
+      <script>
+        ['dog','cat','hamster','rabbit','parrot','turtle','fox','panda','monkey','duck'].forEach(id => {
+          document.write(`<div class="item large"><img src="../../public/assets/pets/${id}.svg"><span class="item-name">${id}</span></div>`);
+        });
+      </script>
+    </div>
+  </div>
+  <div class="subsection">
+    <div class="subsection-title">Lv11~19 — 야생 동물</div>
+    <div class="grid large">
+      <script>
+        ['owl','wolf','lion','tiger','bear','eagle','dolphin','shark','crocodile','rhino'].forEach(id => {
+          document.write(`<div class="item large"><img src="../../public/assets/pets/${id}.svg"><span class="item-name">${id}</span></div>`);
+        });
+      </script>
+    </div>
+  </div>
+  <div class="subsection">
+    <div class="subsection-title">Lv21~31 — 강력한 동물</div>
+    <div class="grid large">
+      <script>
+        ['elephant','gorilla','mini-dragon','giant-squid','whale','dino','trex','cobra','griffin','werewolf','unicorn'].forEach(id => {
+          document.write(`<div class="item large"><img src="../../public/assets/pets/${id}.svg"><span class="item-name">${id}</span></div>`);
+        });
+      </script>
+    </div>
+  </div>
+  <div class="subsection">
+    <div class="subsection-title">Lv33~39 — 환상 생물</div>
+    <div class="grid large">
+      <script>
+        ['ice-wolf','lightning-eagle','sea-dragon','fire-phoenix','moon-bear','star-fox','crystal-whale','cosmic-turtle','meteor-leopard'].forEach(id => {
+          document.write(`<div class="item large"><img src="../../public/assets/pets/${id}.svg"><span class="item-name">${id}</span></div>`);
+        });
+      </script>
+    </div>
+  </div>
+  <div class="subsection">
+    <div class="subsection-title">Lv41~50 — 전설 생물</div>
+    <div class="grid large">
+      <script>
+        ['plasma-dragon','void-wolf','dimension-lion','crystal-pegasus','nebula-serpent','galaxy-bear','thunder-dragon','cosmos-lion','divine-beast','legend-creature'].forEach(id => {
+          document.write(`<div class="item large"><img src="../../public/assets/pets/${id}.svg"><span class="item-name">${id}</span></div>`);
+        });
+      </script>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 5. 내 땅 배경 ══════════════════════════════════════════════════════ -->
+<div class="section" id="backgrounds">
+  <div class="section-header">
+    <h2>🌍 내 땅 배경</h2>
+    <span class="count">/assets/backgrounds/ · 50종 · viewBox 32×16 (2:1 와이드) · card bg</span>
+  </div>
+  <div class="subsection">
+    <div class="subsection-title">Lv1~10 — 자연</div>
+    <div class="grid">
+      <script>
+        ['overworld','forest','nether','cave','ocean','swamp','jungle','savanna','snow','desert'].forEach(id => {
+          document.write(`<div class="item"><img src="../../public/assets/backgrounds/${id}.svg" style="width:40px;height:40px;object-fit:cover;"><span class="item-name">${id}</span></div>`);
+        });
+      </script>
+    </div>
+  </div>
+  <div class="subsection">
+    <div class="subsection-title">Lv11~20 — 모험</div>
+    <div class="grid">
+      <script>
+        ['volcano','mushroom','fortress','ruins','sky','floating-isle','crystal-cave','aurora','deep-sea','storm-peak'].forEach(id => {
+          document.write(`<div class="item"><img src="../../public/assets/backgrounds/${id}.svg" style="width:40px;height:40px;object-fit:cover;"><span class="item-name">${id}</span></div>`);
+        });
+      </script>
+    </div>
+  </div>
+  <div class="subsection">
+    <div class="subsection-title">Lv21~30 — 신비</div>
+    <div class="grid">
+      <script>
+        ['moon-base','shadow-realm','dragon-peak','time-ruins','star-meadow','nebula-cave','comet-trail','space-station','milky-way','asteroid-belt'].forEach(id => {
+          document.write(`<div class="item"><img src="../../public/assets/backgrounds/${id}.svg" style="width:40px;height:40px;object-fit:cover;"><span class="item-name">${id}</span></div>`);
+        });
+      </script>
+    </div>
+  </div>
+  <div class="subsection">
+    <div class="subsection-title">Lv31~40 — 우주 극한</div>
+    <div class="grid">
+      <script>
+        ['black-hole','supernova','pulsar','quasar','wormhole','dark-matter','antimatter','plasma-storm','cosmic-void','galaxy-core'].forEach(id => {
+          document.write(`<div class="item"><img src="../../public/assets/backgrounds/${id}.svg" style="width:40px;height:40px;object-fit:cover;"><span class="item-name">${id}</span></div>`);
+        });
+      </script>
+    </div>
+  </div>
+  <div class="subsection">
+    <div class="subsection-title">Lv41~50 — 신의 영역</div>
+    <div class="grid">
+      <script>
+        ['quantum-realm','dimension-rift','time-stream','crystal-cosmos','divine-realm','celestial-sea','void-throne','eternity','genesis','godverse'].forEach(id => {
+          document.write(`<div class="item"><img src="../../public/assets/backgrounds/${id}.svg" style="width:40px;height:40px;object-fit:cover;"><span class="item-name">${id}</span></div>`);
+        });
+      </script>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 베이스 캐릭터 — 가족 스토리 카드 ═════════════════════════════ -->
+<div class="section" id="family-profiles">
+  <div class="section-header">
+    <h2>👨‍👩‍👧‍👧 '빛의 캐슬' 메인 캐릭터 — 스토리 & 직업</h2>
+    <span class="count">5종 포트레이트</span>
+  </div>
+  <div class="subsection">
+    <div style="display:grid;gap:16px;grid-template-columns:repeat(2,1fr);">
+
+      <!-- 아빠 -->
+      <div style="background:#1A1208;border:2px solid #FFD700;padding:16px;text-align:center;">
+        <img src="../../public/assets/characters/base-dad.svg" style="width:80px;height:80px;image-rendering:pixelated;margin:0 auto;display:block;" alt="아빠">
+        <p style="color:#FFD700;font-size:15px;font-weight:bold;margin-top:8px;font-family:monospace;">아빠 ⚙️</p>
+        <p style="color:#AACCFF;font-size:11px;margin:4px 0;font-family:sans-serif;">직업: 전술 마법사(Tactical Mage)</p>
+        <p style="color:#AAA;font-size:10px;line-height:1.6;font-family:sans-serif;text-align:left;margin-top:6px;">
+          "이컴 마법사 지휘관이였다는 전설이 있다."<br>
+          새로운 마법과 아이디어를 좋아하고 신비로운 마법서적을 찾아 여행을 떠나는걸 무척 좋아했다고 한다. 과학자와 마법사 친구들과 어울리기 좋아했지만 지금은 혼자 마법 연구하며 책을 쓰고 있다. 틈틈히 '빛의 캐슬'에서 빛의 용사와 보라마녀 삼시세끼를 묵묵히 챙긴다. 슈가왕국 대전투 당시 보라마녀에게 대패한 후 강력한 마법 결계에 봉인되었다. 안경을 빼앗기면 마법능력이 사라진다는 약점이 있다. AI마법스킬을 배우며 보라마녀 복수하는 날만 기다리고 있다고 한다.
+        </p>
+      </div>
+
+      <!-- 엄마 -->
+      <div style="background:#1A1208;border:2px solid #CC88FF;padding:16px;text-align:center;">
+        <img src="../../public/assets/characters/base-mom.svg" style="width:80px;height:80px;image-rendering:pixelated;margin:0 auto;display:block;" alt="엄마">
+        <p style="color:#CC88FF;font-size:15px;font-weight:bold;margin-top:8px;font-family:monospace;">엄마 🛡️</p>
+        <p style="color:#AACCFF;font-size:11px;margin:4px 0;font-family:sans-serif;">직업: 위치 닥터(Witch Doctor)</p>
+        <p style="color:#AAA;font-size:10px;line-height:1.6;font-family:sans-serif;text-align:left;margin-top:6px;">
+          "빛의 캐슬을 고요함속에 지키는 은둔마녀"<br>
+          겉으로는 차분하지만 '빛의 캐슬'에서 만큼은 좀 뾰족해진다. 균형감각과 세심함을 핑계로 아빠와 빛의용사들을 어디서든 무섭도록 지켜보는 마녀. 이를 알아챈 빛의 용사들에겐 '잔소리 마녀'. 마법결계에 묶인 아빠에겐 '잔소리 미녀'로 불리는 독특한 캐릭터. 신비로운 중국 하얼빈에서 왔다는 소문이 있다. 슈가왕국 대전투시 모든걸 마법으로 냠냠 삼키며 정복했다는 전설이 있다. 샤오롱빠오와 달달한 떡볶이를 좋아한다.
+        </p>
+      </div>
+
+      <!-- 서윤 -->
+      <div style="background:#1A1208;border:2px solid #FF88AA;padding:16px;text-align:center;">
+        <img src="../../public/assets/characters/base-child-1.svg" style="width:80px;height:80px;image-rendering:pixelated;margin:0 auto;display:block;" alt="서윤">
+        <p style="color:#FFAACC;font-size:15px;font-weight:bold;margin-top:8px;font-family:monospace;">서윤 🎵</p>
+        <p style="color:#AACCFF;font-size:11px;margin:4px 0;font-family:sans-serif;">직업: 오라클 (Oracle)</p>
+        <p style="color:#AAA;font-size:10px;line-height:1.6;font-family:sans-serif;text-align:left;margin-top:6px;">
+          "밝은 에너지로 사람들을 연결하는 예언자."<br>
+          '빛의 캐슬' 예언자이다. 호기심 많고 활력이 넘친다. 새로운 것을 두려워하지 않고 어디서든 파티 분위기를 끌어올리는 신비로운 존재. 고블린 대장을 쉽게 무찔렀다는 전설의 김치 아이템을 만들 수 있다. 해맑음과 눈물은 아빠에겐 강력한 무기. 매일 춤을 추며 스스로도 멈출 수가 없다고 말하지만 핑계일뿐 고촌 자연의 정령 또는 외계마물과 소통한다는 소문이 있다. 아이스크림을 좋아한다.
+        </p>
+      </div>
+
+      <!-- 하윤 -->
+      <div style="background:#1A1208;border:2px solid #4488CC;padding:16px;text-align:center;">
+        <img src="../../public/assets/characters/base-child-2.svg" style="width:80px;height:80px;image-rendering:pixelated;margin:0 auto;display:block;" alt="하윤">
+        <p style="color:#88CCFF;font-size:15px;font-weight:bold;margin-top:8px;font-family:monospace;">하윤 📖</p>
+        <p style="color:#AACCFF;font-size:11px;margin:4px 0;font-family:sans-serif;">직업: 성기사(Paladin)</p>
+        <p style="color:#AAA;font-size:10px;line-height:1.6;font-family:sans-serif;text-align:left;margin-top:6px;">
+          "차분함속에 든든한. 미래의 리더."<br>
+          '빛의 캐슬' 미래의 리더 후보이다. 말수는 적고 담담하지만 생각이 깊고 책임감이 강하다. 마법사 집안에서 태어났지만 '전사'로서의 자질이 크다. 배려하면서도 필요할 때 앞에 나서는 리더십의 소유자. 아빠를 스승이라 여기지만 스승을 뛰어넘기 위해 피나는 노력과 훈련을 마다하지 않는다. 더 좋은 칼과 무기를 은밀하게 수집한다. 아무도 모르는 신비의 고사리 아이템을 늘 가지고 있다. 제주할멍이 주었다는 전설이 있다.
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 게스트 (옵저버) 3종 -->
+  <div class="subsection" style="margin-top:24px;">
+    <div class="subsection-title">🧳 게스트 — 여행자 캐릭터 3종 (옵저버 전용)</div>
+    <div style="display:grid;gap:16px;grid-template-columns:repeat(3,1fr);">
+
+      <div style="background:#1A1208;border:2px solid #FF8833;padding:16px;text-align:center;">
+        <img src="../../public/assets/characters/observer-bard.svg" style="width:96px;height:96px;image-rendering:pixelated;margin:0 auto;display:block;" alt="방랑 음악가">
+        <p style="color:#FF9944;font-size:13px;font-weight:bold;margin-top:8px;font-family:monospace;">방랑 음악가 🎵</p>
+        <p style="color:#AACCFF;font-size:10px;margin:4px 0;font-family:sans-serif;">observer-bard · 나그네 바드</p>
+        <p style="color:#888;font-size:10px;line-height:1.5;font-family:sans-serif;">어디서 왔는지 모르나 노래 하나로 어느 파티에도 녹아드는 불꽃 같은 여행 음악가. 머무는 곳마다 활기를 남기고 떠난다.</p>
+      </div>
+
+      <div style="background:#1A1208;border:2px solid #EE88BB;padding:16px;text-align:center;">
+        <img src="../../public/assets/characters/observer-healer.svg" style="width:96px;height:96px;image-rendering:pixelated;margin:0 auto;display:block;" alt="옆나라 치유사">
+        <p style="color:#FF99CC;font-size:13px;font-weight:bold;margin-top:8px;font-family:monospace;">옆나라 치유사 💛</p>
+        <p style="color:#AACCFF;font-size:10px;margin:4px 0;font-family:sans-serif;">observer-healer · 이방인 힐러</p>
+        <p style="color:#888;font-size:10px;line-height:1.5;font-family:sans-serif;">멀리 다른 왕국에서 온 빛의 치유사. 말은 잘 통하지 않아도 따뜻한 손길 하나로 상처를 낫게 한다는 전설이 있다.</p>
+      </div>
+
+      <div style="background:#1A1208;border:2px solid #8855CC;padding:16px;text-align:center;">
+        <img src="../../public/assets/characters/observer-knight.svg" style="width:96px;height:96px;image-rendering:pixelated;margin:0 auto;display:block;" alt="방랑 성기사">
+        <p style="color:#AA88FF;font-size:13px;font-weight:bold;margin-top:8px;font-family:monospace;">방랑 성기사 ⚔️</p>
+        <p style="color:#AACCFF;font-size:10px;margin:4px 0;font-family:sans-serif;">observer-knight · 이방 성기사</p>
+        <p style="color:#888;font-size:10px;line-height:1.5;font-family:sans-serif;">과거를 짊어진 채 홀로 여정을 걷는 방랑 성기사. 황금빛 한 줄기처럼 어둠 속에서도 신념을 잃지 않는 강인한 영혼.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 게스트 포트레이트 (56px 표시, 미래 활용용) -->
+  <div class="subsection" style="margin-top:24px;">
+    <div class="subsection-title">🎭 가족 포트레이트 (56px · 게스트 확장용 보관)</div>
+    <p style="color:#666;font-size:10px;margin-bottom:8px;font-family:sans-serif;">새로 제작한 세밀 포트레이트 — 현재 게임에서는 미사용, 향후 게스트/NPC 캐릭터로 활용 예정</p>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <div style="text-align:center;">
+        <img src="../../public/assets/characters/guest-dad.svg" style="width:56px;height:56px;image-rendering:pixelated;display:block;border:2px solid #FFD700;" alt="게스트 아빠">
+        <span style="font-size:9px;color:#888;">guest-dad</span>
+      </div>
+      <div style="text-align:center;">
+        <img src="../../public/assets/characters/guest-mom.svg" style="width:56px;height:56px;image-rendering:pixelated;display:block;border:2px solid #CC88FF;" alt="게스트 엄마">
+        <span style="font-size:9px;color:#888;">guest-mom</span>
+      </div>
+      <div style="text-align:center;">
+        <img src="../../public/assets/characters/guest-seoyoon.svg" style="width:56px;height:56px;image-rendering:pixelated;display:block;border:2px solid #FF88AA;" alt="게스트 서윤">
+        <span style="font-size:9px;color:#888;">guest-seoyoon</span>
+      </div>
+      <div style="text-align:center;">
+        <img src="../../public/assets/characters/guest-hayoon.svg" style="width:56px;height:56px;image-rendering:pixelated;display:block;border:2px solid #4488CC;" alt="게스트 하윤">
+        <span style="font-size:9px;color:#888;">guest-hayoon</span>
+      </div>
+      <div style="text-align:center;">
+        <img src="../../public/assets/characters/guest-wanderer.svg" style="width:56px;height:56px;image-rendering:pixelated;display:block;border:2px solid #7A5A3A;" alt="게스트 나그네">
+        <span style="font-size:9px;color:#888;">guest-wanderer</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin:32px;padding:16px;border:1px solid #3A2F1E;color:#8A7A6A;font-size:11px;">
+  <strong style="color:#FFD700;">PDF로 저장하는 방법</strong><br>
+  1. 이 파일을 Chrome/Edge 브라우저에서 열기<br>
+  2. Ctrl+P (Mac: ⌘+P) → 인쇄 창 열기<br>
+  3. 대상: "PDF로 저장" 선택<br>
+  4. 페이지 크기: A4 또는 Letter, 여백: 최소<br>
+  5. 저장<br><br>
+  파일 경로: <code style="color:#4FC3F7;">docs/svg-catalog/catalog.html</code>
+</div>
+
+</body>
+</html>

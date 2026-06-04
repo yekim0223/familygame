@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 머리 볏 (물결 파랑) -->
+  <rect x="5" y="0" width="6" height="3" fill="#0080C0"/>
+  <rect x="4" y="1" width="8" height="2" fill="#00A0E0"/>
+  <!-- 뿔 -->
+  <rect x="6" y="0" width="2" height="2" fill="#0060A0"/>
+  <!-- 머리 -->
+  <rect x="4" y="2" width="8" height="5" fill="#0090B0"/>
+  <rect x="3" y="3" width="10" height="4" fill="#00B0D0"/>
+  <rect x="5" y="2" width="6" height="1" fill="#20C8E8"/>
+  <!-- 눈 (초록) -->
+  <rect x="5" y="4" width="3" height="2" fill="#00C040"/>
+  <rect x="6" y="4" width="2" height="2" fill="#1A1A1A"/>
+  <rect x="6" y="4" width="1" height="1" fill="#FFFFFF"/>
+  <!-- 주둥이 -->
+  <rect x="11" y="5" width="4" height="2" fill="#0080B0"/>
+  <!-- 몸 (비늘, S자 곡선) -->
+  <rect x="5" y="7" width="6" height="4" fill="#0090B0"/>
+  <rect x="4" y="8" width="8" height="3" fill="#00A0C0"/>
+  <!-- 비늘 무늬 -->
+  <rect x="5" y="8" width="2" height="1" fill="#00C0E0"/>
+  <rect x="8" y="9" width="2" height="1" fill="#00C0E0"/>
+  <!-- 지느러미 -->
+  <rect x="2" y="8" width="3" height="4" fill="#0070A0"/>
+  <rect x="11" y="8" width="3" height="4" fill="#0070A0"/>
+  <!-- 꼬리 -->
+  <rect x="4" y="11" width="4" height="4" fill="#0080B0"/>
+  <rect x="3" y="13" width="3" height="3" fill="#0060908"/>
+  <rect x="6" y="12" width="5" height="3" fill="#0070A0"/>
+</svg>

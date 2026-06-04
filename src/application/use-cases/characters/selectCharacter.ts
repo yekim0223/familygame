@@ -54,189 +54,139 @@ export const UI_ROLE_CHAR_KEY: Record<UIRole, Role> = {
   DAD: 'DAD', MOM: 'MOM', HAYOON: 'CHILD', SEOYOON: 'CHILD', OBSERVER: 'OBSERVER',
 }
 
-// ── 전체 캐릭터 마스터 데이터 (역할별 50종) ───────────────────────
-// requiredLevel=1: 기본 오픈 / 부모는 requiredLevel 무시
+// ── 공통 직업 100종 (전 역할 공유, 아이는 레벨 해제) ─────────────
+// child-* = 기존 아이 직업 (SVG 제작 중), com-* = 새 공통 직업
+export const COMMON_CHARACTERS: { id: string; label: string; emoji: string; requiredLevel: number }[] = [
+  // ── Lv 1~50: CHILD 직업 (54종) ─────────────────────────────────
+  { id:'child-adventurer',      label:'모험가',     emoji:'🗡️', requiredLevel:1 },
+  { id:'child-mage-apprentice', label:'마법사 견습', emoji:'📖', requiredLevel:1 },
+  { id:'child-ninja',           label:'닌자',        emoji:'🥷', requiredLevel:1 },
+  { id:'child-archer',          label:'궁수',        emoji:'🏹', requiredLevel:1 },
+  { id:'child-detective',       label:'탐정',        emoji:'🔍', requiredLevel:1 },
+  { id:'child-warrior',         label:'전사',        emoji:'🛡️', requiredLevel:1 },
+  { id:'child-rogue',           label:'도적',        emoji:'🗝️', requiredLevel:1 },
+  { id:'child-fairy',           label:'요정',        emoji:'🧚', requiredLevel:1 },
+  { id:'child-student',         label:'학생',        emoji:'📚', requiredLevel:1 },
+  { id:'child-hero',            label:'영웅',        emoji:'🦸', requiredLevel:1 },
+  { id:'child-knight',          label:'기사',        emoji:'🛡', requiredLevel:5 },
+  { id:'child-paladin',         label:'팔라딘',      emoji:'🌟', requiredLevel:5 },
+  { id:'child-bard',            label:'음유시인',    emoji:'🎸', requiredLevel:5 },
+  { id:'child-ranger',          label:'레인저',      emoji:'🌲', requiredLevel:5 },
+  { id:'child-mage',            label:'마법사',      emoji:'🧙', requiredLevel:10 },
+  { id:'child-druid',           label:'드루이드',    emoji:'🍀', requiredLevel:10 },
+  { id:'child-monk',            label:'수도승',      emoji:'🙏', requiredLevel:10 },
+  { id:'child-priest',          label:'사제',        emoji:'✝️', requiredLevel:10 },
+  { id:'child-gladiator',       label:'검투사',      emoji:'🏟️', requiredLevel:15 },
+  { id:'child-assassin',        label:'암살자',      emoji:'🌑', requiredLevel:15 },
+  { id:'child-alchemist',       label:'연금술사',    emoji:'⚗️', requiredLevel:15 },
+  { id:'child-shaman',          label:'주술사',      emoji:'🔮', requiredLevel:15 },
+  { id:'child-dragon-rider',    label:'용기사',      emoji:'🐉', requiredLevel:20 },
+  { id:'child-holy-knight',     label:'성기사',      emoji:'☀️', requiredLevel:20 },
+  { id:'child-dark-blade',      label:'마검사',      emoji:'⚡', requiredLevel:20 },
+  { id:'child-ice-mage',        label:'빙결마법사',  emoji:'❄️', requiredLevel:20 },
+  { id:'child-dark-knight',     label:'흑기사',      emoji:'🖤', requiredLevel:25 },
+  { id:'child-necromancer',     label:'강령술사',    emoji:'💀', requiredLevel:25 },
+  { id:'child-elf-archer',      label:'엘프 궁수',   emoji:'🌿', requiredLevel:25 },
+  { id:'child-spell-blade',     label:'마법검사',    emoji:'💠', requiredLevel:25 },
+  { id:'child-archmage',        label:'대마법사',    emoji:'🌀', requiredLevel:30 },
+  { id:'child-summoner',        label:'소환사',      emoji:'📿', requiredLevel:30 },
+  { id:'child-angel-warrior',   label:'천사 전사',   emoji:'😇', requiredLevel:30 },
+  { id:'child-blood-mage',      label:'혈술사',      emoji:'🩸', requiredLevel:30 },
+  { id:'child-holy-sword',      label:'성검사',      emoji:'🗡', requiredLevel:35 },
+  { id:'child-shadow-knight',   label:'그림자 기사', emoji:'🌙', requiredLevel:35 },
+  { id:'child-berserker',       label:'광전사',      emoji:'🔴', requiredLevel:35 },
+  { id:'child-time-mage',       label:'시공술사',    emoji:'⏳', requiredLevel:35 },
+  { id:'child-hero-king',       label:'용사왕',      emoji:'👑', requiredLevel:40 },
+  { id:'child-sage',            label:'현자',        emoji:'📜', requiredLevel:40 },
+  { id:'child-conqueror',       label:'패왕',        emoji:'🏆', requiredLevel:40 },
+  { id:'child-prophet',         label:'예언자',      emoji:'👁️', requiredLevel:40 },
+  { id:'child-celestial-knight',label:'천기사',      emoji:'🌤️', requiredLevel:45 },
+  { id:'child-demon-slayer',    label:'악마사냥꾼',  emoji:'🔥', requiredLevel:45 },
+  { id:'child-star-mage',       label:'별의 마법사', emoji:'✨', requiredLevel:45 },
+  { id:'child-myth-archer',     label:'신화 궁수',   emoji:'🎯', requiredLevel:45 },
+  { id:'child-divine-warrior',  label:'신계 전사',   emoji:'💎', requiredLevel:50 },
+  { id:'child-absolute-mage',   label:'절대 마법사', emoji:'🌌', requiredLevel:50 },
+  { id:'child-undead-king',     label:'불사왕',      emoji:'💫', requiredLevel:50 },
+  { id:'child-cosmos-hero',     label:'우주 영웅',   emoji:'🌟', requiredLevel:50 },
+
+  // ── Lv 51~99: COM 확장 직업 (45종) — 아이 전용 고레벨 ──────────
+  // 부모는 레벨 무관 자유 선택 (isParent 로직에서 전부 해제)
+  { id:'com-healer',            label:'치유사',      emoji:'💊', requiredLevel:51 },
+  { id:'com-chef',              label:'요리사',      emoji:'👩‍🍳', requiredLevel:51 },
+  { id:'com-witch',             label:'마녀',        emoji:'🧹', requiredLevel:51 },
+  { id:'com-scholar',           label:'학자',        emoji:'📜', requiredLevel:51 },
+  { id:'com-dancer',            label:'무희',        emoji:'💃', requiredLevel:51 },
+  { id:'com-cleric',            label:'성직자',      emoji:'✝️', requiredLevel:55 },
+  { id:'com-merchant',          label:'상인',        emoji:'🛒', requiredLevel:55 },
+  { id:'com-jester',            label:'광대',        emoji:'🃏', requiredLevel:55 },
+  { id:'com-wanderer',          label:'방랑자',      emoji:'🧭', requiredLevel:55 },
+  { id:'com-miner',             label:'광부',        emoji:'⛏️', requiredLevel:55 },
+  { id:'com-blacksmith',        label:'대장장이',    emoji:'🔨', requiredLevel:58 },
+  { id:'com-enchanter',         label:'마법부여사',  emoji:'💎', requiredLevel:58 },
+  { id:'com-artisan',           label:'장인',        emoji:'🎨', requiredLevel:58 },
+  { id:'com-seer',              label:'선견자',      emoji:'🔮', requiredLevel:58 },
+  { id:'com-templar',           label:'템플러',      emoji:'⚔️', requiredLevel:58 },
+  { id:'com-warden',            label:'감시자',      emoji:'🗺️', requiredLevel:58 },
+  { id:'com-witch-hunter',      label:'마녀사냥꾼',  emoji:'🔫', requiredLevel:62 },
+  { id:'com-oracle',            label:'신탁사',      emoji:'👁️', requiredLevel:62 },
+  { id:'com-trickster',         label:'트릭스터',    emoji:'🌀', requiredLevel:62 },
+  { id:'com-guardian',          label:'수호자',      emoji:'🛡', requiredLevel:62 },
+  { id:'com-champion',          label:'챔피언',      emoji:'🏅', requiredLevel:62 },
+  { id:'com-crusader',          label:'십자군',      emoji:'⚔️', requiredLevel:65 },
+  { id:'com-ice-queen',         label:'얼음 여왕',   emoji:'❄️', requiredLevel:65 },
+  { id:'com-fire-mage',         label:'불꽃 마법사', emoji:'🔥', requiredLevel:65 },
+  { id:'com-wind-dancer',       label:'바람 무희',   emoji:'🌪️', requiredLevel:65 },
+  { id:'com-earth-sage',        label:'대지 현자',   emoji:'🌍', requiredLevel:65 },
+  { id:'com-sea-witch',         label:'바다 마녀',   emoji:'🌊', requiredLevel:65 },
+  { id:'com-thunder-mage',      label:'번개 마법사', emoji:'⚡', requiredLevel:70 },
+  { id:'com-void-mage',         label:'공허 마법사', emoji:'🕳️', requiredLevel:70 },
+  { id:'com-storm-caller',      label:'폭풍술사',    emoji:'🌩️', requiredLevel:70 },
+  { id:'com-lava-knight',       label:'용암 기사',   emoji:'🌋', requiredLevel:73 },
+  { id:'com-frost-archer',      label:'서리 궁수',   emoji:'🏹', requiredLevel:73 },
+  { id:'com-warlord',           label:'군주',        emoji:'⚔', requiredLevel:73 },
+  { id:'com-sea-king',          label:'해왕',        emoji:'🌊', requiredLevel:76 },
+  { id:'com-runemaster',        label:'룬마스터',    emoji:'🔱', requiredLevel:76 },
+  { id:'com-lunar-mage',        label:'달빛 마법사', emoji:'🌙', requiredLevel:76 },
+  { id:'com-solar-knight',      label:'태양 기사',   emoji:'☀️', requiredLevel:80 },
+  { id:'com-chrono-mage',       label:'시간 마법사', emoji:'⏳', requiredLevel:80 },
+  { id:'com-golem-master',      label:'골렘 마스터', emoji:'🗿', requiredLevel:80 },
+  { id:'com-dream-weaver',      label:'꿈술사',      emoji:'💫', requiredLevel:84 },
+  { id:'com-phoenix-mage',      label:'불사조 마법사',emoji:'🦅', requiredLevel:88 },
+  { id:'com-chaos-knight',      label:'혼돈 기사',   emoji:'🌪️', requiredLevel:92 },
+  { id:'com-balance-keeper',    label:'균형의 수호자',emoji:'⚖️', requiredLevel:95 },
+  { id:'com-void-sovereign',    label:'공허 군주',   emoji:'🕳️', requiredLevel:97 },
+  { id:'com-eternal-legend',    label:'영원의 전설', emoji:'🌟', requiredLevel:99 },
+]
+
+// ── 전체 캐릭터 마스터 데이터 (역할별 베이스 + 공통 100종) ────────
+// requiredLevel=0: 베이스(항상 해제) / 부모는 모든 레벨 무시
 export const ALL_CHARACTERS: Record<Role, { id: string; label: string; emoji: string; requiredLevel: number }[]> = {
 
-  // ── 아빠 (DAD) — 중세 RPG 남성 직업 50종 ──────────────────────
+  // ── 아빠 (DAD) — 기본 캐릭터 + 공통 100종 + 레거시 호환 ──────
   DAD: [
-    { id:'dad-warrior',    label:'전사',      emoji:'⚔️',  requiredLevel:1 },
-    { id:'dad-mage',       label:'마법사',     emoji:'🧙',  requiredLevel:1 },
-    { id:'dad-archer',     label:'궁수',       emoji:'🏹',  requiredLevel:1 },
-    { id:'dad-cleric',     label:'성직자',     emoji:'✝️',  requiredLevel:1 },
-    { id:'dad-miner',      label:'광부',       emoji:'⛏️',  requiredLevel:1 },
-    { id:'dad-rogue',      label:'도적',       emoji:'🗝️',  requiredLevel:1 },
-    { id:'dad-builder',    label:'건축가',     emoji:'🏗️',  requiredLevel:1 },
-    { id:'dad-knight',     label:'기사',       emoji:'🛡️',  requiredLevel:1 },
-    { id:'dad-explorer',   label:'탐험가',     emoji:'🧭',  requiredLevel:1 },
-    { id:'dad-alchemist',  label:'연금술사',   emoji:'⚗️',  requiredLevel:1 },
-    { id:'dad-paladin',    label:'팔라딘',     emoji:'🌟',  requiredLevel:1 },
-    { id:'dad-ranger',     label:'레인저',     emoji:'🌲',  requiredLevel:1 },
-    { id:'dad-monk',       label:'수도사',     emoji:'🙏',  requiredLevel:1 },
-    { id:'dad-bard',       label:'음유시인',   emoji:'🎸',  requiredLevel:1 },
-    { id:'dad-druid',      label:'드루이드',   emoji:'🍀',  requiredLevel:1 },
-    { id:'dad-gladiator',  label:'검투사',     emoji:'🏟️',  requiredLevel:1 },
-    { id:'dad-assassin',   label:'암살자',     emoji:'🌑',  requiredLevel:1 },
-    { id:'dad-shaman',     label:'주술사',     emoji:'🔮',  requiredLevel:1 },
-    { id:'dad-blacksmith', label:'대장장이',   emoji:'🔨',  requiredLevel:1 },
-    { id:'dad-summoner',   label:'소환사',     emoji:'📿',  requiredLevel:1 },
-    { id:'dad-necromancer',label:'강령술사',   emoji:'💀',  requiredLevel:1 },
-    { id:'dad-berserker',  label:'광전사',     emoji:'🔴',  requiredLevel:1 },
-    { id:'dad-spellblade', label:'마검사',     emoji:'⚡',  requiredLevel:1 },
-    { id:'dad-holy-knight',label:'성기사',     emoji:'☀️',  requiredLevel:1 },
-    { id:'dad-dark-knight',label:'흑기사',     emoji:'🖤',  requiredLevel:1 },
-    { id:'dad-archmage',   label:'대마법사',   emoji:'🌀',  requiredLevel:1 },
-    { id:'dad-prophet',    label:'예언자',     emoji:'👁️',  requiredLevel:1 },
-    { id:'dad-dragon-rider',label:'용기사',    emoji:'🐉',  requiredLevel:1 },
-    { id:'dad-time-mage',  label:'시공마법사', emoji:'⏳',  requiredLevel:1 },
-    { id:'dad-sage',       label:'현자',       emoji:'📜',  requiredLevel:1 },
-    { id:'dad-conqueror',  label:'정복자',     emoji:'🏰',  requiredLevel:1 },
-    { id:'dad-demon-slayer',label:'악마사냥꾼',emoji:'🌙',  requiredLevel:1 },
-    { id:'dad-celestial',  label:'천기사',     emoji:'🌤️',  requiredLevel:1 },
-    { id:'dad-star-mage',  label:'별의마법사', emoji:'✨',  requiredLevel:1 },
-    { id:'dad-king',       label:'왕',         emoji:'👑',  requiredLevel:1 },
-    { id:'dad-emperor',    label:'황제',       emoji:'🏆',  requiredLevel:1 },
-    { id:'dad-divine',     label:'신성전사',   emoji:'💎',  requiredLevel:1 },
-    { id:'dad-cosmos',     label:'우주기사',   emoji:'🌌',  requiredLevel:1 },
-    { id:'dad-absolute',   label:'절대마법사', emoji:'💫',  requiredLevel:1 },
-    { id:'dad-guardian',   label:'수호자',     emoji:'🛡',  requiredLevel:1 },
-    { id:'dad-warlord',    label:'군주',       emoji:'⚔',   requiredLevel:1 },
-    { id:'dad-oracle',     label:'신탁사',     emoji:'🔯',  requiredLevel:1 },
-    { id:'dad-chrono',     label:'크로노마법사',emoji:'🕰️', requiredLevel:1 },
-    { id:'dad-golem-master',label:'골렘마스터',emoji:'🗿',  requiredLevel:1 },
-    { id:'dad-runemaster', label:'룬마스터',   emoji:'🔱',  requiredLevel:1 },
-    { id:'dad-wind-mage',  label:'풍속마법사', emoji:'🌪️',  requiredLevel:1 },
-    { id:'dad-earth-knight',label:'대지기사',  emoji:'🌍',  requiredLevel:1 },
-    { id:'dad-sea-king',   label:'해왕',       emoji:'🌊',  requiredLevel:1 },
-    { id:'dad-void-walker',label:'공허보행자', emoji:'🕳️',  requiredLevel:1 },
-    { id:'dad-god-king',   label:'신왕',       emoji:'🌟',  requiredLevel:1 },
+    { id:'base-dad',       label:'슈퍼파파', emoji:'👨', requiredLevel:0 },
+    ...COMMON_CHARACTERS,
   ],
-
-  // ── 엄마 (MOM) — 중세 RPG 여성 직업 50종 ──────────────────────
+  // ── 엄마 (MOM) — 기본 캐릭터 + 공통 100종 ────────────────────
   MOM: [
-    { id:'mom-healer',     label:'치유사',     emoji:'💊',  requiredLevel:1 },
-    { id:'mom-mage',       label:'마법사',     emoji:'✨',  requiredLevel:1 },
-    { id:'mom-chef',       label:'요리사',     emoji:'👩‍🍳', requiredLevel:1 },
-    { id:'mom-monk',       label:'수도사',     emoji:'🙏',  requiredLevel:1 },
-    { id:'mom-gardener',   label:'정원사',     emoji:'🌿',  requiredLevel:1 },
-    { id:'mom-witch',      label:'마녀',       emoji:'🧹',  requiredLevel:1 },
-    { id:'mom-scholar',    label:'학자',       emoji:'📜',  requiredLevel:1 },
-    { id:'mom-fairy',      label:'요정',       emoji:'🧚',  requiredLevel:1 },
-    { id:'mom-merchant',   label:'상인',       emoji:'🛒',  requiredLevel:1 },
-    { id:'mom-poet',       label:'시인',       emoji:'🪶',  requiredLevel:1 },
-    { id:'mom-alchemist',  label:'연금술사',   emoji:'⚗️',  requiredLevel:1 },
-    { id:'mom-bard',       label:'음유시인',   emoji:'🎵',  requiredLevel:1 },
-    { id:'mom-ranger',     label:'수렵사',     emoji:'🌲',  requiredLevel:1 },
-    { id:'mom-oracle',     label:'예언자',     emoji:'👁️',  requiredLevel:1 },
-    { id:'mom-druid',      label:'드루이드',   emoji:'🍀',  requiredLevel:1 },
-    { id:'mom-paladin',    label:'성녀기사',   emoji:'🌟',  requiredLevel:1 },
-    { id:'mom-summoner',   label:'소환사',     emoji:'📿',  requiredLevel:1 },
-    { id:'mom-enchanter',  label:'마법부여사', emoji:'💎',  requiredLevel:1 },
-    { id:'mom-seer',       label:'선견자',     emoji:'🔮',  requiredLevel:1 },
-    { id:'mom-artisan',    label:'장인',       emoji:'🎨',  requiredLevel:1 },
-    { id:'mom-dancer',     label:'무희',       emoji:'💃',  requiredLevel:1 },
-    { id:'mom-assassin',   label:'암살자',     emoji:'🌙',  requiredLevel:1 },
-    { id:'mom-shaman',     label:'무당',       emoji:'🪬',  requiredLevel:1 },
-    { id:'mom-archmage',   label:'대마법사',   emoji:'🌀',  requiredLevel:1 },
-    { id:'mom-holy-knight',label:'신성기사',   emoji:'☀️',  requiredLevel:1 },
-    { id:'mom-dark-mage',  label:'어둠마법사', emoji:'🖤',  requiredLevel:1 },
-    { id:'mom-star-sage',  label:'별의현자',   emoji:'⭐',  requiredLevel:1 },
-    { id:'mom-time-mage',  label:'시공마법사', emoji:'⏳',  requiredLevel:1 },
-    { id:'mom-sea-witch',  label:'바다마녀',   emoji:'🌊',  requiredLevel:1 },
-    { id:'mom-ice-queen',  label:'얼음여왕',   emoji:'❄️',  requiredLevel:1 },
-    { id:'mom-fire-mage',  label:'불꽃마법사', emoji:'🔥',  requiredLevel:1 },
-    { id:'mom-wind-dancer',label:'바람무희',   emoji:'🌪️',  requiredLevel:1 },
-    { id:'mom-earth-sage', label:'대지현자',   emoji:'🌍',  requiredLevel:1 },
-    { id:'mom-light-herald',label:'빛의전령',  emoji:'🌤️',  requiredLevel:1 },
-    { id:'mom-dream-weaver',label:'꿈직조사',  emoji:'💭',  requiredLevel:1 },
-    { id:'mom-queen',      label:'여왕',       emoji:'👑',  requiredLevel:1 },
-    { id:'mom-empress',    label:'여황제',     emoji:'🏆',  requiredLevel:1 },
-    { id:'mom-angel',      label:'천사',       emoji:'😇',  requiredLevel:1 },
-    { id:'mom-valkyrie',   label:'발키리',     emoji:'⚡',  requiredLevel:1 },
-    { id:'mom-cosmos',     label:'우주마법사', emoji:'🌌',  requiredLevel:1 },
-    { id:'mom-moon-sage',  label:'달의현자',   emoji:'🌙',  requiredLevel:1 },
-    { id:'mom-crystal',    label:'수정마법사', emoji:'💠',  requiredLevel:1 },
-    { id:'mom-void',       label:'공허술사',   emoji:'🕳️',  requiredLevel:1 },
-    { id:'mom-nature',     label:'자연수호자', emoji:'🌺',  requiredLevel:1 },
-    { id:'mom-star-queen', label:'별의여왕',   emoji:'🌟',  requiredLevel:1 },
-    { id:'mom-thunder',    label:'번개마법사', emoji:'⚡',  requiredLevel:1 },
-    { id:'mom-life-weaver',label:'생명직조사', emoji:'🌱',  requiredLevel:1 },
-    { id:'mom-rune-sage',  label:'룬현자',     emoji:'🔱',  requiredLevel:1 },
-    { id:'mom-galaxy',     label:'은하마법사', emoji:'💫',  requiredLevel:1 },
-    { id:'mom-divine',     label:'신성여신',   emoji:'✡️',  requiredLevel:1 },
+    { id:'base-mom', label:'잔소리미녀', emoji:'👩', requiredLevel:0 },
+    ...COMMON_CHARACTERS,
   ],
 
-  // ── 아이 (CHILD) — RPG 직업 50종 (Lv 5단위 오픈) ──────────────
+  // ── 아이 (CHILD) — 기본 캐릭터 2종 + 공통 100종 ────────────────
   CHILD: [
-    // Lv 1 기본 10종
-    { id:'child-adventurer',        label:'모험가',     emoji:'🗡️',  requiredLevel:1  },
-    { id:'child-mage-apprentice',   label:'마법사견습', emoji:'📖',  requiredLevel:1  },
-    { id:'child-ninja',             label:'닌자',       emoji:'🥷',  requiredLevel:1  },
-    { id:'child-archer',            label:'궁수',       emoji:'🏹',  requiredLevel:1  },
-    { id:'child-detective',         label:'탐정',       emoji:'🔍',  requiredLevel:1  },
-    { id:'child-warrior',           label:'전사',       emoji:'🛡️',  requiredLevel:1  },
-    { id:'child-rogue',             label:'도적',       emoji:'🗝️',  requiredLevel:1  },
-    { id:'child-fairy',             label:'요정',       emoji:'🧚',  requiredLevel:1  },
-    { id:'child-student',           label:'학생',       emoji:'📚',  requiredLevel:1  },
-    { id:'child-hero',              label:'영웅',       emoji:'🦸',  requiredLevel:1  },
-    // Lv 5
-    { id:'child-knight',            label:'기사',       emoji:'🛡',  requiredLevel:5  },
-    { id:'child-paladin',           label:'팔라딘',     emoji:'🌟',  requiredLevel:5  },
-    { id:'child-bard',              label:'음유시인',   emoji:'🎸',  requiredLevel:5  },
-    { id:'child-ranger',            label:'레인저',     emoji:'🌲',  requiredLevel:5  },
-    // Lv 10
-    { id:'child-mage',              label:'마법사',     emoji:'🧙',  requiredLevel:10 },
-    { id:'child-druid',             label:'드루이드',   emoji:'🍀',  requiredLevel:10 },
-    { id:'child-monk',              label:'수도승',     emoji:'🙏',  requiredLevel:10 },
-    { id:'child-priest',            label:'사제',       emoji:'✝️',  requiredLevel:10 },
-    // Lv 15
-    { id:'child-gladiator',         label:'검투사',     emoji:'🏟️',  requiredLevel:15 },
-    { id:'child-assassin',          label:'암살자',     emoji:'🌑',  requiredLevel:15 },
-    { id:'child-alchemist',         label:'연금술사',   emoji:'⚗️',  requiredLevel:15 },
-    { id:'child-shaman',            label:'주술사',     emoji:'🔮',  requiredLevel:15 },
-    // Lv 20
-    { id:'child-dragon-rider',      label:'용기사',     emoji:'🐉',  requiredLevel:20 },
-    { id:'child-holy-knight',       label:'성기사',     emoji:'☀️',  requiredLevel:20 },
-    { id:'child-dark-blade',        label:'마검사',     emoji:'⚡',  requiredLevel:20 },
-    { id:'child-ice-mage',          label:'빙결마법사', emoji:'❄️',  requiredLevel:20 },
-    // Lv 25
-    { id:'child-dark-knight',       label:'흑기사',     emoji:'🖤',  requiredLevel:25 },
-    { id:'child-necromancer',       label:'강령술사',   emoji:'💀',  requiredLevel:25 },
-    { id:'child-elf-archer',        label:'엘프궁수',   emoji:'🌿',  requiredLevel:25 },
-    { id:'child-spell-blade',       label:'마법검사',   emoji:'💠',  requiredLevel:25 },
-    // Lv 30
-    { id:'child-archmage',          label:'대마법사',   emoji:'🌀',  requiredLevel:30 },
-    { id:'child-summoner',          label:'소환사',     emoji:'📿',  requiredLevel:30 },
-    { id:'child-angel-warrior',     label:'천사전사',   emoji:'😇',  requiredLevel:30 },
-    { id:'child-blood-mage',        label:'혈술사',     emoji:'🩸',  requiredLevel:30 },
-    // Lv 35
-    { id:'child-holy-sword',        label:'성검사',     emoji:'🗡',  requiredLevel:35 },
-    { id:'child-shadow-knight',     label:'그림자기사', emoji:'🌙',  requiredLevel:35 },
-    { id:'child-berserker',         label:'광전사',     emoji:'🔴',  requiredLevel:35 },
-    { id:'child-time-mage',         label:'시공술사',   emoji:'⏳',  requiredLevel:35 },
-    // Lv 40
-    { id:'child-hero-king',         label:'용사왕',     emoji:'👑',  requiredLevel:40 },
-    { id:'child-sage',              label:'현자',       emoji:'📜',  requiredLevel:40 },
-    { id:'child-conqueror',         label:'패왕',       emoji:'🏆',  requiredLevel:40 },
-    { id:'child-prophet',           label:'예언자',     emoji:'👁️',  requiredLevel:40 },
-    // Lv 45
-    { id:'child-celestial-knight',  label:'천기사',     emoji:'🌤️',  requiredLevel:45 },
-    { id:'child-demon-slayer',      label:'악마사냥꾼', emoji:'🔥',  requiredLevel:45 },
-    { id:'child-star-mage',         label:'별의마법사', emoji:'✨',  requiredLevel:45 },
-    { id:'child-myth-archer',       label:'신화궁수',   emoji:'🎯',  requiredLevel:45 },
-    // Lv 50
-    { id:'child-divine-warrior',    label:'신계전사',   emoji:'💎',  requiredLevel:50 },
-    { id:'child-absolute-mage',     label:'절대마법사', emoji:'🌌',  requiredLevel:50 },
-    { id:'child-undead-king',       label:'불사왕',     emoji:'💫',  requiredLevel:50 },
-    { id:'child-cosmos-hero',       label:'우주영웅',   emoji:'🌟',  requiredLevel:50 },
+    { id:'base-child-1', label:'핑크공주', emoji:'👸', requiredLevel:0 },
+    { id:'base-child-2', label:'보라전사', emoji:'🗡️', requiredLevel:0 },
+    ...COMMON_CHARACTERS,
   ],
 
+  // ── 게스트 (OBSERVER) — 기본 + 여행자 게스트 3종 + 공통 100종 ──
   OBSERVER: [
-    { id:'observer-grandma', label:'할머니', emoji:'👵', requiredLevel:1 },
-    { id:'observer-grandpa', label:'할아버지',emoji:'👴', requiredLevel:1 },
-    { id:'observer-uncle',   label:'삼촌',   emoji:'🧑', requiredLevel:1 },
-    { id:'observer-aunt',    label:'이모',   emoji:'👩', requiredLevel:1 },
-    { id:'observer-friend',  label:'친구',   emoji:'👤', requiredLevel:1 },
+    { id:'base-observer',      label:'이름없는 나그네',  emoji:'🧑',  requiredLevel:0 },
+    { id:'observer-bard',      label:'방랑 음악가',      emoji:'🎵',  requiredLevel:0 },
+    { id:'observer-healer',    label:'옆나라 치유사',    emoji:'💛',  requiredLevel:0 },
+    { id:'observer-knight',    label:'방랑 성기사',      emoji:'⚔️',  requiredLevel:0 },
+    ...COMMON_CHARACTERS,
   ],
 }
 
@@ -420,3 +370,62 @@ export const BANNER_BG: Record<string, string> = {
   genesis:'from-orange-300 to-yellow-100', godverse:'from-indigo-900 to-purple',
 }
 
+
+// ── 장비 카탈로그 (무기·투구·방패) ─────────────────────────────────
+export interface GearItem {
+  id: string
+  label: string
+  emoji: string
+  requiredLevel: number
+  slot: 'weapon' | 'helmet' | 'shield' | 'armor'
+  svgPath: string
+}
+
+export const WEAPON_ITEMS: GearItem[] = [
+  { id:'sword-basic',   label:'나무 검',    emoji:'🗡️', requiredLevel:1,  slot:'weapon', svgPath:'/assets/gear/weapon/sword-basic.svg' },
+  { id:'bow-basic',     label:'기본 활',    emoji:'🏹', requiredLevel:3,  slot:'weapon', svgPath:'/assets/gear/weapon/bow-basic.svg' },
+  { id:'axe-iron',      label:'철 도끼',    emoji:'🪓', requiredLevel:5,  slot:'weapon', svgPath:'/assets/gear/weapon/axe-iron.svg' },
+  { id:'sword-iron',    label:'철 검',      emoji:'⚔️', requiredLevel:8,  slot:'weapon', svgPath:'/assets/gear/weapon/sword-iron.svg' },
+  { id:'hammer-war',    label:'전쟁 해머',  emoji:'🔨', requiredLevel:10, slot:'weapon', svgPath:'/assets/gear/weapon/hammer-war.svg' },
+  { id:'staff-magic',   label:'마법 지팡이',emoji:'🪄', requiredLevel:12, slot:'weapon', svgPath:'/assets/gear/weapon/staff-magic.svg' },
+  { id:'sword-dark',    label:'암흑 검',    emoji:'🌑', requiredLevel:15, slot:'weapon', svgPath:'/assets/gear/weapon/sword-dark.svg' },
+  { id:'sword-gold',    label:'황금 검',    emoji:'✨', requiredLevel:20, slot:'weapon', svgPath:'/assets/gear/weapon/sword-gold.svg' },
+  { id:'lance-dragon',  label:'용 창',      emoji:'🐉', requiredLevel:25, slot:'weapon', svgPath:'/assets/gear/weapon/lance-dragon.svg' },
+  { id:'sword-crystal', label:'수정 검',    emoji:'💎', requiredLevel:30, slot:'weapon', svgPath:'/assets/gear/weapon/sword-crystal.svg' },
+]
+
+export const HELMET_ITEMS: GearItem[] = [
+  { id:'helmet-leather', label:'가죽 투구', emoji:'🪖', requiredLevel:2,  slot:'helmet', svgPath:'/assets/gear/helmet/helmet-leather.svg' },
+  { id:'helmet-iron',    label:'철 투구',   emoji:'🪖', requiredLevel:10, slot:'helmet', svgPath:'/assets/gear/helmet/helmet-iron.svg' },
+  { id:'helmet-gold',    label:'황금 왕관', emoji:'👑', requiredLevel:18, slot:'helmet', svgPath:'/assets/gear/helmet/helmet-gold.svg' },
+  { id:'helmet-magic',   label:'마법 투구', emoji:'💙', requiredLevel:22, slot:'helmet', svgPath:'/assets/gear/helmet/helmet-magic.svg' },
+  { id:'helmet-dragon',  label:'용 투구',   emoji:'🐉', requiredLevel:28, slot:'helmet', svgPath:'/assets/gear/helmet/helmet-dragon.svg' },
+]
+
+export const SHIELD_ITEMS: GearItem[] = [
+  { id:'shield-wood',   label:'나무 방패', emoji:'🛡️', requiredLevel:4,  slot:'shield', svgPath:'/assets/gear/shield/shield-wood.svg' },
+  { id:'shield-iron',   label:'철 방패',   emoji:'🛡️', requiredLevel:14, slot:'shield', svgPath:'/assets/gear/shield/shield-iron.svg' },
+  { id:'shield-gold',   label:'황금 방패', emoji:'⭐', requiredLevel:22, slot:'shield', svgPath:'/assets/gear/shield/shield-gold.svg' },
+  { id:'shield-magic',  label:'마법 방패', emoji:'💠', requiredLevel:28, slot:'shield', svgPath:'/assets/gear/shield/shield-magic.svg' },
+  { id:'shield-dragon', label:'용 방패',   emoji:'🔥', requiredLevel:32, slot:'shield', svgPath:'/assets/gear/shield/shield-dragon.svg' },
+]
+
+export const ARMOR_ITEMS: GearItem[] = [
+  { id:'armor-leather', label:'가죽 갑옷', emoji:'🧥', requiredLevel:2,  slot:'armor', svgPath:'/assets/gear/armor/armor-leather.svg' },
+  { id:'armor-iron',    label:'철 갑옷',   emoji:'🛡️', requiredLevel:8,  slot:'armor', svgPath:'/assets/gear/armor/armor-iron.svg' },
+  { id:'armor-chain',   label:'사슬 갑옷', emoji:'⛓️', requiredLevel:14, slot:'armor', svgPath:'/assets/gear/armor/armor-chain.svg' },
+  { id:'armor-gold',    label:'황금 갑옷', emoji:'✨', requiredLevel:20, slot:'armor', svgPath:'/assets/gear/armor/armor-gold.svg' },
+  { id:'armor-dragon',  label:'드래곤 갑옷',emoji:'🐉', requiredLevel:28, slot:'armor', svgPath:'/assets/gear/armor/armor-dragon.svg' },
+]
+
+export function getGearBySlot(slot: 'weapon'|'helmet'|'shield'|'armor'): GearItem[] {
+  if (slot === 'weapon') return WEAPON_ITEMS
+  if (slot === 'helmet') return HELMET_ITEMS
+  if (slot === 'shield') return SHIELD_ITEMS
+  return ARMOR_ITEMS
+}
+export function getUnlockedGear(slot: 'weapon'|'helmet'|'shield'|'armor', level: number, isParent: boolean): string[] {
+  const items = getGearBySlot(slot)
+  if (isParent) return items.map(i => i.id)
+  return items.filter(i => level >= i.requiredLevel).map(i => i.id)
+}

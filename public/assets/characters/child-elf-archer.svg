@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated;image-rendering:crisp-edges">
+  <!-- 엘프 귀 (뾰족하게 옆으로) -->
+  <rect x="4"  y="8" width="5"  height="2" fill="#F5C17A"/>
+  <rect x="3"  y="7" width="5"  height="3" fill="#E8A860"/>
+  <rect x="2"  y="8" width="4"  height="2" fill="#D89050"/>
+  <rect x="23" y="8" width="5"  height="2" fill="#F5C17A"/>
+  <rect x="24" y="7" width="5"  height="3" fill="#E8A860"/>
+  <rect x="26" y="8" width="4"  height="2" fill="#D89050"/>
+
+  <!-- ══ 머리 (은발, 엘프) ══ -->
+  <rect x="9"  y="1" width="14" height="2" fill="#D0E8D0"/>
+  <rect x="8"  y="2" width="16" height="3" fill="#C0D8C0"/>
+  <rect x="7"  y="4" width="2"  height="9" fill="#C0D8C0"/>
+  <rect x="23" y="4" width="2"  height="9" fill="#C0D8C0"/>
+  <rect x="8"  y="13" width="3" height="2" fill="#C0D8C0"/>
+  <rect x="21" y="13" width="3" height="2" fill="#C0D8C0"/>
+  <!-- 엘프 머리 하이라이트 -->
+  <rect x="12" y="2" width="8"  height="1" fill="#E8F0E8"/>
+
+  <!-- ══ 얼굴 ══ -->
+  <rect x="9"  y="4"  width="14" height="10" fill="#F5C17A"/>
+  <rect x="10" y="14" width="12" height="1"  fill="#F5C17A"/>
+  <rect x="11" y="15" width="10" height="1"  fill="#F5C17A"/>
+
+  <!-- ══ 눈썹 (사선) ══ -->
+  <rect x="10" y="5" width="5"  height="1" fill="#4A6840"/>
+  <rect x="14" y="4" width="2"  height="1" fill="#4A6840"/>
+  <rect x="17" y="5" width="5"  height="1" fill="#4A6840"/>
+  <rect x="16" y="4" width="2"  height="1" fill="#4A6840"/>
+
+  <!-- ══ 눈 (에메랄드, 엘프 날카로움) ══ -->
+  <rect x="10" y="7" width="5" height="4" fill="#1A0828"/>
+  <rect x="10" y="7" width="5" height="3" fill="#20807888"/>
+  <rect x="10" y="7" width="5" height="1" fill="#40C0A0"/>
+  <rect x="14" y="7" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="17" y="7" width="5" height="4" fill="#1A0828"/>
+  <rect x="17" y="7" width="5" height="3" fill="#208078"/>
+  <rect x="17" y="7" width="5" height="1" fill="#40C0A0"/>
+  <rect x="17" y="7" width="1" height="1" fill="#FFFFFF"/>
+
+  <!-- ══ 코·입 ══ -->
+  <rect x="15" y="10" width="2" height="1" fill="#DDA055"/>
+  <rect x="13" y="12" width="6" height="1" fill="#CC7744"/>
+  <rect x="14" y="13" width="4" height="1" fill="#AA5522"/>
+
+  <!-- ══ 목 ══ -->
+  <rect x="14" y="16" width="4" height="2" fill="#F5C17A"/>
+
+  <!-- ══ 엘프 궁수 의상 (은녹색) ══ -->
+  <!-- 어깨 망토 -->
+  <rect x="6"  y="17" width="5"  height="6" fill="#3A6040"/>
+  <rect x="21" y="17" width="5"  height="6" fill="#3A6040"/>
+  <rect x="6"  y="17" width="5"  height="1" fill="#5A8060"/>
+  <rect x="21" y="17" width="5"  height="1" fill="#5A8060"/>
+  <rect x="6"  y="22" width="5"  height="1" fill="#C0D8C0"/>
+  <rect x="21" y="22" width="5"  height="1" fill="#C0D8C0"/>
+  <!-- 가슴 갑옷 (가죽) -->
+  <rect x="10" y="17" width="12" height="1" fill="#C0D8C0"/>
+  <rect x="9"  y="18" width="14" height="7" fill="#3A5830"/>
+  <rect x="10" y="18" width="4"  height="3" fill="#5A7848"/>
+  <!-- 엘프 잎사귀 문양 -->
+  <rect x="14" y="21" width="4"  height="4" fill="#2A8040"/>
+  <rect x="13" y="22" width="6"  height="2" fill="#2A8040"/>
+  <rect x="15" y="20" width="2"  height="5" fill="#40A058"/>
+  <!-- 화살통 끈 -->
+  <rect x="13" y="18" width="2"  height="7" fill="#6B4A18"/>
+  <rect x="17" y="18" width="2"  height="7" fill="#6B4A18"/>
+
+  <!-- ══ 벨트 ══ -->
+  <rect x="9"  y="25" width="14" height="2" fill="#4A6840"/>
+  <rect x="9"  y="25" width="14" height="1" fill="#5A8050"/>
+  <rect x="14" y="24" width="4"  height="3" fill="#C0D8C0"/>
+
+  <!-- ══ 다리·부츠 ══ -->
+  <rect x="10" y="27" width="5" height="3" fill="#2A4830"/>
+  <rect x="17" y="27" width="5" height="3" fill="#2A4830"/>
+  <rect x="9"  y="30" width="6" height="2" fill="#3A5840"/>
+  <rect x="9"  y="30" width="6" height="1" fill="#5A7858"/>
+  <rect x="17" y="30" width="6" height="2" fill="#3A5840"/>
+  <rect x="17" y="30" width="6" height="1" fill="#5A7858"/>
+</svg>

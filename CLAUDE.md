@@ -19,7 +19,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | **디자인** | 마인크래프트 오마주 픽셀 아트 + 여아 감성 퍼플/핑크 |
 | **Firebase 프로젝트** | `family-quest-8b41b` |
 | **배포 URL** | `family-quest-8b41b.web.app` |
-| **현재 버전** | 2.1.0 |
+| **현재 버전** | 8.1 |
 
 ---
 
@@ -430,7 +430,631 @@ CHILD → border-approved | border-gold (id 해시로 자녀별 고유 배정)
 
 ---
 
-## 12. 현재 상태 (2026-05-31 Session 32 완료 기준 — v2.1.0, 미배포)
+## 12. 현재 상태 (2026-06-04 Session 51 완료 기준 — v8.1, 배포 완료)
+
+### 구현 완료 (Session 51 — v8.0~v8.1)
+
+- **[OBSERVER/게스트 기능 전면 삭제]**:
+  - LoginPage: GUEST 버튼 + `|` 구분자 제거
+  - App.tsx: `/observer-login` 라우트 + `ObserverLoginPage` import 제거
+  - (observerLogin.ts 유스케이스 파일은 미사용 상태로 잔존 — 추후 정리 가능)
+
+- **[스도쿠 생명 버그 수정]** (v8.0): `livesRef = useRef(3)` 추가로 stale closure 문제 해결
+
+- **[보상 페이지 개선]**:
+  - "수동 발송" / "경험치" 탭 이모지 제거 (텍스트만)
+  - 이달 획득 XP: `⭐` 이모지 → `star.svg` 인라인 이미지
+  - 일별 합계 `⭐` → `star.svg` (12px)
+
+- **[이모지 → SVG 교체]**:
+  - 홈: 공지사항 섹션 `📢` → megaphone.svg / 용사의 여정 `📜` → star.svg
+  - 프로필: PIN 번호 변경 `🔒` → save.svg (16px)
+  - SettingsPage 버튼 텍스트: `📌` / `💾` / `⚡` / `🚪` 이모지 제거 (텍스트만)
+  - NoticesPage 제목: `📢` 제거
+
+- **[Header 설정 드롭다운]**: 외부 클릭 시 자동 닫힘 `fixed inset-0` overlay로 기존 구현 확인 ✓
+
+### 코딩 규칙 추가 (Session 51)
+
+```typescript
+// 56. OBSERVER 역할 삭제 — LoginPage GUEST 버튼, App.tsx 라우트 제거
+//     Role 타입('OBSERVER')과 selectCharacter.ts OBSERVER 항목은 코드에 잔존하나
+//     실제 접근 경로가 없으므로 무해. 추후 domain 레이어 정리 시 일괄 삭제 예정
+//
+// 57. 이모지 UI 아이콘 원칙: BottomNav/Header/SettingsPage/ProfilePage 등
+//     UI 내 아이콘은 /assets/icons/*.svg 사용. 순수 텍스트 이모지(게임 문구, 채팅 이모지 패널) 제외
+```
+
+---
+
+## 12-prev. 이전 상태 (2026-06-04 Session 50 완료 기준 — v7.8, 배포 완료)
+
+### 구현 완료 (Session 50 — v7.2~v7.8)
+
+- **[members.html 가족소개 페이지]**: 4인 캐릭터 카드 (역할별 컬러 테두리, 96px SVG, 빛의 캐슬 스토리)
+  - 헤더 드롭다운 > 프로필 설정 하단에 "멤버소개" 진입점 배치
+- **[LoginAnimation]**: "Loading..." → "START!" 중간 로딩 단계 제거 (즉시 START!)
+- **[홈 캐릭터/펫 감정 인터랙션]**:
+  - 캐릭터/펫 터치 → music/star/begging SVG 아이콘 우상단 플로팅 (각각 독립 위치)
+  - 3회 연타 → 레벨1 귀찮음(작은 진동), 5회+ → 레벨2+skull 글로우
+  - 캐미오(방문 캐릭터) 클릭 → skull 즉시 출현 → 700ms 소멸
+  - 귀찮음 상태 중 자동 이동/롤/캐미오 스케줄 중단
+- **[SVG 카탈로그 개편]**: 상단 스펙 패널 (에셋 현황/픽셀 사양/기술 스펙/컬러 팔레트) + 카테고리별 viewBox 사이즈 표기
+- **[base-mom.svg 개선]**: 드레스 단축 + 다리 4px 가시화 (아빠와 동일 비율) + 페어리 스타일 하체 (라벤더·별장식·스타킹·퍼플 구두)
+- **[아빠잡기 해골(bomb) 수정]**: 💀 이모지 → skull.svg + 빨간 글로우. 확률 0%→6%(초반)/12%/22%로 조정
+- **[게임 5종 UX 개선]**:
+  - 슈퍼점핑: React HUD ♥ 중복 제거(Canvas만 표시), fallback 너구리 타원→사각형, 이단점프 힌트 `"💡 공중에서 한 번 더 탭!"` 금색 텍스트
+  - 언도쿠: 생명 2개 → 3개
+  - GAME_META desc 5종 전면 개선 (2단점프·해골경고·엄마보너스 등 핵심 조작 포함)
+- **[UI 클릭 사운드]**: BottomNav 탭 + Header 드롭다운 아이템(프로필/멤버소개/작업공간/로그아웃) + 뒤로가기 + 설정 아이콘 클릭 시 keyClick() 재생
+- **[report/session-overview.md]**: 버전히스토리·아키텍처·SVG시스템·게임·보상 종합 문서 생성
+
+### 파일 구조 (Session 50 신규/수정)
+
+```
+public/
+  members.html                          ← 가족 소개 정적 페이지 (신규)
+  assets/characters/base-mom.svg        ← 다리 개선 + 페어리 하체
+
+src/presentation/
+  components/animations/LoginAnimation.tsx  ← Loading 단계 제거
+  components/layout/BottomNav.tsx           ← 탭 클릭 keyClick 사운드
+  components/layout/Header.tsx              ← 드롭다운 클릭 keyClick 사운드
+  pages/home/HomePage.tsx                   ← 감정 인터랙션 시스템
+  pages/game/GamePage.tsx                   ← GAME_META desc 5종 개선
+  pages/game/PonpokoGame.tsx                ← HUD ♥ 제거, 이단점프 힌트
+  pages/game/SudokuGame.tsx                 ← 생명 3개
+  pages/game/WhacAMoleGame.tsx              ← skull.svg, 확률 조정
+
+report/session-overview.md               ← 종합 기술 문서 (신규)
+docs/svg-catalog/catalog.html            ← 스펙 패널 + viewBox 사이즈
+```
+
+### 코딩 규칙 추가 (Session 50)
+
+```typescript
+// 53. UI 클릭 사운드: BottomNav NavLink, Header 드롭다운 항목, 뒤로가기
+//     모두 audioManager.keyClick() 호출 — 사용자 인터랙션 피드백
+//
+// 54. 캐릭터 터치 감정 인터랙션 (홈):
+//     processTap() 공통 카운터 → handleCharOrPetTap(캐릭터), handlePetTap(펫), handleCameoTap(캐미오)
+//     각각 emotionBubbles / petEmotionBubbles / cameoBubble 독립 상태
+//     annoyedLevelRef: 스케줄러 클로저에서 직접 참조 (state 미사용)
+//
+// 55. 게임 HUD 중복 정보 원칙 (Rule 52 강화):
+//     Canvas drawHUD에 표시된 정보(♥ 생명 등)는 React 하단바에 절대 중복 표시 금지
+//     PonpokoGame: uiLives → _uiLives (미사용 선언, setUiLives만 사용)
+```
+
+### 미완성 (Session 50 이후)
+
+| 항목 | 비고 |
+|------|------|
+| 언도쿠 퍼즐 단일 정답 보장 알고리즘 | Lv3~5 백트래킹 |
+| FCM 푸시 알림 + Badging API | 2~3세션 |
+| 너구리 원작 구현 (다층 플랫폼) | 전용 1~2세션 |
+
+---
+
+## 12-prev. 이전 상태 (2026-06-04 Session 49 완료 기준 — v7.1, 배포 완료)
+
+### 구현 완료 (Session 49)
+
+- **[게임 4종 대규모 업그레이드]** (v7.0→7.1):
+  - 갤러그: 웨이브 전환 2초 STAGE X 화면 + 특수 적 3종(속도/점수/윙맨) + 아이템 사인파 낙하
+  - 슈퍼점핑: 빨간 코인 10% 확률 (+20점, 노란 +10의 2배)
+  - 아빠잡기: 5종 SVG 배경 + 엄마 캐릭터(3~8%) + 시간 보너스(+5/+10초) + 최대 60초
+  - 언도쿠: SVG 배경 + 가족 방문객(45초 주기) + 캐릭터 좌상단 bob 애니 + 펫 우하단
+
+- **[캐릭터 시스템 확장]**:
+  - CHILD 직업 재편: child-* Lv1~50, com-* Lv51~99 (아이 레벨 진행 통합)
+  - 게스트(OBSERVER) 3종 추가: observer-bard, observer-healer, observer-knight
+  - 게스트 포트레이트 5종 보관: guest-dad/mom/seoyoon/hayoon/wanderer.svg (56px 표시용)
+
+- **[아이콘 10종 신규]**: 감정(행복/사랑/슬픔/화남/놀람) + UI(검색/필터/공유/완료/닫기)
+
+- **[SVG 카탈로그 갱신]**:
+  - 가족 스토리 카드 (기존 스프라이트 + 직업·성향 스토리)
+  - CHILD+COM → 아이직업(Lv1~50) + 확장직업(Lv51~99) 통합 표기
+  - UI 아이콘 섹션에 감정/UI 신규 아이콘 통합
+
+### 파일 구조 (v7.1 기준 신규)
+
+```
+public/assets/characters/
+  observer-bard.svg, observer-healer.svg, observer-knight.svg  ← 게스트 3종
+  guest-dad.svg, guest-mom.svg, guest-seoyoon.svg, guest-hayoon.svg, guest-wanderer.svg  ← 포트레이트 보관
+
+public/assets/icons/
+  emotion-happy/love/sad/angry/surprise.svg  ← 감정 아이콘 5종
+  search/filter/share/check-circle/close-x.svg  ← UI 액션 5종
+
+docs/svg-catalog/
+  characters/  ← 기존 레거시 스프라이트 old-base-*.svg 보관
+```
+
+---
+
+## 12-prev. 이전 상태 (2026-06-04 Session 48 완료 기준 — v6.5, 배포 완료)
+
+### 구현 완료 (Session 48)
+
+- **[SVG 카탈로그]**: `docs/svg-catalog/README.md` 생성 — 전체 SVG 에셋(캐릭터·펫·배경·장비·아이콘) 분류 정리
+- **[갤러그 생명 중복 제거]**: 캔버스 HUD에 이미 ♥ 표시 → 하단 React 생명 표시 제거
+- **[게임 HUD 버튼 전체 통일]** — 5개 게임 모두 동일한 ⏸ PAUSE + EXIT 구조:
+  - 크기: `min-w-[44px] h-9` (1.5배) — 기존 `w-9 h-7` 대비 확대
+  - **⏸ PAUSE**: 회색 배경, 재생 중 ⏸/일시정지 중 ▶ 토글
+  - **EXIT**: 빨간 배경(`bg-rejected`) + 흰색 폰트 — 직관적 이탈 신호
+  - GalagaGame, PonpokoGame, WhacAMoleGame, SudokuGame 모두 `onBack` prop 추가 + GamePage에서 `handleBack` 전달
+  - MinesweeperGame 기존 버튼 → 동일 규격으로 리사이즈
+- **[설정 아이콘 전체 SVG 완성]**: 설정 섹션 2·3 이모지 전부 SVG 교체
+  - 🎁→`gift.svg`, 🙏→`begging.svg`, 💌→`letter.svg`, 📅→`calendar.svg`, 📌→`star.svg`
+  - 💬→`trash.svg`(채팅 삭제 위험 표시 개선)
+
+### 코딩 규칙 추가 (Session 48)
+
+```typescript
+// 51. 게임 HUD 버튼 표준 (전 게임 통일):
+//     ⏸ PAUSE: min-w-[44px] h-9 bg-panel-dark border-2 border-panel-border font-pixel text-base
+//     EXIT:    min-w-[54px] h-9 bg-rejected border-2 border-rejected/60 font-pixel text-xs text-white
+//     모든 게임에 onBack? prop 추가 → GamePage에서 handleBack 전달
+//
+// 52. 캔버스 HUD(drawHUD)와 React UI의 중복 정보 최소화
+//     캔버스에 이미 있는 정보는 React 하단바에 표시 안 함 (생명 등)
+```
+
+### 파일 추가 (Session 48)
+
+```
+docs/svg-catalog/README.md  ← 전체 SVG 에셋 분류 카탈로그
+public/assets/icons/
+  gift.svg, letter.svg, star.svg, trash.svg  ← 설정 아이콘 신규
+```
+
+---
+
+## 12-prev. 이전 상태 (2026-06-04 Session 47 완료 기준 — v6.2, 배포 완료)
+
+### 구현 완료 (Session 47)
+
+- **[아이콘 개편]**:
+  - `sword.svg` → 쌍칼(X형) 제거, **직선 단검** (날 끝↑, 황금 가드, 나무 손잡이)
+  - `begging.svg` → 두 손 모양 제거, **흰색 픽셀 하트** (분홍 하이라이트)
+  - 영향: BottomNav 퀘스트 탭 + 홈 부모 퀵메뉴 + 아이 플로팅 버튼
+
+- **[플로팅 버튼 텍스트 변경]**:
+  - 아이 홈 플로팅 버튼: "조르기" → **"부탁해요"** (더 직관적)
+  - 부모 퀵메뉴: "조르기 관리" → **"부탁 관리"**
+
+---
+
+## 12-prev. 이전 상태 (2026-06-04 Session 46 완료 기준 — v6.1, 배포 완료)
+
+### 구현 완료 (Session 46)
+
+- **[게임 일시정지 시스템]**: 4개 게임 전부 ⏸/▶ 버튼 추가
+  - GalagaGame: HUD 하단바 우측, `pausedRef` + RAF 스킵 패턴
+  - PonpokoGame: 스코어바 우측, 동일 패턴
+  - MinesweeperGame: HUD 우측 (✕ 옆), `paused` state + `savedElapsed` 보정 타이머
+  - WhacAMoleGame: HUD 콤보 영역 아래, `gameActive.current` 연동
+  - 일시정지 오버레이: 각 게임 내부 `absolute` 다크 오버레이
+  - **위치 원칙**: 모든 ⏸ 버튼이 게임 조작 버튼(하단 패드)과 분리된 HUD 영역에 배치
+
+- **[두근두근 질문함 개선]**:
+  - 모달 하단 버튼 짤림 수정: `overflow-y-auto max-h-[92dvh]` + `paddingBottom: env(safe-area-inset-bottom)`
+  - 오늘 완료 시 `return null` → **완료 도장 UI** 표시 (초록 테두리 + ✓ 배지 + "오늘 완료 ✓")
+  - 버튼 없는 정적 표시 — 아이들이 "흔적" 확인 가능
+
+- **[언도쿠(Undoku) 게임 신규]** (`SudokuGame.tsx`):
+  - 5단계 난이도 (입문⭐~최고⭐⭐⭐⭐⭐), 처음부터 전부 선택 가능
+  - 생명 ♥♥ 2개 — 오답 2회 즉시 게임오버 + 5초 플래시
+  - 시간 기반 점수: `기본점수 × (1 + 잔여시간/전체시간)` (Lv5 최대 10,000pts)
+  - Lv5 가변 타이머: 클리어할수록 1분씩 감소 (최소 3분, localStorage 저장)
+  - 아빠 FIGHTING!!! 슈웅: 게임 시작 시 base-dad.svg + CSS `@keyframes swoosh-lr`
+  - 엄마 Congratulation ❤️ 슈웅: ResultScreen 1위 달성 시 `@keyframes swoosh-rl`
+  - 캐릭터+펫 우하단 배치 — 정답(점프)/오답(흔들기)/완성(celebrate) 반응
+  - `game_scores` 컬렉션 연동: `gameId: 'sudoku'`
+
+- **[장비/프로필 개선]**:
+  - 투구 크기 20% 증가 (`charSize * 0.396`)
+  - 방패/무기 크기 20% 증가 + 약간 위로 (`charSize * 0.444`, y: 26/32→22/32)
+  - **무기 ↔ 방패 위치 교체**: 무기=왼손, 방패=오른손
+  - 검 5종 SVG 재설계: 나무검·황금검·철검·암흑검·수정검 모두 직선 날 + `rotate(-25deg)` 기울기
+  - 마이펫·장비 **두 번 클릭 = 선택 해제** (`allowDeselect` prop)
+  - 게임오버 BACK 버튼 `fontMode="pixel"` 통일
+
+### 파일 변경 (Session 46)
+
+```
+신규:
+  src/presentation/pages/game/SudokuGame.tsx
+  src/styles/pixel-theme.css (@keyframes swoosh-lr/swoosh-rl 추가)
+  docs/01-plan/features/sudoku-game.plan.md
+
+수정:
+  src/infrastructure/firebase/collections/gameScores.ts  (GameId: sudoku 추가)
+  src/presentation/pages/game/GamePage.tsx               (언도쿠 연동 + ResultScreen 슈웅)
+  src/presentation/pages/game/GalagaGame.tsx             (일시정지)
+  src/presentation/pages/game/PonpokoGame.tsx            (일시정지)
+  src/presentation/pages/game/MinesweeperGame.tsx        (일시정지)
+  src/presentation/pages/game/WhacAMoleGame.tsx          (일시정지)
+  src/presentation/components/character/CharacterSprite.tsx (장비 크기/위치 교체)
+  src/presentation/components/character/InventoryGrid.tsx   (allowDeselect)
+  src/presentation/pages/profile/ProfilePage.tsx            (allowDeselect 적용)
+  src/presentation/pages/home/QuestionBalloon.tsx           (하단 짤림 수정 + 완료 도장)
+  public/assets/gear/weapon/sword-*.svg (5종 재설계)
+```
+
+### 코딩 규칙 추가 (Session 46)
+
+```typescript
+// 46. 게임 일시정지 패턴 (Canvas RAF 게임):
+//     pausedRef = useRef(false)  — RAF tick에서 early return
+//     togglePause(): pausedRef.current = !pausedRef.current + setUiPaused(...)
+//     일시정지 오버레이: z-20, absolute inset-0, bg-black/65
+//     위치: HUD 영역 (조작 버튼 패드와 완전 분리)
+//
+// 47. 언도쿠 GameId: 'sudoku' (불변) — game_scores 컬렉션 저장 키
+//     언도쿠 Lv5 가변 타이머: fq_sudoku_lv5_clears (localStorage, 클리어마다 +1)
+//     레벨별 최고점: fq_sudoku_best_lv[1-5] (localStorage)
+//
+// 48. 슈웅 애니메이션: swoosh-lr (좌→우), swoosh-rl (우→좌)
+//     pixel-theme.css에 정의, translateX + skewX(-12deg) 속도감
+//     발동: showXxx = true → setTimeout → false (단발 트리거)
+//
+// 49. InventoryGrid allowDeselect: 선택된 아이템 재클릭 → onSelect('') 호출
+//     빈 문자열 ''로 저장 → CharacterSprite에서 null로 처리 → 미표시
+//     ProfilePage handleSelectPet: petId !== '' 조건으로 unlock 체크 건너뜀
+//
+// 50. QuestionBalloon 완료 도장: isTodayQuestionDone → 버튼 숨김 아님, 도장 UI 표시
+//     아이들이 "오늘 완료 ✓" 확인 가능 — return null 패턴 금지
+```
+
+### 미완성 (추후 진행)
+
+| 항목 | 비고 |
+|------|------|
+| 언도쿠 퍼즐 유일해 검증 강화 | Lv3-5 백트래킹 생성 시 단일 정답 보장 알고리즘 |
+| FCM 푸시 + Badging API | 1:1 메시지 백그라운드 알림 뱃지 (2~3세션) |
+| 게임 1 (끝없는 러너 2.0) | PonpokoGame 확장, 내 캐릭터 SVG 적 시스템 |
+| 게임 2 (보스 레이드) | 1:1 배틀, scale² HP 공식, 랜덤 보스 |
+
+---
+
+## 12-prev. 이전 상태 (2026-06-04 Session 45 완료 기준 — v5.8, 배포 완료)
+
+### 구현 완료 (Session 45)
+
+- **[배포 규칙]**: 로컬 먼저, 상용 배포는 명시 지시 후에만 실행 (메모리 저장)
+- **[프로필 설정 전면 개편]**:
+  - 상단: 장비/펫 모두 보이는 `lg` 사이즈 정적 캐릭터 프리뷰 (클리핑 없이 패딩으로 보장)
+  - 장비 오버레이 크기: charSize 비례(0.46×/0.33×/0.37×) → 박스 내부 수용
+  - 펫 바운스 없음 (`petAnimate={false}`)
+  - 탭 버튼: 4열 컴팩트 (아이콘 없음, 텍스트만)
+  - 진입 시 '캐릭터' 탭 기본 오픈
+- **[내 땅 배경 SVG Lv1~50 완성]** (50종 전체):
+  - Lv31~50 20종 신규: black-hole~godverse (우주/신비 테마)
+  - BANNER_SVG_SET 등록 완료
+- **[장비 시스템 v2 확장]**:
+  - 무기: 5→10종 (도끼·전쟁해머·암흑검·용창·수정검 추가)
+  - 투구: 3→5종 (마법투구·용투구 추가)
+  - 방패: 2→5종 (황금·마법·용 추가)
+  - **갑옷 신규 슬롯**: 5종 (가죽·철·사슬·황금·드래곤), equipment[3], 몸통 중앙 z=8
+  - Z-index: 갑옷(8)<투구(10)<방패(12)<무기(13) — 레이어 겹침 정책
+- **[BottomNav + Header SVG 아이콘 개선]**:
+  - BottomNav: 쌍칼(X형), 밝은 집/달력/메시지/트로피/게임패드
+  - Header: 음표3개·종·톱니바퀴(설정) SVG, 테두리 제거
+  - begging.svg 신규 추가
+- **[홈화면 개선]**:
+  - 캐릭터 지그재그 이동 (중앙→우→좌상→좌→우하): 3.5~7초 대기 후 18%확률로 걷기
+  - 걷기 중: `animate-char-walk` (±2도 틸팅+2.5px 바운스 0.42s)
+  - 방향 반전: 이동 방향에 따라 scaleX(-1) 전환
+  - 게스트(캐미오)+펫 겹침 방지: 펫 보일 때 캐미오 반드시 왼쪽 등장
+  - HUD 중앙: Lv 배지 → **직업명** (CHARACTER_LABELS)
+  - HUD 좌측: font-korean → font-pixel text-[11px], 👑 이모지 제거
+  - 퀵메뉴: ⚔️→쌍칼SVG, 🙏→begging.svg, 🏆→trophy SVG
+  - 용사의 여정: 이모지 → **빨간점(미읽)/회색점(읽음)**
+  - 공지사항 항목: 📢 이모지 → **금색 점**
+- **[게임 시스템 개편]**:
+  - 너구리→**슈퍼점핑**: 로그인 캐릭터 SVG 플레이어, 발 애니 sin×0.35 계승
+  - 지뢰찾기→**마이펫 찾기**: 지뢰 셀에 마이펫 SVG
+  - 두더지잡기→**아빠 잡기**: base-dad SVG, 타격 시 `animate-dad-hit` 쓰러짐 CSS
+  - 아빠 잡기 배경: `bg-panel-darkest`→`#3A6B2A` (밝은 초록), 구멍 흙색
+  - 게임 선택 화면: 이모지→SVG (ponpoko=내 캐릭터, minesweeper=내 펫, whacamole=base-dad)
+  - 대회 HUD: 🏆→trophy SVG
+- **[보상 체계 개편]**:
+  - 조르기 자동보상 제거 (BeggingManagePage sendManualReward 삭제)
+  - 미션 자동보상 제거 (approveMission grantReward 삭제)
+  - GOOD 슬롯 XP 지급 제거
+  - **퀘스트 완료 XP**: 퀘스트 종료(⏹) 시 targetMembers 전원에게 난이도×10 XP
+  - **두근두근 질문 XP**: +10/+20 → Firebase exp + rewards 컬렉션 기록
+  - **게임 1위 탈환 XP**: +10 XP → Firebase exp + rewards 기록
+  - rewards.ts: `recordXPReward()` 헬퍼 추가 (source: xp_question/xp_quest/xp_game)
+- **[보상 페이지 재설계]**:
+  - 탭 분리: **🎁 수동 발송** (조르기·미션 제외) / **⭐ 경험치** (질문·퀘스트·게임)
+  - 일별 집계: 날짜 헤더 + 당일 합계 + 건별 내역 (건별 나열 폐지)
+  - 월 요약 카드 2개: 수동발송 총액 / 경험치 합계
+
+### 파일 구조
+
+```
+public/assets/
+  characters/  ← 캐릭터 SVG (base-*5종 + child-*49종 + com-*45종)
+  pets/        ← 펫 SVG 50종
+  backgrounds/ ← 내 땅 배경 SVG 50종 (Lv1~50 완성)
+  icons/       ← UI 아이콘 SVG (BottomNav 6종 + Header 3종 + begging)
+  gear/
+    weapon/    ← 무기 SVG 10종
+    helmet/    ← 투구 SVG 5종
+    shield/    ← 방패 SVG 5종
+    armor/     ← 갑옷 SVG 5종 (신규)
+```
+
+### 보상 체계 규칙 (v5.8 확정)
+
+| 보상 종류 | 발생 조건 | 저장 |
+|-----------|-----------|------|
+| 수동 발송 | 부모 직접 발송 | rewards (source=manual) |
+| 퀘스트 완료 XP | 퀘스트 ⏹ 종료 시, 대상 아이 전원, 난이도×10 | rewards (source=xp_quest) + member.exp |
+| 두근두근 XP | 질문 답변 제출, +10 또는 +20 랜덤 | rewards (source=xp_question) + member.exp |
+| 게임 1위 XP | 가족 1위 탈환 시, +10 | rewards (source=xp_game) + member.exp |
+
+### 미완성 (추후 진행)
+
+| 항목 | 비고 |
+|------|------|
+| 직업 149종 나신 전환 | 장기 작업 |
+| 무기/투구/방패 추가 종류 | 필요 시 |
+| doc/sprites 카탈로그 | 문서화 |
+
+---
+
+## 12-prev. 이전 상태 (2026-06-03 Session 44 완료 기준 — v5.0, 배포 완료)
+
+### 구현 완료 (Session 43 — SVG 스프라이트 전면 교체)
+
+- **[두더지잡기 게임 추가]**: WhacAMoleGame.tsx, SFX 4종, GamePage 연동
+- **[사운드 전체 보강]**: 카운트다운/GOOD슬롯/아이확인/보상/칭찬스티커 SFX 추가
+- **[SVG 픽셀 아트 시스템 구축]** — 이모지 → SVG 전면 교체:
+  - 기본 캐릭터 5종: `base-dad`(슈퍼맨+안경), `base-mom`(마녀), `base-child-1`(핑크공주), `base-child-2`(보라전사), `base-observer`(모험가)
+  - GNB 헤더 아이콘: 🎸→기타SVG, 🌟→별SVG, 🎒→배낭SVG
+  - BottomNav 6종: home/sword/calendar/message/trophy/gamepad SVG
+  - CHILD 직업 49종 SVG (Lv1~50)
+  - COM 공통 직업 45종 SVG
+  - 펫 50종 SVG (`/public/assets/pets/`)
+  - 내 땅(배경) 30종 SVG (`/public/assets/backgrounds/`) — Lv1~30 완료
+  - 총 **159개+ SVG** 제작
+- **[100종 통합 직업 시스템]**: DAD/MOM/CHILD 각각 → 공통 100종(base + COMMON_CHARACTERS)
+- **[프로필 개선]**:
+  - `CharacterSprite`에 `worldBanner` prop 추가 → 내 땅 SVG가 캐릭터 박스 배경으로 표시
+  - InventoryGrid: 캐릭터/펫/배경 모두 SVG 렌더링 (이모지 숨김)
+  - '등급' → '내 땅' 명칭 변경
+  - 기본 캐릭터 항상 첫 번째 슬롯
+- **[두근두근 질문 보상]**: 답변 시 XP +10 또는 +20 랜덤 지급
+- **[버전]**: 1.0 → 1.8 → 2.8
+
+### 파일 구조
+
+```
+public/assets/
+  characters/  ← 캐릭터 SVG (base-*5종 + child-*49종 + com-*45종)
+  pets/        ← 펫 SVG 50종
+  backgrounds/ ← 내 땅 배경 SVG 30종 (Lv1~30)
+  icons/       ← UI 아이콘 SVG (GNB/BottomNav)
+```
+
+### 미완성 (추후 진행)
+
+| 항목 | 비고 |
+|------|------|
+| 내 땅 배경 SVG Lv31~50 (20종) | 다음 세션 |
+| doc/sprites 카탈로그 | 다음 세션 |
+| 무기/아이템 시스템 확장 | 설계 필요 |
+
+---
+
+## 12-prev. 이전 상태 (2026-06-02 Session 42 완료 기준 — v3.1.1, 배포 완료)
+
+### 구현 완료 (Session 42 — Gap 분석 + 품질 개선)
+
+- **[Gap Analysis → 86% → 91%+ 개선]**:
+  - **I-1** `useEffectTrigger.ts` 전역 훅 신규 생성 (`src/presentation/components/effects/useEffectTrigger.ts`) — 미래 EffectOverlay 확장 인터페이스
+  - **I-2** EffectOverlay `prefers-reduced-motion` 가드 — 접근성 대응, true면 즉시 onEnd 호출 후 렌더 스킵
+  - **I-3** PixelModal `body.modal-open` 토글 — 모달 열린 중 EffectOverlay 발동 차단. `useEffect open→add / cleanup→remove`
+  - **I-4** T6 stale navigate 버그 수정 — `rewardNavTimer = useRef` + `useEffect cleanup`으로 언마운트 시 setTimeout 자동 취소 (HomePage.tsx)
+  - **M-1** MessagesPage `text-[10px]` 3곳 → `text-xs` 폰트 규칙 준수
+  - **M-4** EffectOverlay `buildParticles` → `useMemo([type,count])` 메모이즈 + `onEnd` deps 제거로 타이머 리셋 방지
+  - `tsc --noEmit` 에러 0개
+
+- **[로그인 페이지 버그 수정]**:
+  - **펫 오류 수정**: 캐릭터 선택 카드에 `petId={null}` `weapon={null}` 명시 — localStorage currentPet 폴백으로 전원 동일 펫 표시되던 버그 해결
+  - **엄마/아빠 중복 제거**: `({realName})` 괄호 라인 삭제, `👑 아빠`/`👑 엄마` 역할 텍스트 삭제 (이름만 표시)
+  - PIN 입력 화면도 동일하게 적용
+
+### 파일 구조 추가
+
+```
+src/presentation/components/effects/
+  EffectOverlay.tsx      ← 파티클 오버레이 (prefers-reduced-motion + modal-open 억제)
+  useEffectTrigger.ts    ← 전역 트리거 훅 (NEW)
+```
+
+### 미완성 (Session 42 이후 잔존)
+
+| 항목 | 비고 |
+|------|------|
+| 게임 중 Header 뒤로가기 버튼 — 의도적 미수정 (사용자 요청) | 다음 세션 검토 |
+| T7 DM 채팅 이펙트 미지원 (그룹챗만) | Minor — 말풍선 아우라는 DM도 동작 |
+
+---
+
+## 12-prev. 이전 상태 (2026-06-02 Session 41 완료 기준 — v3.1.0, 배포 완료)
+
+### 구현 완료 (Session 41 — 도파민 이펙트 + UX 정밀 수술)
+
+- **[도파민 폭발 동적 반응 시스템 — T1~T7 전부 구현]**:
+  - **EffectOverlay 컴포넌트** (`src/presentation/components/effects/EffectOverlay.tsx`): 5종 파티클(confetti/hearts/stars/coins/fire), z-9990 pointer-events-none, autoDestroy
+  - **T1** 아이 퀘스트 확인 버튼 → 🎉 폭죽 28개 (MissionDetailPage)
+  - **T2** 부모 GOOD 슬롯 평가 → ⭐ 별 샤워 20개 (MissionDetailPage)
+  - **T3** 칭찬 스티커 신규 수신 → ❤️ 하트 부유 22개 (PraiseWhiteboard, prevCountRef로 초기 로드 방지)
+  - **T4** 게임 개인 신기록 → ⭐ 별 샤워 + "⭐ NEW RECORD!" 배너 (GamePage)
+  - **T5** 게임 가족 1등 탈환 → 🎉 폭죽 30개 + "🏆 FAMILY #1!" 배너 (GamePage)
+  - **T6** 보상 알림 클릭 → 🪙 코인 이펙트 1s 재생 후 navigate (HomePage, T6 버그 수정: 즉시navigate→언마운트 방지)
+  - **T7** 메신저 특수이모지(🎉❤️⭐🔥) 수신 4초이내 → 전체화면 이펙트 양쪽 동시 발동 (MessagesPage, triggeredMsgIds Set 중복방지)
+  - **말풍선 아우라**: 특수이모지 포함 메시지에 `animate-special-bubble` 색상별 맥박 발광 + 이펙트 라벨 배지
+  - **✨이펙트 탭**: 메신저 이모지 패널 첫 탭에 이펙트 이모지 모음 + 골드 강조, 하단 힌트 스트립 제거
+
+- **[UX 정밀 수술]**:
+  - **공지사항 섹션**: 용사의 여정과 동일한 PixelCard + 폰트 규격(t-sub/text-xs/text-gold), 5개→3개
+  - **공지사항 수정 기능**: NoticesPage에 인라인 편집 폼 추가, updatedAt 필드 + notices.ts updateNotice 함수 신규
+  - **공지사항 등록일·수정일**: 목록 행에 `등록 MM/DD HH:MM` · `수정 HH:MM` 표시
+  - **HomePage 오늘의 퀘스트 위젯 삭제**: TodayQuestWidget + SLOT_DISPLAY 완전 제거
+  - **HomePage 랜덤 응원 말풍선 완전 삭제**: CHEER_POOL + pickCheer + RandomCheerBubble 코드 완전 제거, members state/subscribeMembers import 제거
+  - **캐릭터 상자 회색 폰트 제거**: jobLabel(`⚔️ 용기사` 등) 삭제, CHARACTER_LABELS import 제거, 여백 자연스럽게 유지
+  - **아이 홈 캐릭터 버그 수정**: `displayCharId = currentSkin || Firebase값` → `displayCharId = currentMember.character.characterId` (localStorage currentSkin이 다른 사용자 값 섞임 문제 완전 해결)
+  - `tsc --noEmit` 에러 0개
+
+### 미완성 (Session 41 이후 잔존)
+
+| 항목 | 비고 |
+|------|------|
+| 게임 중 Header 뒤로가기 버튼 — 의도적 미수정 (사용자 요청) | 다음 세션 검토 |
+
+---
+
+## 12-prev. 이전 상태 (2026-06-02 Session 40 완료 기준 — v3.0.0, 배포 완료)
+
+### 구현 완료 (Session 39+40 — UX 전면 정비)
+
+- **[Session 39 — 코드 정리 + RPG 홈 카드 + 퀘스트 위젯]**:
+  - **보상 발송/칭찬스티커 코인 이펙트**: 발송 성공 시 🪙 3개 `animate-coin-drop` (0.22s 스태거)
+  - **미사용 파일 11개 삭제**: `family_app_spec*.py` 4개, `captures/`, `report/`, `uiStore.ts`, `SpeechBubble.tsx`, `respondMission.ts`, `completeMission.ts`, `security-rules.txt`
+  - **홈 상단 RPG 스탯 카드**: 픽셀 도트 그리드 오버레이 + Lv 배지 + ⭐ATK(이번주 Good) / ⚔️QST(진행 중) 스탯박스 + 하단 편집 바
+  - **오늘의 퀘스트 위젯 (아이 전용)**: ACTIVE 미션별 오늘 슬롯 상태 실시간 표시 (⭐잘했어요/📋미평가/⏸보류), 최대 4개, 탭 → 미션 상세
+  - **GOOD 슬롯 XP 버그 수정**: `addGameXP`(부모 localStorage) → 아이 Firebase `member.exp` 업데이트 + 아이에게 MISSION_APPROVED 알림 발송, 이전 슬롯 GOOD 시 중복 적립 방지
+  - **missions.ts 데드코드 제거**: `subscribeMemberMissions`, `updateMissionStatus` 삭제
+  - `tsc --noEmit` 에러 0개
+
+- **[Session 40 — 메신저/홈/달력/설정 전면 정비]**:
+  - **메신저 이름 중복 완전 해결**: `t-pixel-shadow` + `font-bold` 제거 → 얇은 단일 이름 태그. 날짜 구분선 시 `lastSenderId` 유지(연속 같은 발신자 이름 재노출 방지). `weapon={null}` MessageBubble 적용
+  - **닉네임 옆 실명 표시**: `nick (realName)` 형식으로 표시 (닉네임≠실명일 때만)
+  - **원터치 응원 완전 삭제**: SettingsPage AccordionSection + 관련 state/함수 + CheerOverlay(HomePage) 전부 제거
+  - **채팅 기록 삭제 기능**: DAD 작업방 → 💬 AccordionSection 추가, `clearAllFamilyMessages()` 헬퍼 신규
+  - **홈 화면 밸런스**: PraiseWhiteboard → 공지사항 아래 하단으로 이동. CheerOverlay 제거
+  - **두근두근 질문함 리디자인**: 📝→💌 하트 버튼(분홍 테두리+두근두근 텍스트), QuestionModal 다크 테마+하트 말풍선 스타일
+  - **달력 오늘 날짜 단일 테두리**: `isToday && hasSpecial` 시 `card-highlight`+`ring-2 ring-gold` 이중 적용 → `inventory-slot !border-2 !border-gold bg-gold/10` 단일화 (월간/주간 모두)
+  - **새로고침 녹색 배경 수정**: `ProtectedRoute` 로딩 `bg-minecraft`(초록) → `bg-panel-darkest`
+  - **용사의 여정 피드 5개**: `slice(10)` → `slice(5)`
+  - **배포**: v2.9.0 (Session 39), v3.0.0 (Session 40) 순차 배포
+  - `tsc --noEmit` 에러 0개
+
+### 미완성 (Session 40 이후 잔존)
+
+| 항목 | 비고 |
+|------|------|
+| 게임 중 Header 뒤로가기 버튼 — 의도적 미수정 (사용자 요청) | 다음 세션 검토 |
+
+---
+
+## 12-prev. 이전 상태 (2026-06-02 Session 38 완료 기준 — v2.9.1, 배포 대기)
+
+### 구현 완료 (Session 38 — 전체 코드 점검 및 버그픽스)
+
+- **[P0 로직 버그 수정]**:
+  - **pickCheer 연산자 우선순위 버그**: `role === 'DAD' || role === 'MOM' && m.isActive` → `(role === 'DAD' || role === 'MOM') && m.isActive` — 비활성 아빠 계정도 포함되던 문제 수정
+  - **myRank 계산 오류**: `findIndex(s => s.memberId === myId && s.score <= score)` → `filter(s => s.score > score).length + 1` — 1위일 때 undefined 메달 표시 버그 수정
+
+- **[P1 기능 연동]**:
+  - **미션 Good 슬롯 XP 적립 구현**: `MissionDetailPage.tsx` `handleSlot('GOOD')` 호출 시 `addGameXP(mission.difficulty * 1000)` 추가 — 난이도 1→10XP, 5→50XP 아이템 XP 적립
+  - **홈 피드 최대 10개**: `slice(0, 5)` → `slice(0, 10)` (CLAUDE.md 명세와 통일)
+  - **원터치 응원 프리셋 역할 동적 반영**: 아빠 로그인 시 "아빠가" 문구, 엄마 로그인 시 "엄마가" 문구로 분기
+
+- **[P2 코드 품질]**:
+  - **handleGameOver 의존성 정리**: `allScores` 불필요 의존성 제거 (함수 내 미사용)
+  - **ResultScreen PixelButton 교체**: raw `<button>` 2개 → `PixelButton ghost/gold` (규칙 4 준수)
+
+- **[P3 정리]**:
+  - **toDateKey 유틸 추출**: `src/utils/dateUtils.ts` 신규 생성. `MissionDetailPage`, `MessagesPage`에서 중복 정의 제거 후 공통 import
+  - **ProfilePage CHILD 레이블**: `'딸 (Child)'` → `'아이 (Child)'` (성별 가정 제거)
+  - **EXPIRED 레이블 통일**: `MissionDetailPage STATUS_LABEL` → `'소멸됨'` (도메인 엔티티 기준 통일)
+  - **스냅샷 설명 명확화**: "로컬 세션 정보(로그인·즐겨찾기)만 저장해요. 서버 데이터는 영향 없음." 으로 오해 방지
+  - `tsc --noEmit` 에러 0개
+
+### 미완성 (Session 38 이후 잔존)
+
+| 항목 | 비고 |
+|------|------|
+| 게임 중 Header 뒤로가기 버튼 — 의도적 미수정 (사용자 요청) | 다음 세션 검토 |
+
+---
+
+## 12-prev. 이전 상태 (2026-06-02 Session 37+37b 완료 기준 — v2.9.0, 배포 대기)
+
+### 구현 완료 (Session 37+37b 추가 — v2.9.0, 배포 대기)
+
+- **[UX 전면 개편 Session 37]**:
+  - **[1] SettingsPage 전면 통일**: 모든 섹션을 NavRow+AccordionSection 패턴으로 통일. 순서 재정렬: 구성원 > 메뉴 4종 > 칭찬·응원 > 작업방 > 로그아웃. `sectionKey` 미사용 prop 제거. `SectionLabel` 컴포넌트 제거. 구성원/칭찬스티커/원터치응원 → AccordionSection (기본 접힘). 메뉴 4종 PixelButton → NavRow. 아빠 작업방 외부 card-pixel 래퍼 제거
+  - **[2] 게임 개선**: GamePage에 'countdown' 뷰 상태 추가 — 게임 선택 시 3→2→1→GO! 오버레이 (3.5초). 게임오버 딜레이 3초 → 5초 (GalagaGame/PonpokoGame/MinesweeperGame). GalagaGame/PonpokoGame 나가기 버튼 제거. 지뢰찾기 미오픈 셀 밝게 + gold 3D border
+  - **[3] 동적 반응 요소**: G슬롯 ⭐ 파티클 (0.45s), 레벨업 황금 flash 오버레이 (AppLayout 레벨 감지), EXP바 ease-out 전환
+  - **[4] 홈 로딩창 1회 최적화**: `fq_anim_shown` localStorage 플래그로 첫 로그인 1회만 표시
+
+- **[MessagesPage 긴급 버그픽스 + UX Session 37b]**:
+  - **게임 알림 채팅 차단**: `GamePage.tsx`에서 `sendMessage` import 및 개인기록/1위 알림 메시지 전송 코드 완전 제거. 이제 게임 플레이가 채팅을 방해하지 않음
+  - **닉네임 중복 완전 해결**: `getMemberInfo()` (localStorage 캐시 읽기) 함수 완전 삭제. `members.find()` 실시간 데이터로 대체. 스프라이트+이름 태그를 같은 줄에 배치 — 기존: 스프라이트 왼쪽 컬럼 + 이름 말풍선 내부(분리돼 보임) → 이제: 스프라이트·이름 한 줄 헤더 (명확하게 1개처럼 인식)
+  - **달 모양 아이콘 제거**: 채팅 내 모든 `CharacterSprite`에 `petId={null}` 추가 (MessageBubble/DM목록/DM헤더 3곳). 뷰어의 현재 펫이 타인 스프라이트에 오버레이되던 문제 해결
+  - **입력바 크기 조화**: `items-stretch` 컨테이너 + 이모지 버튼 높이 자동 맞춤 + 입력창 `py-2.5` + 전송 버튼 `!py-0` (모든 요소 동일 높이)
+  - `tsc --noEmit` 에러 0개
+
+### 구현 완료 (Session 36 추가 — v2.8.0, 배포 대기)
+
+- **[UX 전면 개편 — Sprint A+B+C+D 완료]**:
+  - **[A] ProfilePage 상단 컴팩트화**: `size="xl" animate="bob"` 큰 배너박스 → `bg-gradient-to-r` 가로형 컴팩트 카드 (`p-2.5`). 캐릭터 `size="md"` + `petId` prop 직접 전달(PetSprite 별도 제거). 스크롤 없이 PIN 카드까지 한 화면에 노출
+  - **[B] Header 아이콘 어린이 친화 교체**: `🎵` → `🎸`(기타, 음소거시 🔇 유지), `🔔` → `🌟`(반짝별), `⚙️` → `🎒`(배낭·RPG 인벤토리). 9세 아이 직관 아이콘으로 통일
+  - **[C] SettingsPage 아빠 작업공간 아코디언**: `AccordionSection` 컴포넌트 신규 생성. 🏆주간대회·⚡엔진새로고침·💾상태저장·💀앱초기화 4개 섹션 기본 접힘. 한 섹션만 펼쳐지는 exclusive toggle. 위험 섹션(💀)은 `danger` prop으로 빨간 테두리 구분
+  - **[D] 게임 게임오버 UX 개선**:
+    - GalagaGame / PonpokoGame: `cbRef.current(score)` 즉시 → `setTimeout(3000)` 3초 딜레이. 게임오버 오버레이 `bg-black/70 border-rejected` 반투명 박스 + "결과 화면으로 이동 중..." 안내 추가
+    - MinesweeperGame: 1800ms → 3000ms. `phase==='lost' && !showBoom` 조건 GAME OVER 오버레이 신규 추가 (기존 boom 후 공백 해소)
+    - GalagaGame 터치 버튼: `w-[60px] h-[60px]` → `w-[74px] h-[74px]` 확대
+    - MinesweeperGame 버튼: `w-16 h-14 text-[10px]` → `w-20 h-16 text-xs` 확대
+  - `tsc --noEmit` 에러 0개
+
+### 구현 완료 (Session 35 추가 — v2.7.0, 배포 대기)
+
+- **[UX/코드 일관성 수술 — Sprint A+B+C 완료]**:
+  - **[A-1] 1:1 DM 헤더 컴팩트화**: 파트너 프로필이 화면 40% 차지하던 문제 해결. `py-4 + scale-125 CharacterSprite + 3줄 텍스트` → 단일 h-11 컴팩트 바(xs 아바타 + 이름 + 역할배지 + 뒤로가기). 채팅 가용 면적 2배 확보
+  - **[A-2] displayBanner stale 버그 수정**: `useEffect dep` 에 `currentMember?.character.worldBanner` 추가 — 아이템 장착 후 배너가 구버전으로 남던 문제 해결
+  - **[A-3] 폰트 규칙 준수**: ProfilePage `text-[9px]/text-[7px]` → `text-xs` 전수 교체 (4곳)
+  - **[B] ProfilePage 캐릭터 시스템 단일화**: `🎒 아이템 상점` XP구매 섹션 완전 제거. 레벨 언락 50종 시스템(캐릭터/마이펫/등급 3패널)만 남김. `displayCharId = previewCharId || Firebase값`으로 단순화 — localStorage `currentSkin` 우선순위 충돌 해소. 관련 import 정리 (`PixelModal`, `SKIN_CATALOG`, `BG_CATALOG`, `PET_SHOP_CATALOG`, `WEAPON_CATALOG`, `getXPLevel`, `ShopItem`, `BgType` 제거). `tsc --noEmit` 에러 0개
+  - **[C] GNB 오디오 컨트롤 단순화**: 3버튼 그룹(`▶⏸` + `▶▶` + `🎵`) → 단일 테마 아이콘 버튼 + 드롭다운(재생/정지 + 4무드). 우측 요소 5개 → 3개(`🎵` + `🔔` + `⚙️`). `handleNextTheme` 제거
+
+### 구현 완료 (Session 34 추가 — v2.6.0, 배포 완료)
+
+- **[UI/UX 디자인 일관성 전면 정비 — Sprint A+B+C 완료]**:
+  - **[A-1] 폰트 크기 규칙 준수**: `SettingsPage` 하단 버전 텍스트 `text-[9px]/text-[10px]` → `text-xs` (최소 폰트 규칙 완전 준수)
+  - **[A-2] 자녀 선택 버튼 통일**: `SettingsPage` 칭찬 스티커·원터치 응원 섹션의 raw `<button>` → `PixelButton`, 두 섹션 모두 `gold` 색상 통일 (코딩 규칙 4번 준수), 프리셋 버튼도 `PixelButton variant="purple"` 교체
+  - **[A-3] 섹션 헤더 스타일 통일**: `HomePage` 피드·공지 섹션 `t-heading text-gold` → `t-sub font-bold text-gold t-pixel-shadow` (3가지 혼재 → 전 페이지 1가지 통일)
+  - **[B-1] ApprovalListPage 다크 테마 완성**: `text-pixel-dark/text-stone` → `text-cream/text-panel-sub`, `PixelCard` → `card-pixel`, `gap-1.5` → `gap-2`
+  - **[B-2] SpecialDaysPage 전면 다크 개편**: `window.confirm` 제거 → `PixelModal` (규칙 3 준수), 커스텀 `Toast(fixed inset-0)` → `PixelModal`, 모든 raw 버튼 → `PixelButton`, `bg-cream/bg-pixel-dark` 완전 제거, `input-pixel` 표준 적용
+  - **[B-3] QuestionAnswersPage + QuestionBoxPage 다크 테마 완성**: 필터 탭 raw 버튼 → `PixelButton variant="purple"`, `card-pixel` 카드 통일, `text-pixel-dark/text-stone` → `text-cream/text-panel-sub`, 불필요한 뒤로가기 버튼 제거(Header 처리)
+  - **[C-1] StatisticsPage + RegisterPage 완전 다크 재작성**: `bg-panel-darkest` 기준, `PixelCard` → `card-pixel`, 섹션 헤더 `SectionLabel` 패턴 통일, `RegisterPage` `bg-minecraft` → `bg-panel-darkest`, 모든 raw role 선택 버튼 → `PixelButton`, 성공 화면 `/master` → `/settings`로 수정
+  - **[C-2] 여백 단위 정규화**: `SettingsPage` 섹션 구분자 `mb-4 pb-4` → `mb-3 pb-3` 통일
+  - **[C-3] ChildSelector 공통 컴포넌트 신규 생성** (`src/presentation/components/settings/ChildSelector.tsx`): 칭찬/응원 두 섹션에서 공유 사용, `showAvatar` prop으로 아바타 표시 여부 제어
+  - `tsc --noEmit` 에러 0개
+
+### 구현 완료 (Session 33 추가 — v2.5.0, 배포 완료)
+
+- **[SettingsPage.tsx v4.0 — MasterSettingsPage 완전 흡수 통합]**:
+  - **MasterSettingsPage.tsx 완전 삭제**: `/master` · `/settings/master` 라우트 제거. 진입점 `/settings` 단일화
+  - **1단 가족 구성원**: 부모 권한 시 닉네임 + loginId 인라인 수정 폼 결합 (fsSet 패턴 유지)
+  - **2단 📌칭찬·💖응원**: 기존 스티커/격려 패널 슬림 유지
+  - **3단 4종 라우팅 버튼**: 🎁보상주기 / 🙏조르기관리 / 💌질문함 / 📅기념일
+  - **4단 DAD 전용 격리 제어판**: 📢공지사항 nav · 🏆주간대회(슬라이더·회차) · ⚡캐시초기화 · 💾스냅샷 · 🔄앱초기화
+  - **5단**: 🚪로그아웃
+  - `tsc --noEmit` 에러 0개
+
+- **[HomePage.tsx CharacterSprite 바인딩 교정]**:
+  - 메인 프로필 카드 `<CharacterSprite>`에서 `variant="job"` 제거
+  - `displayCharId = currentSkin || Firebase값` 실시간 반영 보장 (룩변 즉시 적용)
 
 ### 구현 완료 (Session 32 추가 — v2.1.0, 미배포)
 
@@ -916,7 +1540,7 @@ npm run deploy
 firebase deploy --only firestore:rules,firestore:indexes
 ```
 
-### 진행 현황 (Session 32 기준 — v2.1.0)
+### 진행 현황 (Session 38 기준 — v2.9.1, 배포 대기)
 
 ```
 Phase 1 — 완료 ✓ (tailwind 토큰 + PixelButton/PixelCard/PixelModal)
@@ -930,33 +1554,73 @@ Phase 4 — 완료 ✓ (보조 페이지 15개 다크 개편 전체)
 [마일스톤 3-1] 메인화면 개편 + 응원시스템 + 패밀리 늬우스 + 달력 타임라인 — 완료 ✓
 [대개정판 Session 28] 게임 대개편 + 오디오 파이프라인 + UI 수술 — 완료 ✓ (v2.0.0)
 [마일스톤 2-3 종착지 Session 29] 재화 단일화 + 슬롯 상점 + 특퀘 UX + 안전장치 — 완료 ✓ (v2.1.0)
-[Session 30] 인벤토리-Firebase 이중 장부 해결 — 완료 ✓ (CharacterSprite 폴백 + ProfilePage 완전 연동)
-[Session 31] HomePage 실시간 인벤토리 연동 + TS 에러 전면 청산 — 완료 ✓ (tsc 에러 0개, 19개 파일)
+[Session 30] 인벤토리-Firebase 이중 장부 해결 — 완료 ✓
+[Session 31] HomePage 실시간 인벤토리 연동 + TS 에러 전면 청산 — 완료 ✓
 [Session 32] HomePage 비주얼 RPG 오버홀(던전 다크·펫 프레임) + Header GNB 컴팩트화 — 완료 ✓
+[Session 33] SettingsPage 통합(MasterSettingsPage 흡수) + HomePage CharacterSprite 바인딩 교정 — 완료 ✓ (v2.5.0)
+[Session 34] UI/UX 디자인 일관성 전면 정비 — 완료 ✓ (v2.6.0 배포)
+  - Sprint A: 폰트 규칙·버튼 통일·섹션 헤더 단일화
+  - Sprint B: ApprovalList/SpecialDays/QuestionAnswers/QuestionBox 다크 테마
+  - Sprint C: Statistics/Register 다크 재작성 + ChildSelector 컴포넌트 추출
+[Session 35] UX 수술 + 코드 정리 — 완료 ✓ (v2.7.0 배포 대기)
+  - Sprint A: DM 헤더 컴팩트화 + displayBanner stale 버그 + 폰트 규칙
+  - Sprint B: ProfilePage 아이템 상점 제거 + 캐릭터 시스템 단일화
+  - Sprint C: GNB 오디오 3버튼 → 단일 테마 아이콘
+[Session 36] UX 전면 개편 — 완료 ✓ (v2.8.0 배포 대기)
+[Session 37] UX 개편 완성 — 완료 ✓ (v2.9.0 배포 대기)
+  - SettingsPage 전면 통일 (NavRow+AccordionSection 패턴 전체 적용)
+  - 게임 3초 카운트다운 + 게임오버 5초 + 나가기 버튼 제거 + 지뢰찾기 색상
+  - G슬롯 파티클 + EXP바 smooth transition + 레벨업 flash 오버레이
+  - 홈 로딩창 첫 로그인 1회만 표시 (fq_anim_shown 플래그)
+[Session 37b] MessagesPage 버그픽스 — 완료 ✓ (v2.9.0 배포 대기)
+  - 게임 알림 채팅 차단 (sendMessage 완전 제거)
+  - 닉네임 중복 해결 (getMemberInfo 삭제, 스프라이트+이름 한 줄 통합)
+  - 달 모양 아이콘 제거 (petId={null} 3곳)
+  - 입력바 크기 조화
+[Session 38] 전체 코드 점검 + 버그픽스 — 완료 ✓ (v2.9.1 배포 대기)
+  - P0: pickCheer 연산자 우선순위 버그 수정
+  - P0: myRank 계산 오류 수정 (1위 undefined 메달 해결)
+  - P1: 미션 Good 슬롯 → addGameXP 연동 (difficulty*1000 pts)
+  - P1: 홈 피드 5개 → 10개
+  - P1: 원터치 응원 프리셋 아빠/엄마 역할별 분기
+  - P2: handleGameOver allScores 불필요 의존성 제거
+  - P2: ResultScreen raw 버튼 → PixelButton
+  - P3: toDateKey → src/utils/dateUtils.ts 공통 유틸 추출
+  - P3: ProfilePage CHILD '딸' → '아이'
+  - P3: EXPIRED 레이블 '소멸됨' 통일
+  - P3: 스냅샷 설명 명확화 (서버 데이터 미저장 명시)
+  - Sprint A: ProfilePage 상단 컴팩트화 (xl→md 가로형)
+  - Sprint B: Header 아이콘 어린이 친화 교체 (🎸🌟🎒)
+  - Sprint C: SettingsPage 아빠 작업공간 아코디언 4섹션
+  - Sprint D: 게임 게임오버 3초 딜레이 + 오버레이 + 버튼 확대
+  - Sprint E: HomePage RPG 시네 카드 (배너그라디언트 배경+펫 통합+무기제거+편집CTA)
+  - Sprint F: SettingsPage 아빠 작업방 NavRow+AccordionSection 세로 리스트 + 큰 아이콘 패턴
+  - Sprint G (긴급 버그픽스): MessagesPage DM 이름 중복 버그 수정 (isDM 조건 추가)
+               HomePage 캐릭터 편집 버튼 → 카드 우측 하단 absolute 배치
 
-Phase 5 — 다음 작업 (우선순위 순)
-  Firestore 인덱스 배포 필요:
-  - praise_stickers: targetMemberId ASC + createdAt DESC
-  - cheer_messages: targetMemberId ASC + isRead ASC + createdAt DESC
-  - tournament_scores: roundNumber ASC + score DESC
-  잔여 페이지 (다크 테마 미적용):
-  - ApprovalListPage — 퀘스트 승인 목록
-  - SpecialDaysPage — 기념일·생일 관리
-  - QuestionAnswersPage, QuestionBoxPage — 두근두근 질문함
-  - StatisticsPage — 통계
-  - RegisterPage — 회원가입
-  사운드 연동 확장 (선택적):
-  - MissionDetailPage: 아이 확인 버튼 → audioManager.missionConfirm()
-  - MissionDetailPage: 부모 GOOD 슬롯 → audioManager.slotApproval()
-  - RewardSendPage: 보상 발송 → audioManager.rewardPayout()
-  XP 상점 후속 개선 (선택적):
-  - GamePage 선택 화면: 현재 gameXP 잔액 + Lv 표시
-  - ProfilePage XP 상점: currentBg/currentSkin을 CharacterSprite 배경 테마와 연결
-  게임 후속 개선 (선택적):
-  - dynamic import로 게임 코드 스플리팅 (현재 번들 ~956KB)
-  코드 정리:
-  - TetrisGame.tsx, SnakeGame.tsx 파일 자체 삭제 (현재 import만 제거된 상태)
-  - TS6133 미사용 import 전면 정리 — ✓ Session 31 완료
+---
+## 다음 세션 (Session 39) 작업 계획
+
+### 우선순위 1: 보상 발송 완료 코인 이펙트
+- `RewardSendPage.tsx` 발송 성공 시 코인 🪙 3개 흘러내리는 keyframe
+  (기존 `.animate-coin-drop` 재활용)
+- SettingsPage 칭찬스티커 발송 완료 시에도 동일 이펙트
+
+### 우선순위 2: CharacterSprite petId 명시 전달
+- ProfilePage에서 `previewPetId || currentMember.character.petId`를 displayPetId로 쓰지만
+  CharacterSprite 내부에서도 `invPet` 폴백이 있어 불일치 가능성
+- 해결: ProfilePage의 CharacterSprite에 `petId={displayPetId}` 명시적 전달
+
+### 잔존 이슈 (다음 세션 선택 작업)
+- 게임 중 Header 뒤로가기 버튼 노출 문제 (의도적 보류)
+- dynamic import로 게임 코드 스플리팅 (현재 번들 ~945KB)
+- Firestore 인덱스 배포 확인 (praise_stickers / cheer_messages / tournament_scores)
+
+Phase 5 — 캐릭터 스프라이트 개선 (논의 완료):
+  - 현재: 이모지 기반 CharacterSprite (직업별 ⚔️🏹🧙 등)
+  - 방향: kenney.nl 등 무료 PNG 팩 도입 검토 중
+    → 규격: 투명 배경 PNG, 64×64 or 128×128, 직업별 8종 세트
+    → 파일 준비 후 /public/assets/characters/ 에 배치 → CharacterSprite <img> 교체
 ```
 
 ### 앱 초기화 로직
@@ -1082,13 +1746,42 @@ Phase 5 — 다음 작업 (우선순위 순)
 //     handleEquip(weapon) → setWeapon() + updateMember({ 'character.equipment': [id] })
 //     handleSelectCharacter → setPreviewCharId() + setSkin() 모두 호출 (스토어 양방향)
 //     handleSelectPet       → setPreviewPetId() + setInvPet() 모두 호출 (스토어 양방향)
-// 38. ProfilePage displayCharId/displayPetId 우선순위:
-//     currentSkin || previewCharId || currentMember.character.characterId
-//     invPet      || previewPetId  || currentMember.character.petId
-//     (스토어 장착값 > 로컬 프리뷰 > Firebase 기본값)
+// 38. ProfilePage displayCharId/displayPetId 우선순위 (Session 35 단순화):
+//     previewCharId || currentMember.character.characterId
+//     previewPetId  || currentMember.character.petId
+//     (로컬 프리뷰 > Firebase 기본값 — localStorage currentSkin 의존 제거)
+//     XP 아이템 상점 제거됨 — 캐릭터 선택은 레벨 언락 50종(캐릭터/마이펫/등급 3패널)만 사용
+// 39. HomePage 캐릭터 표시 — localStorage currentSkin/currentPet 절대 사용 금지:
+//     displayCharId = currentMember.character.characterId  ← Firebase 값 직접
+//     displayPetId  = currentMember.character.petId        ← Firebase 값 직접
+//     이유: localStorage는 기기 공유 시 이전 로그인 사용자 값이 남아 캐릭터 오류 발생
+//     ProfilePage만 previewCharId로 로컬 프리뷰 허용 (규칙 38)
+// 40. 도파민 이펙트 — EffectOverlay 컴포넌트 사용 규칙:
+//     z-[9990] (PixelModal z-9999보다 아래), pointer-events-none, autoDestroy
+//     트리거: T1(퀘스트확인) T2(GOOD슬롯) T3(칭찬수신) T4(신기록) T5(1등) T6(보상클릭) T7(메신저특수이모지)
+//     T6: rewardNavTimer = useRef + useEffect cleanup으로 stale timer 방지 (1s 딜레이 후 navigate)
+//     T7: triggeredMsgIds Set으로 중복 방지, 수신 4초 이내 메시지만 감지
+//     prefers-reduced-motion 시 이펙트 스킵, PixelModal 열린 중 억제(body.modal-open)
+//     메신저 ✨이펙트 탭: EMOJI_CATS 첫 번째 키 — 이펙트 이모지만 모아서 골드 강조
+//     전역 훅: useEffectTrigger() (src/presentation/components/effects/useEffectTrigger.ts)
+// 41. PixelModal body 클래스:
+//     open=true → document.body.classList.add('modal-open') (useEffect)
+//     cleanup → classList.remove('modal-open')
+//     EffectOverlay가 body.modal-open 감지 → 이펙트 억제 (SC-04 준수)
+// 42. 로그인 캐릭터 카드 CharacterSprite — petId={null} weapon={null} 필수:
+//     미전달 시 localStorage currentPet 폴백 → 전원 동일 펫 버그 재발
+// 43. 배포 규칙 — 로컬 확인 먼저, 상용 배포(npm run deploy)는 사용자 명시 지시 후에만 실행
+//     자동 배포 절대 금지
+// 44. 보상 체계 (v5.8): 수동발송만 보상 페이지 표시.
+//     XP는 recordXPReward()로 rewards 컬렉션에 별도 기록 (rewardType='XP', source=xp_*)
+//     자동 미션/조르기 보상 코드 없음 — 추가 금지
+// 45. CharacterSprite gearArmor prop: equipment[3] = 갑옷 ID, z=8(가장 뒤)
+//     Z순서: 갑옷(8) < 투구(10) < 방패(12) < 무기(13)
+// 46. 게임 ID 절대 불변: 'galaga'|'ponpoko'|'minesweeper'|'whacamole' — Firebase 저장 키
+//     명칭/설명은 GAME_META에서만 변경, gameId 문자열 변경 시 기존 점수 데이터 손상
 ```
 
 ---
 
 *패밀리 퀘스트 — 우리 가족만의 특별한 게임 세계 ⛏*  
-*최초 작성: 2026-04-23 | 마지막 업데이트: 2026-05-31 (Session 32 완료 — v2.1.0 미배포: 🏠 HomePage 던전 다크 오버홀 + 🐾 펫 인벤토리 프레임 + 📱 Header GNB 75% 컴팩트화)*
+*최초 작성: 2026-04-23 | 마지막 업데이트: 2026-06-04 (Session 45 완료 — v5.8: 보상체계 개편 + 게임 에셋 교체 + SVG 완성)*

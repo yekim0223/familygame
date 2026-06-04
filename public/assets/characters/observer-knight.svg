@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated">
+  <!-- 강인 — 상흔 방랑자 (성장·의리·감정 깊음) -->
+
+  <!-- 다크 퍼플 머리 + 황금빛 한 줄기 (성장의 흔적) -->
+  <rect x="8"  y="1"  width="16" height="3"  fill="#3A2255"/>
+  <rect x="6"  y="4"  width="20" height="3"  fill="#4A2A66"/>
+  <rect x="5"  y="5"  width="3"  height="5"  fill="#3A2255"/>
+  <rect x="24" y="5"  width="3"  height="5"  fill="#3A2255"/>
+  <!-- 황금 한 줄기 -->
+  <rect x="16" y="1"  width="3"  height="6"  fill="#FFD700"/>
+  <rect x="17" y="0"  width="2"  height="2"  fill="#FFE84D"/>
+
+  <!-- 얼굴 -->
+  <rect x="8"  y="7"  width="16" height="11" fill="#DDBB99"/>
+
+  <!-- 눈 — 깊고 단단한 눈빛 (진한 파랑) -->
+  <rect x="10" y="9"  width="5"  height="4"  fill="#FFFFFF"/>
+  <rect x="17" y="9"  width="5"  height="4"  fill="#FFFFFF"/>
+  <rect x="11" y="10" width="2"  height="2"  fill="#225588"/>
+  <rect x="18" y="10" width="2"  height="2"  fill="#225588"/>
+  <rect x="12" y="10" width="1"  height="1"  fill="#FFFFFF"/>
+  <rect x="19" y="10" width="1"  height="1"  fill="#FFFFFF"/>
+  <!-- 굳은 눈썹 -->
+  <rect x="9"  y="8"  width="6"  height="1"  fill="#4A3344"/>
+  <rect x="17" y="8"  width="6"  height="1"  fill="#4A3344"/>
+
+  <!-- 굳은 입 (단단하지만 따뜻) -->
+  <rect x="12" y="14" width="8"  height="2"  fill="#AA6644"/>
+  <rect x="13" y="15" width="6"  height="1"  fill="#CC8866"/>
+
+  <!-- 작은 흉터 (왼쪽 뺨) -->
+  <rect x="9"  y="12" width="3"  height="1"  fill="#AA8877"/>
+  <rect x="10" y="13" width="2"  height="1"  fill="#AA8877"/>
+
+  <!-- 목 -->
+  <rect x="13" y="18" width="6"  height="2"  fill="#DDBB99"/>
+
+  <!-- 다크 방랑자 망토 -->
+  <rect x="4"  y="20" width="24" height="10" fill="#2A1A44"/>
+  <rect x="4"  y="20" width="24" height="2"  fill="#3A2A55"/>
+  <rect x="12" y="20" width="8"  height="10" fill="#1A1228"/>
+  <!-- 망토 테두리 (골드) -->
+  <rect x="4"  y="20" width="1"  height="10" fill="#AA8822"/>
+  <rect x="27" y="20" width="1"  height="10" fill="#AA8822"/>
+
+  <!-- 여행 별 (오른쪽 위, 목표) -->
+  <rect x="27" y="3"  width="2"  height="2"  fill="#FFD700"/>
+  <rect x="26" y="4"  width="4"  height="1"  fill="#FFD700"/>
+  <rect x="28" y="2"  width="1"  height="4"  fill="#FFD700"/>
+
+  <!-- 작은 반짝임 상처 치유 -->
+  <rect x="0"  y="10" width="2"  height="2"  fill="#AA88FF"/>
+  <rect x="1"  y="9"  width="1"  height="4"  fill="#AA88FF"/>
+</svg>

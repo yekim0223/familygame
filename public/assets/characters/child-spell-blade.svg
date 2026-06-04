@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated;image-rendering:crisp-edges">
+  <!-- 마법검사 — 마력 머리 (금+보라 혼합) -->
+  <rect x="9"  y="1" width="14" height="2" fill="#8040C0"/>
+  <rect x="8"  y="2" width="16" height="3" fill="#A060E0"/>
+  <rect x="7"  y="4" width="2"  height="9" fill="#8040C0"/>
+  <rect x="23" y="4" width="2"  height="9" fill="#8040C0"/>
+  <rect x="8"  y="13" width="3" height="2" fill="#8040C0"/>
+  <rect x="21" y="13" width="3" height="2" fill="#8040C0"/>
+  <!-- 금빛 스트릭 -->
+  <rect x="14" y="2" width="4"  height="1" fill="#FFD700"/>
+
+  <!-- ══ 얼굴 ══ -->
+  <rect x="9"  y="5"  width="14" height="9" fill="#F5C17A"/>
+  <rect x="10" y="14" width="12" height="1" fill="#F5C17A"/>
+  <rect x="11" y="15" width="10" height="1" fill="#F5C17A"/>
+
+  <!-- ══ 눈썹·눈 (금+보라 이색) ══ -->
+  <rect x="10" y="6"  width="5" height="1" fill="#6030A0"/>
+  <rect x="17" y="6"  width="5" height="1" fill="#6030A0"/>
+  <!-- 왼쪽 눈: 금 -->
+  <rect x="10" y="8"  width="5" height="4" fill="#1A0828"/>
+  <rect x="10" y="8"  width="5" height="3" fill="#C08000"/>
+  <rect x="10" y="8"  width="5" height="1" fill="#FFD700"/>
+  <rect x="14" y="8"  width="1" height="1" fill="#FFFFFF"/>
+  <!-- 오른쪽 눈: 보라 -->
+  <rect x="17" y="8"  width="5" height="4" fill="#1A0828"/>
+  <rect x="17" y="8"  width="5" height="3" fill="#6020C0"/>
+  <rect x="17" y="8"  width="5" height="1" fill="#C040FF"/>
+  <rect x="17" y="8"  width="1" height="1" fill="#FFFFFF"/>
+
+  <!-- ══ 볼·입 ══ -->
+  <rect x="9"  y="11" width="3" height="1" fill="#F0A090"/>
+  <rect x="20" y="11" width="3" height="1" fill="#F0A090"/>
+  <rect x="13" y="12" width="6" height="1" fill="#CC5533"/>
+  <rect x="14" y="13" width="4" height="1" fill="#AA3311"/>
+
+  <!-- ══ 목 ══ -->
+  <rect x="14" y="16" width="4" height="2" fill="#F5C17A"/>
+
+  <!-- ══ 마법검사 갑옷 (금+보라 하이브리드) ══ -->
+  <!-- 어깨 (반반) -->
+  <rect x="5"  y="17" width="7"  height="6" fill="#C08000"/>
+  <rect x="5"  y="17" width="7"  height="1" fill="#FFD700"/>
+  <rect x="5"  y="22" width="7"  height="1" fill="#8040C0"/>
+  <rect x="20" y="17" width="7"  height="6" fill="#6020C0"/>
+  <rect x="20" y="17" width="7"  height="1" fill="#C040FF"/>
+  <rect x="20" y="22" width="7"  height="1" fill="#FFD700"/>
+  <rect x="11" y="17" width="1"  height="1" fill="#FFD700"/>
+  <rect x="20" y="17" width="1"  height="1" fill="#C040FF"/>
+  <!-- 칼라 (금+보라) -->
+  <rect x="10" y="17" width="6"  height="1" fill="#FFD700"/>
+  <rect x="16" y="17" width="6"  height="1" fill="#C040FF"/>
+  <!-- 가슴 -->
+  <rect x="9"  y="18" width="7"  height="7" fill="#C08000"/>
+  <rect x="16" y="18" width="7"  height="7" fill="#6020C0"/>
+  <!-- 중앙 마검 문양 -->
+  <rect x="14" y="19" width="4"  height="6" fill="#D0D0D0"/>
+  <rect x="15" y="18" width="2"  height="7" fill="#FFFFFF"/>
+  <rect x="14" y="22" width="4"  height="1" fill="#D0D0D0"/>
+
+  <!-- ══ 벨트 ══ -->
+  <rect x="9"  y="25" width="7"  height="2" fill="#C08000"/>
+  <rect x="16" y="25" width="7"  height="2" fill="#6020C0"/>
+  <rect x="14" y="24" width="4"  height="3" fill="#D0D0D0"/>
+
+  <!-- ══ 다리·부츠 ══ -->
+  <rect x="10" y="27" width="5" height="3" fill="#A07000"/>
+  <rect x="17" y="27" width="5" height="3" fill="#501090"/>
+  <rect x="9"  y="30" width="6" height="2" fill="#C08000"/>
+  <rect x="9"  y="30" width="6" height="1" fill="#FFD700"/>
+  <rect x="17" y="30" width="6" height="2" fill="#6020C0"/>
+  <rect x="17" y="30" width="6" height="1" fill="#C040FF"/>
+</svg>

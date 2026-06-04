@@ -100,7 +100,7 @@ export function JumpPad({ onJump }: JumpPadProps) {
         label={
           <div className="flex flex-col items-center gap-0.5">
             <span className="text-2xl">🦘</span>
-            <span className="font-pixel text-[9px] text-pixel-dark">JUMP</span>
+            <span className="font-pixel text-xs text-pixel-dark">JUMP</span>
           </div>
         }
         onPress={onJump}

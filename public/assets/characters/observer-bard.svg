@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated">
+  <!-- 활기 — 불꽃 바드 (에너지·유머·분위기 메이커) -->
+
+  <!-- 불꽃 머리카락 -->
+  <rect x="9"  y="0"  width="14" height="2"  fill="#FF4400"/>
+  <rect x="7"  y="2"  width="18" height="3"  fill="#FF6620"/>
+  <rect x="5"  y="3"  width="3"  height="4"  fill="#FF4400"/>
+  <rect x="24" y="3"  width="3"  height="4"  fill="#FF4400"/>
+  <rect x="4"  y="1"  width="3"  height="2"  fill="#FF8844"/>
+  <rect x="25" y="1"  width="3"  height="2"  fill="#FF8844"/>
+
+  <!-- 얼굴 -->
+  <rect x="8"  y="5"  width="16" height="11" fill="#FFCC99"/>
+
+  <!-- 눈 — 반짝이는 녹색 -->
+  <rect x="10" y="7"  width="4"  height="4"  fill="#FFFFFF"/>
+  <rect x="18" y="7"  width="4"  height="4"  fill="#FFFFFF"/>
+  <rect x="11" y="8"  width="2"  height="2"  fill="#22CC44"/>
+  <rect x="19" y="8"  width="2"  height="2"  fill="#22CC44"/>
+  <rect x="12" y="8"  width="1"  height="1"  fill="#FFFFFF"/>
+  <rect x="20" y="8"  width="1"  height="1"  fill="#FFFFFF"/>
+
+  <!-- 활짝 웃는 입 -->
+  <rect x="11" y="13" width="10" height="2"  fill="#CC5533"/>
+  <rect x="12" y="14" width="8"  height="1"  fill="#FFAAAA"/>
+  <rect x="11" y="13" width="2"  height="1"  fill="#FFCC99"/>
+  <rect x="19" y="13" width="2"  height="1"  fill="#FFCC99"/>
+
+  <!-- 볼 홍조 -->
+  <rect x="8"  y="11" width="4"  height="2"  fill="#FFB0A0"/>
+  <rect x="20" y="11" width="4"  height="2"  fill="#FFB0A0"/>
+
+  <!-- 목 -->
+  <rect x="13" y="16" width="6"  height="2"  fill="#FFCC99"/>
+
+  <!-- 상의 황금빛 바드 복장 -->
+  <rect x="7"  y="18" width="18" height="9"  fill="#FFD700"/>
+  <rect x="7"  y="18" width="18" height="2"  fill="#FFE84D"/>
+  <rect x="14" y="18" width="4"  height="9"  fill="#CC8800"/>
+
+  <!-- 음표 (왼쪽 위) -->
+  <rect x="2"  y="3"  width="2"  height="5"  fill="#FF9900"/>
+  <rect x="0"  y="3"  width="4"  height="2"  fill="#FF9900"/>
+  <rect x="0"  y="5"  width="3"  height="3"  fill="#FF9900"/>
+
+  <!-- 별 반짝임 -->
+  <rect x="27" y="2"  width="2"  height="2"  fill="#FFFF88"/>
+  <rect x="26" y="3"  width="4"  height="1"  fill="#FFFF88"/>
+  <rect x="28" y="1"  width="1"  height="4"  fill="#FFFF88"/>
+  <rect x="1"  y="16" width="2"  height="2"  fill="#FFE84D"/>
+</svg>

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <rect x="0" y="0" width="32" height="16" fill="#040008"/>
+  <!-- 별 (드물게) -->
+  <rect x="1"  y="1" width="1" height="1" fill="#554466"/>
+  <rect x="30" y="2" width="1" height="1" fill="#554466"/>
+  <rect x="3"  y="13" width="1" height="1" fill="#443355"/>
+  <rect x="29" y="14" width="1" height="1" fill="#443355"/>
+  <!-- 왕좌 계단 -->
+  <rect x="4"  y="14" width="24" height="2" fill="#110022"/>
+  <rect x="6"  y="13" width="20" height="2" fill="#1A0033"/>
+  <rect x="8"  y="12" width="16" height="2" fill="#220044"/>
+  <!-- 왕좌 기반 -->
+  <rect x="10" y="8"  width="12" height="5" fill="#330055"/>
+  <rect x="11" y="7"  width="10" height="2" fill="#440066"/>
+  <!-- 왕좌 등받이 -->
+  <rect x="12" y="3"  width="8"  height="6" fill="#440066"/>
+  <rect x="13" y="2"  width="6"  height="2" fill="#550077"/>
+  <!-- 왕좌 팔걸이 -->
+  <rect x="10" y="7"  width="3" height="4" fill="#330055"/>
+  <rect x="19" y="7"  width="3" height="4" fill="#330055"/>
+  <!-- 왕좌 장식 (자수정) -->
+  <rect x="14" y="3"  width="4" height="2" fill="#8800AA"/>
+  <rect x="15" y="2"  width="2" height="2" fill="#AA22CC"/>
+  <rect x="15" y="1"  width="2" height="2" fill="#CC44EE"/>
+  <!-- 왕관 (상단) -->
+  <rect x="13" y="0"  width="6" height="2" fill="#660088"/>
+  <rect x="14" y="0"  width="1" height="3" fill="#AA00CC"/>
+  <rect x="16" y="0"  width="1" height="3" fill="#AA00CC"/>
+  <rect x="15" y="0"  width="2" height="1" fill="#CC44FF"/>
+  <!-- 에너지 방사 -->
+  <rect x="8"  y="5" width="2" height="6" fill="#220033"/>
+  <rect x="22" y="5" width="2" height="6" fill="#220033"/>
+  <rect x="6"  y="7" width="3" height="4" fill="#110022"/>
+  <rect x="23" y="7" width="3" height="4" fill="#110022"/>
+</svg>

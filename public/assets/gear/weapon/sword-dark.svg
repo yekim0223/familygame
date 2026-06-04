@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated">
+  <!-- 암흑검, -25도 회전 (몸 반대방향) -->
+  <g transform="rotate(-25, 16, 16)">
+    <!-- 암흑검 날 (보라/검정) -->
+    <rect x="14" y="1"  width="4"  height="20" fill="#330044"/>
+    <rect x="15" y="1"  width="2"  height="20" fill="#550066"/>
+    <rect x="15" y="1"  width="2"  height="4"  fill="#AA44CC"/>
+    <!-- 날 하이라이트 (보라빛) -->
+    <rect x="14" y="2"  width="1"  height="16" fill="#661188"/>
+    <!-- 칼날 끝 -->
+    <rect x="14" y="1"  width="4"  height="2"  fill="#CC66FF"/>
+    <rect x="15" y="0"  width="2"  height="2"  fill="#FFFFFF"/>
+    <!-- 가드 (금빛+보라) -->
+    <rect x="8"  y="20" width="16" height="3"  fill="#AA00CC"/>
+    <rect x="8"  y="20" width="16" height="1"  fill="#CC44EE"/>
+    <rect x="10" y="19" width="12" height="2"  fill="#880099"/>
+    <!-- 손잡이 -->
+    <rect x="13" y="23" width="6"  height="8"  fill="#1A001A"/>
+    <rect x="13" y="24" width="6"  height="2"  fill="#330033"/>
+    <rect x="13" y="27" width="6"  height="2"  fill="#330033"/>
+    <!-- 끝 장식 (보라 보석) -->
+    <rect x="12" y="30" width="8"  height="2"  fill="#AA00CC"/>
+    <rect x="14" y="30" width="4"  height="2"  fill="#CC66FF"/>
+    <!-- 암흑 에너지 -->
+    <rect x="12" y="8"  width="2"  height="2"  fill="#661188"/>
+    <rect x="18" y="12" width="2"  height="2"  fill="#661188"/>
+  </g>
+</svg>

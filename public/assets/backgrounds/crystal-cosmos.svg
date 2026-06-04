@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <rect x="0" y="0" width="32" height="16" fill="#040818"/>
+  <!-- 별 -->
+  <rect x="1"  y="2" width="1" height="1" fill="#AADDFF"/>
+  <rect x="20" y="1" width="1" height="1" fill="#CCEEFF"/>
+  <rect x="30" y="3" width="1" height="1" fill="#AADDFF"/>
+  <rect x="5"  y="13" width="1" height="1" fill="#CCEEFF"/>
+  <rect x="28" y="14" width="1" height="1" fill="#AADDFF"/>
+  <!-- 수정 기둥 (하단에서 솟구침) -->
+  <rect x="2"  y="8"  width="3" height="8" fill="#2244AA"/>
+  <rect x="3"  y="6"  width="2" height="2" fill="#3355BB"/>
+  <rect x="3"  y="5"  width="1" height="2" fill="#4466CC"/>
+  <!-- 수정 하이라이트 -->
+  <rect x="2"  y="9"  width="1" height="4" fill="#4466DD"/>
+  <rect x="3"  y="7"  width="1" height="1" fill="#88AAFF"/>
+  <!-- 수정 기둥 2 -->
+  <rect x="8"  y="10" width="3" height="6" fill="#1133AA"/>
+  <rect x="9"  y="8"  width="2" height="2" fill="#2244BB"/>
+  <rect x="9"  y="7"  width="1" height="2" fill="#3355CC"/>
+  <rect x="8"  y="11" width="1" height="3" fill="#3366EE"/>
+  <!-- 수정 기둥 3 -->
+  <rect x="14" y="6"  width="4" height="10" fill="#334499"/>
+  <rect x="15" y="4"  width="3" height="3"  fill="#4455AA"/>
+  <rect x="16" y="2"  width="2" height="3"  fill="#5566BB"/>
+  <rect x="16" y="1"  width="1" height="2"  fill="#7788DD"/>
+  <rect x="14" y="7"  width="1" height="6"  fill="#5577CC"/>
+  <rect x="17" y="7"  width="1" height="6"  fill="#88AAFF"/>
+  <!-- 수정 기둥 4 -->
+  <rect x="22" y="9"  width="3" height="7" fill="#2244AA"/>
+  <rect x="23" y="7"  width="2" height="3" fill="#3355BB"/>
+  <rect x="23" y="6"  width="1" height="2" fill="#4466CC"/>
+  <rect x="24" y="10" width="1" height="4" fill="#6688EE"/>
+  <!-- 수정 기둥 5 -->
+  <rect x="27" y="11" width="3" height="5" fill="#1133AA"/>
+  <rect x="28" y="9"  width="2" height="3" fill="#2244BB"/>
+  <rect x="28" y="8"  width="1" height="2" fill="#3366EE"/>
+  <!-- 수정 반사 빛 (하늘) -->
+  <rect x="4"  y="4" width="1" height="1" fill="#6688FF"/>
+  <rect x="10" y="6" width="1" height="1" fill="#5577EE"/>
+  <rect x="23" y="5" width="1" height="1" fill="#7799FF"/>
+  <rect x="29" y="7" width="1" height="1" fill="#5577EE"/>
+</svg>

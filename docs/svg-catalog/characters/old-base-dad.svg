@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated;image-rendering:crisp-edges">
+  <!-- ══ HAIR (dark, slight grey temples) ══ -->
+  <rect x="9"  y="1" width="14" height="1" fill="#1A1A2A"/>
+  <rect x="8"  y="2" width="16" height="3" fill="#222232"/>
+  <rect x="7"  y="4" width="2"  height="8" fill="#1A1A2A"/>
+  <rect x="23" y="4" width="2"  height="8" fill="#1A1A2A"/>
+  <rect x="7"  y="6" width="2"  height="4" fill="#888898"/>
+  <rect x="23" y="6" width="2"  height="4" fill="#888898"/>
+  <rect x="8"  y="12" width="3" height="1" fill="#1A1A2A"/>
+  <rect x="21" y="12" width="3" height="1" fill="#1A1A2A"/>
+
+  <!-- ══ FACE ══ -->
+  <rect x="9"  y="4"  width="14" height="10" fill="#F0B870"/>
+  <rect x="10" y="14" width="12" height="1"  fill="#F0B870"/>
+  <rect x="11" y="15" width="10" height="1"  fill="#F0B870"/>
+  <rect x="10" y="13" width="12" height="2"  fill="#D89A50"/>
+
+  <!-- ══ EYEBROWS ══ -->
+  <rect x="10" y="5" width="6" height="2" fill="#1A1A2A"/>
+  <rect x="16" y="5" width="6" height="2" fill="#1A1A2A"/>
+
+  <!-- ══ GLASSES ══ -->
+  <rect x="9"  y="7"  width="6" height="5" fill="#282838"/>
+  <rect x="9"  y="7"  width="6" height="1" fill="#383848"/>
+  <rect x="9"  y="11" width="6" height="1" fill="#383848"/>
+  <rect x="9"  y="7"  width="1" height="5" fill="#383848"/>
+  <rect x="14" y="7"  width="1" height="5" fill="#383848"/>
+  <rect x="15" y="9"  width="2" height="1" fill="#282838"/>
+  <rect x="17" y="7"  width="6" height="5" fill="#282838"/>
+  <rect x="17" y="7"  width="6" height="1" fill="#383848"/>
+  <rect x="17" y="11" width="6" height="1" fill="#383848"/>
+  <rect x="17" y="7"  width="1" height="5" fill="#383848"/>
+  <rect x="22" y="7"  width="1" height="5" fill="#383848"/>
+  <rect x="23" y="8"  width="1" height="1" fill="#6080A0"/>
+
+  <!-- ══ EYES ══ -->
+  <rect x="10" y="8" width="4" height="3" fill="#2050B0"/>
+  <rect x="10" y="8" width="4" height="1" fill="#4080E0"/>
+  <rect x="13" y="8" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="18" y="8" width="4" height="3" fill="#2050B0"/>
+  <rect x="18" y="8" width="4" height="1" fill="#4080E0"/>
+  <rect x="18" y="8" width="1" height="1" fill="#FFFFFF"/>
+
+  <!-- ══ NOSE + STUBBLE + MOUTH ══ -->
+  <rect x="15" y="10" width="2" height="2" fill="#D08848"/>
+  <rect x="10" y="13" width="2" height="1" fill="#888898"/>
+  <rect x="14" y="13" width="4" height="1" fill="#888898"/>
+  <rect x="20" y="13" width="2" height="1" fill="#888898"/>
+  <rect x="12" y="12" width="8" height="1" fill="#CC6633"/>
+  <rect x="13" y="13" width="6" height="1" fill="#AA4411"/>
+
+  <!-- ══ NECK ══ -->
+  <rect x="14" y="16" width="4" height="2" fill="#F0B870"/>
+
+  <!-- ══ SUIT BODY (NO cape, NO S emblem) ══ -->
+  <rect x="7"  y="18" width="5"  height="5" fill="#1A30C0"/>
+  <rect x="20" y="18" width="5"  height="5" fill="#1A30C0"/>
+  <rect x="7"  y="18" width="5"  height="1" fill="#2A48E0"/>
+  <rect x="20" y="18" width="5"  height="1" fill="#2A48E0"/>
+  <rect x="12" y="18" width="8"  height="1" fill="#FFFFFF"/>
+  <rect x="9"  y="19" width="14" height="5" fill="#1A30C0"/>
+  <rect x="10" y="19" width="5"  height="3" fill="#2A48E0"/>
+  <!-- belt red -->
+  <rect x="9"  y="24" width="14" height="2" fill="#CC0020"/>
+  <rect x="9"  y="24" width="14" height="1" fill="#EE2030"/>
+
+  <!-- ══ ARMS (hands relaxed, empty) ══ -->
+  <rect x="6"  y="19" width="3" height="8" fill="#1A30C0"/>
+  <rect x="23" y="19" width="3" height="8" fill="#1A30C0"/>
+  <!-- hands open -->
+  <rect x="5"  y="26" width="4" height="3" fill="#F0B870"/>
+  <rect x="23" y="26" width="4" height="3" fill="#F0B870"/>
+
+  <!-- ══ LEGS ══ -->
+  <rect x="10" y="26" width="5" height="4" fill="#1A30C0"/>
+  <rect x="17" y="26" width="5" height="4" fill="#1A30C0"/>
+
+  <!-- ══ BOOTS ══ -->
+  <rect x="9"  y="30" width="6" height="2" fill="#AA0010"/>
+  <rect x="9"  y="30" width="6" height="1" fill="#CC2020"/>
+  <rect x="17" y="30" width="6" height="2" fill="#AA0010"/>
+  <rect x="17" y="30" width="6" height="1" fill="#CC2020"/>
+</svg>

@@ -385,11 +385,6 @@ export default function LoginPage() {
             VERIFY ACCOUNT
           </button>
           <span className="text-cream/30 text-xs">|</span>
-          <button type="button" onClick={() => navigate('/observer-login')}
-            className="font-pixel text-cream/90 text-xs underline underline-offset-2 hover:text-cream whitespace-nowrap">
-            GUEST
-          </button>
-          <span className="text-cream/30 text-xs">|</span>
           <button type="button" onClick={() => setShowMasterPanel(p => !p)}
             className="font-pixel text-cream/80 text-xs underline underline-offset-2 hover:text-cream whitespace-nowrap">
             SETTING
@@ -537,19 +532,22 @@ export default function LoginPage() {
                   >
                     {/* 마지막 접속 배지 */}
                     {isLast && (
-                      <span className="absolute top-2 right-2 font-pixel text-[9px] text-gold
+                      <span className="absolute top-2 right-2 font-pixel text-xs text-gold
                                        bg-gold/10 border border-gold px-1 leading-none py-0.5">
                         ★
                       </span>
                     )}
 
-                    {/* 캐릭터 스프라이트 — 크게 */}
+                    {/* 캐릭터 스프라이트 — 내 땅 배경 + 펫 없음 */}
                     <div className="scale-125 mb-1">
                       <CharacterSprite
                         characterId={member.character.characterId}
                         role={member.role}
                         size="lg"
                         variant="job"
+                        petId={null}
+                        weapon={null}
+                        worldBanner={member.character.worldBanner}
                       />
                     </div>
 
@@ -558,17 +556,8 @@ export default function LoginPage() {
                       <p className="font-korean text-cream text-base font-bold leading-tight">
                         {member.name}
                       </p>
-                      {member.realName && member.realName !== member.name && (
-                        <p className="font-korean text-cream/70 text-xs mt-0.5">({member.realName})</p>
-                      )}
                       {member.role === 'CHILD' && (
                         <p className="font-pixel text-xs text-gold/80 mt-1">Lv.{member.level}</p>
-                      )}
-                      {member.role === 'DAD' && (
-                        <p className="font-korean text-xs text-sky mt-1">👑 아빠</p>
-                      )}
-                      {member.role === 'MOM' && (
-                        <p className="font-korean text-xs text-pink mt-1">👑 엄마</p>
                       )}
                     </div>
 
@@ -615,7 +604,7 @@ export default function LoginPage() {
       <div className="flex-1 flex flex-col items-center justify-center px-6 pb-8 gap-6">
         {selected && (
           <>
-            {/* 선택된 캐릭터 프로필 — 크게 */}
+            {/* 선택된 캐릭터 프로필 — 크게 + 내 땅 배경 */}
             <div className="flex flex-col items-center gap-3">
               <div className="scale-150 mb-2">
                 <CharacterSprite
@@ -623,15 +612,15 @@ export default function LoginPage() {
                   role={selected.role}
                   size="lg"
                   variant="job"
+                  petId={null}
+                  weapon={null}
+                  worldBanner={selected.character.worldBanner}
                 />
               </div>
               <div className="text-center">
                 <p className="font-korean text-cream text-xl font-bold t-pixel-shadow">
                   {selected.name}
                 </p>
-                {selected.realName && selected.realName !== selected.name && (
-                  <p className="font-korean text-cream/60 text-sm mt-0.5">({selected.realName})</p>
-                )}
               </div>
             </div>
 

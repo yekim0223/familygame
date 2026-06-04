@@ -7,14 +7,20 @@ import {
   deleteMission, updateDaySlot, removeDaySlot, confirmQuestByChild, updateMission,
 } from '@/infrastructure/firebase/collections/missions'
 import { createNotification } from '@/infrastructure/firebase/collections/notifications'
-import { subscribeMembers } from '@/infrastructure/firebase/collections/members'
+import { subscribeMembers, updateMember, getMember } from '@/infrastructure/firebase/collections/members'
+import { getLevelFromExp } from '@/domain/services/ExpCalc'
+import { recordXPReward } from '@/infrastructure/firebase/collections/rewards'
 import { PixelCard } from '@/presentation/components/pixel/PixelCard'
 import { PixelButton } from '@/presentation/components/pixel/PixelButton'
 import { PixelModal } from '@/presentation/components/pixel/PixelModal'
 import { StatusBadge } from '@/presentation/components/missions/StatusBadge'
 import { DIFFICULTY_INFO, CATEGORY_LABELS } from '@/domain/entities/Mission'
+import { audioManager } from '@/infrastructure/audio/audioManager'
 import type { MissionStatus, DaySlot } from '@/domain/entities/Mission'
 import type { Member } from '@/domain/entities/Member'
+import { toDateKey } from '@/utils/dateUtils'
+import { EffectOverlay } from '@/presentation/components/effects/EffectOverlay'
+import type { EffectType } from '@/presentation/components/effects/EffectOverlay'
 
 // 이력 텍스트 전용 레이블 — 상태 배지 표시는 StatusBadge 컴포넌트 사용 (규칙 21)
 const STATUS_LABEL: Record<MissionStatus, string> = {
@@ -23,7 +29,7 @@ const STATUS_LABEL: Record<MissionStatus, string> = {
   ON_HOLD:          '보류중',
   APPROVED:         '완료',
   REJECTED:         '미승인',
-  EXPIRED:          '종료됨',
+  EXPIRED:          '소멸됨',
   CHILD_REJECTED:   '거절됨',
 }
 
@@ -41,9 +47,6 @@ const SLOT_VARIANT: Record<DaySlot, 'success' | 'danger' | 'hold'> = {
 }
 
 // ── 헬퍼 ──────────────────────────────────────────────────────────
-function toDateKey(d: Date): string {
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
-}
 function getDateRange(start: Date, end: Date): string[] {
   const keys: string[] = []
   const cur = new Date(start); cur.setHours(0, 0, 0, 0)
@@ -61,7 +64,6 @@ export default function MissionDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { currentMember, familyId } = useAuthStore()
-
   // 규칙 10: Zustand 셀렉터로 미션 구독 (즉시 갱신)
   const mission = useMissionStore(state => state.missions.find(m => m.id === id))
 
@@ -74,6 +76,8 @@ export default function MissionDetailPage() {
   const [selectedChild,    setSelectedChild]     = useState('')
   const [confirming,       setConfirming]        = useState(false)
   const [expiring,         setExpiring]          = useState(false)
+  const [goodFlash,        setGoodFlash]         = useState<string|null>(null)
+  const [activeEffect,     setActiveEffect]      = useState<EffectType|null>(null)
 
   // 규칙 11: subscribeMembers로 실시간 구독
   useEffect(() => {
@@ -144,11 +148,19 @@ export default function MissionDetailPage() {
       )
     )
     setConfirming(false)
+    audioManager.missionConfirm()
+    setActiveEffect('confetti')
     showToast('✅ 퀘스트를 확인했어요!', 'success')
   }
 
   const handleSlot = async (dateKey: string, slot: DaySlot) => {
     if (slotLoading) return
+    if (slot === 'GOOD') {
+      setGoodFlash(`${activeChildId}::${dateKey}`)
+      setTimeout(() => setGoodFlash(null), 550)
+      audioManager.slotApproval()
+      setActiveEffect('stars')
+    }
     setSlotLoading(`${activeChildId}::${dateKey}`)
     const { error } = await updateDaySlot(familyId, mission.id, activeChildId, dateKey, slot)
     setSlotLoading(null)
@@ -169,6 +181,19 @@ export default function MissionDetailPage() {
     if (expiring) return
     setExpiring(true)
     const { error } = await updateMission(familyId, mission.id, { status: 'EXPIRED' } as any)
+
+    // 퀘스트 완료 XP: 난이도 × 10 (difficulty 1→10, 5→50)
+    const xpGain = mission.difficulty * 10
+    for (const childId of mission.targetMemberIds) {
+      const { data: child } = await getMember(familyId, childId)
+      if (!child) continue
+      const newExp   = (child.exp ?? 0) + xpGain
+      const newLevel = getLevelFromExp(newExp)
+      await updateMember(familyId, childId, { exp: newExp, level: newLevel } as any)
+      await recordXPReward(familyId, childId, xpGain, 'xp_quest',
+        `퀘스트 완료: ${mission.title}`, familyId)
+    }
+
     setExpiring(false)
     if (error) { showToast(error, 'error'); return }
     showToast('퀘스트를 종료했어요', 'info')
@@ -196,6 +221,13 @@ export default function MissionDetailPage() {
   // ── 렌더 ──────────────────────────────────────────────────────────
   return (
     <div className="p-4 space-y-3 pb-8">
+      {activeEffect && (
+        <EffectOverlay
+          type={activeEffect}
+          count={activeEffect === 'stars' ? 20 : 28}
+          onEnd={() => setActiveEffect(null)}
+        />
+      )}
 
       {/* ── 알림 토스트 (PixelModal) ── */}
       <PixelModal
@@ -407,16 +439,31 @@ export default function MissionDetailPage() {
                   ) : (
                     <div className="flex gap-1.5 flex-1">
                       {(['GOOD', 'BAD', 'HOLD'] as DaySlot[]).map(slot => (
-                        <PixelButton
-                          key={slot}
-                          variant={SLOT_VARIANT[slot]}
-                          size="sm"
-                          disabled={!!slotLoading}
-                          className="flex-1"
-                          onClick={() => handleSlot(dateKey, slot)}
-                        >
-                          {SLOT_STYLE[slot].icon} {isLoading ? '...' : SLOT_STYLE[slot].label}
-                        </PixelButton>
+                        <div key={slot} className="relative flex-1 overflow-visible">
+                          <PixelButton
+                            variant={SLOT_VARIANT[slot]}
+                            size="sm"
+                            disabled={!!slotLoading}
+                            fullWidth
+                            onClick={() => handleSlot(dateKey, slot)}
+                          >
+                            {SLOT_STYLE[slot].icon} {isLoading ? '...' : SLOT_STYLE[slot].label}
+                          </PixelButton>
+                          {/* G슬롯 골드 파티클 */}
+                          {slot === 'GOOD' && goodFlash === `${activeChildId}::${dateKey}` && (
+                            <div className="absolute inset-0 pointer-events-none overflow-visible">
+                              {(['-14px', '0px', '14px'] as const).map((px, i) => (
+                                <span
+                                  key={i}
+                                  className="absolute top-0 left-1/2 text-xs animate-gold-particle select-none"
+                                  style={{ '--px': px, marginLeft: '-6px' } as React.CSSProperties}
+                                >
+                                  ⭐
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       ))}
                     </div>
                   )}

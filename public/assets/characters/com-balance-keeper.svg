@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated;image-rendering:crisp-edges">
+  <!-- 균형의 수호자 — 음양 왕관 -->
+  <rect x="8"  y="1" width="16" height="3" fill="#404040"/>
+  <rect x="7"  y="2" width="18" height="2" fill="#606060"/>
+  <!-- 음양 문양 -->
+  <rect x="13" y="1" width="6"  height="3" fill="#FFFFFF"/>
+  <rect x="13" y="1" width="3"  height="3" fill="#1A1A1A"/>
+  <rect x="15" y="1" width="1"  height="1" fill="#FFFFFF"/>
+  <rect x="14" y="3" width="1"  height="1" fill="#1A1A1A"/>
+  <!-- ══ 머리 (흑백 혼합) ══ -->
+  <rect x="7"  y="4" width="2"  height="8" fill="#FFFFFF"/>
+  <rect x="23" y="4" width="2"  height="8" fill="#1A1A1A"/>
+  <rect x="8"  y="12" width="3" height="2" fill="#FFFFFF"/>
+  <rect x="21" y="12" width="3" height="2" fill="#1A1A1A"/>
+  <!-- ══ 얼굴 ══ -->
+  <rect x="9"  y="4"  width="7"  height="9" fill="#E8E8E8"/>
+  <rect x="16" y="4"  width="7"  height="9" fill="#1A1A1A"/>
+  <rect x="10" y="13" width="6"  height="1" fill="#E8E8E8"/>
+  <rect x="16" y="13" width="6"  height="1" fill="#1A1A1A"/>
+  <rect x="11" y="14" width="5"  height="1" fill="#E8E8E8"/>
+  <rect x="16" y="14" width="5"  height="1" fill="#1A1A1A"/>
+  <!-- 눈 (반반) -->
+  <rect x="10" y="6"  width="5" height="4" fill="#1A1A1A"/>
+  <rect x="10" y="6"  width="5" height="3" fill="#303030"/>
+  <rect x="10" y="6"  width="5" height="1" fill="#FFFFFF"/>
+  <rect x="14" y="6"  width="1" height="1" fill="#FFFFFF"/>
+  <rect x="17" y="6"  width="5" height="4" fill="#FFFFFF"/>
+  <rect x="17" y="6"  width="5" height="3" fill="#D0D0D0"/>
+  <rect x="17" y="6"  width="5" height="1" fill="#1A1A1A"/>
+  <rect x="21" y="6"  width="1" height="1" fill="#1A1A1A"/>
+  <!-- 볼·입 (균형) -->
+  <rect x="13" y="12" width="6" height="1" fill="#808080"/>
+  <!-- 목 -->
+  <rect x="14" y="15" width="4" height="2" fill="#C0C0C0"/>
+  <!-- ══ 음양 갑옷 ══ -->
+  <rect x="9"  y="17" width="7"  height="2" fill="#FFFFFF"/>
+  <rect x="16" y="17" width="7"  height="2" fill="#1A1A1A"/>
+  <rect x="9"  y="19" width="7"  height="8" fill="#E8E8E8"/>
+  <rect x="16" y="19" width="7"  height="8" fill="#1A1A1A"/>
+  <rect x="8"  y="20" width="4"  height="7" fill="#E8E8E8"/>
+  <rect x="20" y="20" width="4"  height="7" fill="#1A1A1A"/>
+  <!-- 어깨 (반반) -->
+  <rect x="5"  y="17" width="5"  height="5" fill="#D0D0D0"/>
+  <rect x="5"  y="17" width="5"  height="1" fill="#FFFFFF"/>
+  <rect x="22" y="17" width="5"  height="5" fill="#303030"/>
+  <rect x="22" y="17" width="5"  height="1" fill="#1A1A1A"/>
+  <!-- 균형 저울 문양 -->
+  <rect x="14" y="21" width="4"  height="1" fill="#808080"/>
+  <rect x="15" y="20" width="2"  height="5" fill="#808080"/>
+  <rect x="12" y="21" width="3"  height="3" fill="#A0A0A0"/>
+  <rect x="17" y="21" width="3"  height="3" fill="#606060"/>
+  <!-- 다리·부츠 -->
+  <rect x="10" y="27" width="5" height="3" fill="#D0D0D0"/>
+  <rect x="17" y="27" width="5" height="3" fill="#303030"/>
+  <rect x="9"  y="30" width="6" height="2" fill="#E8E8E8"/>
+  <rect x="9"  y="30" width="6" height="1" fill="#FFFFFF"/>
+  <rect x="17" y="30" width="6" height="2" fill="#1A1A1A"/>
+  <rect x="17" y="30" width="6" height="1" fill="#404040"/>
+</svg>

@@ -1,189 +1,304 @@
 // Design Ref: §5-2 HomePage — 마일스톤 3-1 전면 개편 (v3.1)
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/presentation/hooks/useAuth'
 import { useAuthStore } from '@/infrastructure/stores/authStore'
 import { useNotificationStore } from '@/infrastructure/stores/notificationStore'
 import { useMembers } from '@/presentation/hooks/useMembers'
-import { useInventoryStore } from '@/infrastructure/stores/userInventoryStore'
 import { LoginAnimation } from '@/presentation/components/animations/LoginAnimation'
-import { CharacterSprite, PetSprite } from '@/presentation/components/character/CharacterSprite'
+import { CharacterSprite, BANNER_SVG_SET } from '@/presentation/components/character/CharacterSprite'
 import { PixelCard } from '@/presentation/components/pixel/PixelCard'
 import { ExpBar } from '@/presentation/components/pixel/ExpBar'
-import {
-  CHARACTER_LABELS,
-  BANNER_UNLOCKS,
-} from '@/application/use-cases/characters/selectCharacter'
+import { BANNER_UNLOCKS, BANNER_BG, CHARACTER_LABELS } from '@/application/use-cases/characters/selectCharacter'
 import { useMissionStore } from '@/infrastructure/stores/missionStore'
+import { toDateKey } from '@/utils/dateUtils'
 import { QuestionBalloonButton } from '@/presentation/pages/home/QuestionBalloon'
 import { subscribeNotices, type Notice } from '@/infrastructure/firebase/collections/notices'
 import { PraiseWhiteboard } from '@/presentation/components/home/PraiseWhiteboard'
-import { CheerOverlay } from '@/presentation/components/home/CheerOverlay'
-import type { Member } from '@/domain/entities/Member'
-import { subscribeMembers } from '@/infrastructure/firebase/collections/members'
+import { EffectOverlay } from '@/presentation/components/effects/EffectOverlay'
 
-// ── 무기 아이콘 매핑 ──────────────────────────────────────────────
-const WEAPON_ICON: Record<string, string> = {
-  basic: '🗡️',
-  laser: '⚡',
-  double: '🔫',
-}
-const WEAPON_LABEL: Record<string, string> = {
-  basic: '단검',
-  laser: '레이저',
-  double: '더블건',
-}
 
-// ── 피드 타입별 아이콘 ────────────────────────────────────────────
-const NOTIF_ICON: Record<string, string> = {
-  NEW_MISSION: '⚔️',
-  MISSION_CONFIRMED: '✅',
-  MISSION_PENDING: '⏳',
-  MISSION_APPROVED: '🎉',
-  MISSION_REJECTED: '❌',
-  MISSION_HOLD: '⏸️',
-  MISSION_EXPIRED: '💀',
-  BEGGING_REQUEST: '🙏',
-  BEG_RESULT: '🎁',
-  LEVEL_UP: '⬆️',
-  NEW_MESSAGE: '💬',
-  CHEER: '📣',
-  MOM_CHEER: '💖',
-}
-
-// ── 랜덤 가족 응원 문구 풀 ────────────────────────────────────────
-const CHEER_POOL: Record<string, string[]> = {
-  DAD: [
-    '포기하지 마! 아빠가 뒤에서 응원해! 🔥',
-    '할 수 있어! 아빠도 어렸을 때 힘들었어. 근데 해냈어! 💪',
-    '오늘도 최선을 다하는 거야! 아빠가 자랑스러워 ⭐',
-    '파이팅! 어려울 때일수록 더 빛나는 거야 ✨',
-  ],
-  MOM: [
-    '엄마가 항상 응원해! 넌 뭐든 잘 할 수 있어 💖',
-    '힘내! 힘들면 쉬어도 돼, 하지만 포기는 금지야 🌈',
-    '우리 아가 최고야! 오늘도 파이팅 🌟',
-    '엄마가 사랑해~ 잘 할 수 있어! 🥰',
-  ],
-}
-
-function pickCheer(members: Member[]): { member: Member; text: string } | null {
-  const parents = members.filter(m => m.role === 'DAD' || m.role === 'MOM' && m.isActive)
-  if (parents.length === 0) return null
-  const m = parents[Math.floor(Math.random() * parents.length)]
-  const pool = CHEER_POOL[m.role] ?? CHEER_POOL.DAD
-  return { member: m, text: pool[Math.floor(Math.random() * pool.length)] }
-}
-
-// ── 공지사항 아코디언 아이템 ──────────────────────────────────────
+// ── 공지사항 아이템 (용사의 여정과 동일 규격) ────────────────────
 function NoticeItem({ notice }: { notice: Notice }) {
   const [open, setOpen] = useState(false)
-  const dateStr = notice.createdAt.toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' })
+  const timeStr = notice.createdAt.toLocaleString('ko-KR', {
+    month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', hour12: false,
+  })
   return (
-    <div className="border-b border-panel-border last:border-0">
-      <button type="button" onClick={() => setOpen(p => !p)}
-        className="w-full flex items-center gap-2 py-2.5 text-left active:bg-panel-surface/30">
-        <div className="flex-1 min-w-0">
-          <span className="font-korean text-sm font-bold text-cream truncate block">{notice.title}</span>
-          <span className="font-korean text-xs text-panel-sub">{dateStr} · {notice.authorName}</span>
-        </div>
-        <span className="text-panel-sub text-xs flex-shrink-0">{open ? '▲' : '▼'}</span>
-      </button>
-      {open && (
-        <p className="font-korean text-xs text-cream/80 px-1 pb-2.5 leading-relaxed line-clamp-5">
-          {notice.content}
-        </p>
-      )}
-    </div>
-  )
-}
-
-// ── 랜덤 응원 말풍선 ─────────────────────────────────────────────
-function RandomCheerBubble({ members }: { members: Member[] }) {
-  const [cheer, setCheer] = useState<{ member: Member; text: string } | null>(null)
-  const [visible, setVisible] = useState(false)
-
-  useEffect(() => {
-    const show = () => {
-      const c = pickCheer(members)
-      if (c) { setCheer(c); setVisible(true) }
-    }
-    // 4초 후 첫 출현
-    const t1 = setTimeout(show, 4_000)
-    // 이후 35초마다 반복
-    const t2 = setInterval(show, 35_000)
-    return () => { clearTimeout(t1); clearInterval(t2) }
-  }, [members])
-
-  if (!visible || !cheer) return null
-
-  const role = cheer.member.role
-  return (
-    <div className="relative flex items-start gap-2 animate-fade-in">
-      <CharacterSprite
-        characterId={cheer.member.character.characterId}
-        role={role}
-        size="sm"
-        variant="job"
-      />
+    <div
+      className="flex items-start gap-2 py-2 border-b border-panel-border last:border-0
+                 cursor-pointer hover:bg-panel-surface/30 active:bg-panel-surface/50 transition-colors"
+      onClick={() => setOpen(p => !p)}
+    >
+      <span className="flex-shrink-0 w-2 h-2 rounded-full bg-gold mt-2" />
       <div className="flex-1 min-w-0">
-        <div className="speech-bubble border-gold relative">
-          <p className="font-korean text-xs font-bold text-gold mb-0.5 t-pixel-shadow">
-            [{role === 'DAD' ? '아빠' : '엄마'}]
+        <p className="font-korean text-xs font-bold text-gold truncate">{notice.title}</p>
+        {open && (
+          <p className="font-korean text-xs text-cream/80 mt-1 leading-relaxed line-clamp-4">
+            {notice.content}
           </p>
-          <p className="font-korean text-sm text-cream leading-snug">&ldquo;{cheer.text}&rdquo;</p>
-        </div>
+        )}
+        <p className="font-korean text-xs text-panel-sub mt-0.5">{timeStr} · {notice.authorName}</p>
       </div>
-      <button
-        type="button"
-        onClick={() => setVisible(false)}
-        className="flex-shrink-0 text-panel-sub hover:text-cream text-xs mt-1"
-        aria-label="닫기"
-      >
-        ✕
-      </button>
+      <span className="font-korean text-xs text-panel-sub flex-shrink-0 mt-1">
+        {open ? '▲' : '▼'}
+      </span>
     </div>
   )
 }
+
 
 // ════════════════════════════════════════════════════════════════
 
 export default function HomePage() {
   const { currentMember } = useAuth()
   const { familyId } = useAuthStore()
-  const { getMissionById } = useMissionStore()
+  const { getMissionById, missions } = useMissionStore()
   const { notifications } = useNotificationStore()
   const { getMemberName } = useMembers()
   const navigate = useNavigate()
 
-  // 인벤토리 — 장착 무기·스킨·펫 (실시간 반영)
-  const currentWeapon = useInventoryStore(s => s.currentWeapon) || 'basic'
-  const currentSkin = useInventoryStore(s => s.currentSkin)
-  const currentPet = useInventoryStore(s => s.currentPet)
-
-  const [showAnim, setShowAnim] = useState(true)
-  const [animDone, setAnimDone] = useState(false)
+  // fq_anim_shown 플래그: 첫 로그인 1회만 표시, 로그아웃 시 clearAllLocalData로 초기화
+  // animDone: 이미 본 경우 true로 초기화 (안 하면 캐릭터 영구 정지)
+  const [showAnim, setShowAnim] = useState(() => !localStorage.getItem('fq_anim_shown'))
+  const [animDone, setAnimDone] = useState(() => !!localStorage.getItem('fq_anim_shown'))
   const [notices, setNotices] = useState<Notice[]>([])
-  const [members, setMembers] = useState<Member[]>([])
+  const [showRewardEffect, setShowRewardEffect] = useState(false)
+  // ── 생동감 애니메이션 상태 ──────────────────────────────────────
+  const [rolling,    setRolling]    = useState<'place'|'left'|'right'|null>(null)
+  const [mainSpeech, setMainSpeech] = useState<{word:string;fading:boolean}|null>(null)
+  const [petVisible, setPetVisible] = useState(true)
+  const [petXOffset, setPetXOffset] = useState(0)
+  const [cameo,      setCameo]      = useState<{charId:string;x:number;speech:string|null;show:boolean}|null>(null)
+  // ── 지그재그 이동 상태 ────────────────────────────────────────
+  const [charPos,    setCharPos]    = useState({ x: 0, y: 0 })
+  const [facingLeft, setFacingLeft] = useState(false)
+  const [isWalking,  setIsWalking]  = useState(false)
+  const waypointIdx    = useRef(0)
+  const walkTimer      = useRef<ReturnType<typeof setTimeout>|null>(null)
+  const petVisibleRef  = useRef(true)   // 스케줄러 클로저에서 petVisible 안전 접근용
+  const rewardNavTimer = useRef<ReturnType<typeof setTimeout>|null>(null)
+  const charAnimTimer  = useRef<ReturnType<typeof setTimeout>|null>(null)
+  const petReadyRef    = useRef(false)
+  // ── 터치 감정 반응 ──────────────────────────────────────────
+  type EmotionBubble = { id: number; icon: string; xOff: number }
+  const [emotionBubbles,    setEmotionBubbles]    = useState<EmotionBubble[]>([])
+  const [petEmotionBubbles, setPetEmotionBubbles] = useState<EmotionBubble[]>([])
+  const [cameoBubble,       setCameoBubble]        = useState<EmotionBubble|null>(null)
+  const [annoyedLevel,      setAnnoyedLevel]       = useState(0)
+  const tapCountRef        = useRef(0)
+  const lastTapRef         = useRef(0)
+  const annoyedLevelRef    = useRef(0)
+  const annoyResetTimerRef = useRef<ReturnType<typeof setTimeout>|null>(null)
+
+  // 역할별 캐미오 캐릭터 ID
+  const CAMEO_BY_ROLE: Record<string, string[]> = {
+    DAD: ['base-mom','base-child-1','base-child-2'],
+    MOM: ['base-dad','base-child-1','base-child-2'],
+    CHILD: ['base-dad','base-mom'],
+    OBSERVER: ['base-dad','base-mom'],
+  }
+  const CONV_PAIRS = [
+    { main:'Hi!',   cameo:'Hello!' },
+    { main:'Good!', cameo:'Nice!'  },
+    { main:'Go!',   cameo:'Yeah!'  },
+    { main:'Wow!',  cameo:'Cool!'  },
+    { main:'Nice!', cameo:'Right!' },
+  ]
+  const SOLO_WORDS = ['Hi!','Good!','Yeah!','Go!','Nice!']
+
+  useEffect(() => () => {
+    if (rewardNavTimer.current)    clearTimeout(rewardNavTimer.current)
+    if (charAnimTimer.current)     clearTimeout(charAnimTimer.current)
+    if (walkTimer.current)         clearTimeout(walkTimer.current)
+    if (annoyResetTimerRef.current) clearTimeout(annoyResetTimerRef.current)
+  }, [])
+
+  // ── 애니메이션 스케줄러 ────────────────────────────────────────
+  useEffect(() => {
+    if (!animDone) return
+    let active = true
+
+    // 이동 웨이포인트 (캐릭터 박스 내 격리 좌표)
+    const WALK_POINTS = [
+      { x: 0,   y: 0   },  // 중앙
+      { x: 65,  y: 0   },  // 우측
+      { x: -52, y: -12 },  // 좌상단
+      { x: -65, y: 0   },  // 좌측
+      { x: 52,  y: 8   },  // 우하단
+    ]
+
+    const showMainSpeech = (word: string) => {
+      setMainSpeech({ word, fading: false })
+      setTimeout(() => { if (active) setMainSpeech(s => s ? { ...s, fading: true } : null) }, 2000)
+      setTimeout(() => { if (active) setMainSpeech(null) }, 2500)
+    }
+
+    const doRoll = (type: 'place'|'left'|'right') => {
+      setRolling(type)
+      setTimeout(() => { if (active) setRolling(null) }, 750)
+    }
+
+    // 이동: 랜덤 웨이포인트로 걸어가기
+    const doWalk = () => {
+      let nextIdx = Math.floor(Math.random() * WALK_POINTS.length)
+      if (nextIdx === waypointIdx.current) nextIdx = (nextIdx + 1) % WALK_POINTS.length
+      const cur  = WALK_POINTS[waypointIdx.current]
+      const next = WALK_POINTS[nextIdx]
+      waypointIdx.current = nextIdx
+      if (next.x !== cur.x) setFacingLeft(next.x < cur.x)
+      setIsWalking(true)
+      setCharPos({ x: next.x, y: next.y })
+      if (walkTimer.current) clearTimeout(walkTimer.current)
+      walkTimer.current = setTimeout(() => {
+        if (!active) return
+        setIsWalking(false)
+      }, 1800)
+    }
+
+    const doPetDisappear = () => {
+      setPetVisible(false)
+      petVisibleRef.current = false
+      setTimeout(() => {
+        if (!active) return
+        const nx = (Math.random() - 0.5) * 80
+        setPetXOffset(nx)
+        setPetVisible(true)
+        petVisibleRef.current = true
+        setTimeout(() => { if (active) setPetXOffset(0) }, 2200)
+      }, 3000)
+    }
+
+    const doCameo = (currentRole: string) => {
+      const opts = CAMEO_BY_ROLE[currentRole] ?? ['base-dad']
+      const charId = opts[Math.floor(Math.random() * opts.length)]
+      // 펫이 보이면 반드시 왼쪽 등장 (겹침 방지 — 펫은 항상 우측)
+      const side = petVisibleRef.current ? -1 : (Math.random() < 0.5 ? -1 : 1)
+      const cx = side * (70 + Math.random() * 40)
+      const pair = CONV_PAIRS[Math.floor(Math.random() * CONV_PAIRS.length)]
+
+      setCameo({ charId, x: cx, speech: null, show: true })
+      setTimeout(() => {
+        if (!active) return
+        showMainSpeech(pair.main)
+        setCameo(c => c ? { ...c, speech: pair.cameo } : null)
+      }, 1000)
+      setTimeout(() => {
+        if (!active) return
+        setCameo(c => c ? { ...c, show: false } : null)
+        setTimeout(() => { if (active) setCameo(null) }, 500)
+      }, 3500)
+    }
+
+    const petTimer = setTimeout(() => { petReadyRef.current = true }, 10000)
+
+    const schedule = (role: string) => {
+      // 가만히 서있는 시간 3.5~7초
+      const delay = 3500 + Math.random() * 3500
+      charAnimTimer.current = setTimeout(() => {
+        if (!active) return
+        // 귀찮음 상태면 이동/롤 등 모든 액션 스킵 (자리에서 멈춤)
+        if (annoyedLevelRef.current > 0) { schedule(role); return }
+        const r = Math.random()
+        if      (r < 0.18)                        doWalk()
+        else if (r < 0.30)                        doRoll('place')
+        else if (r < 0.40)                        doRoll(Math.random() < 0.5 ? 'left' : 'right')
+        else if (r < 0.56)                        showMainSpeech(SOLO_WORDS[Math.floor(Math.random()*SOLO_WORDS.length)])
+        else if (r < 0.65 && petReadyRef.current) doPetDisappear()
+        else if (r < 0.83 && !cameo)              doCameo(role)
+        // 나머지(17%): 아무것도 안 하고 계속 서있기
+        schedule(role)
+      }, delay)
+    }
+
+    schedule(currentMember?.role ?? 'CHILD')
+    return () => {
+      active = false
+      petReadyRef.current = false
+      clearTimeout(petTimer)
+      if (charAnimTimer.current) clearTimeout(charAnimTimer.current)
+      if (walkTimer.current) clearTimeout(walkTimer.current)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [animDone])
+
+
+  // ── 공통: 연타 카운터 처리 → icon + level 반환 ───────────────
+  const processTap = useCallback((): { icon: string; level: number } => {
+    const now = Date.now()
+    if (now - lastTapRef.current > 2500) tapCountRef.current = 0
+    tapCountRef.current++
+    lastTapRef.current = now
+    const count = tapCountRef.current
+    const NORMAL_ICONS = ['music', 'star', 'begging'] as const
+    const icon  = count >= 5 ? 'skull' : NORMAL_ICONS[Math.floor(Math.random() * 3)]
+    const level = count >= 5 ? 2 : count >= 3 ? 1 : 0
+    setAnnoyedLevel(level)
+    annoyedLevelRef.current = level
+    if (annoyResetTimerRef.current) clearTimeout(annoyResetTimerRef.current)
+    annoyResetTimerRef.current = setTimeout(() => {
+      tapCountRef.current = 0; setAnnoyedLevel(0); annoyedLevelRef.current = 0
+    }, 3000)
+    return { icon, level }
+  }, [])
+
+  // ── 캐릭터 터치 ───────────────────────────────────────────────
+  const handleCharOrPetTap = useCallback(() => {
+    const { icon } = processTap()
+    const id = Date.now() + Math.floor(Math.random() * 999)
+    setEmotionBubbles(prev => [...prev.slice(-5), { id, icon, xOff: 6 + Math.floor(Math.random() * 26) }])
+    setTimeout(() => setEmotionBubbles(prev => prev.filter(b => b.id !== id)), 1600)
+  }, [processTap])
+
+  // ── 펫 터치 (독립 버블 위치) ──────────────────────────────────
+  const handlePetTap = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    const { icon } = processTap()
+    const id = Date.now() + Math.floor(Math.random() * 999)
+    setPetEmotionBubbles(prev => [...prev.slice(-3), { id, icon, xOff: 4 + Math.floor(Math.random() * 14) }])
+    setTimeout(() => setPetEmotionBubbles(prev => prev.filter(b => b.id !== id)), 1600)
+  }, [processTap])
+
+  // ── 캐미오(게스트) 터치 → skull 즉시, 700ms 후 소멸 ──────────
+  const handleCameoTap = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    const id = Date.now()
+    setCameoBubble({ id, icon: 'skull', xOff: 6 })
+    setTimeout(() => setCameoBubble(null), 700)
+  }, [])
 
   useEffect(() => {
     if (!familyId) return
     return subscribeNotices(familyId, setNotices)
   }, [familyId])
 
-  useEffect(() => {
-    if (!familyId) return
-    return subscribeMembers(familyId, setMembers)
-  }, [familyId])
-
   if (!currentMember) return null
 
   const isParent = currentMember.role === 'DAD' || currentMember.role === 'MOM'
   const isChild = currentMember.role === 'CHILD'
-  // 스토어 장착값 우선, 없으면 Firebase 기본값 (rule 38)
-  const displayCharId = currentSkin || currentMember.character.characterId
-  const displayPetId = currentPet || currentMember.character.petId
-  const jobLabel = CHARACTER_LABELS[displayCharId] ?? ''
+  // Firebase 값 직접 사용 (localStorage currentSkin은 다른 사용자 값이 섞일 수 있음 — 버그 #캐릭터오류)
+  const displayCharId   = currentMember.character.characterId
+  const displayPetId    = currentMember.character.petId
+  // displayBanner: ProfilePage에서 사용, 홈은 bannerId로 직접 처리
+
+  // ── 아이 전용 RPG 스탯 계산 (ATK = 이번주 GOOD, QST = 진행 중 퀘스트 수) ──
+  const todayKey = toDateKey(new Date())
+  const myActiveMissions = useMemo(
+    () => missions.filter(m => m.status === 'ACTIVE' && m.targetMemberIds.includes(currentMember.id)),
+    [missions, currentMember.id]
+  )
+  // 오늘 + 어제 슬롯에서 GOOD 수 집계 (이번 주 전체보다 직관적)
+  const weekKeys = useMemo(() => {
+    const keys: string[] = []
+    const d = new Date(); d.setHours(0, 0, 0, 0)
+    for (let i = 0; i < 7; i++) { keys.push(toDateKey(d)); d.setDate(d.getDate() - 1) }
+    return keys
+  }, [todayKey])
+  const atkCount = useMemo(() => myActiveMissions.reduce((acc, m) => {
+    const slots = m.slot_evaluations?.[currentMember.id] ?? {}
+    return acc + weekKeys.filter(k => slots[k] === 'GOOD').length
+  }, 0), [myActiveMissions, weekKeys, currentMember.id])
 
   // 용사의 여정 피드 (MISSION_EXPIRED 포함, 최대 5개)
   const feedItems = useMemo(() => {
@@ -208,149 +323,303 @@ export default function HomePage() {
 
   return (
     <>
+      {showRewardEffect && (
+        <EffectOverlay type="coins" count={20} onEnd={() => setShowRewardEffect(false)} />
+      )}
       {/* 로그인 애니메이션 */}
       {showAnim && !animDone && (
-        <div onClick={() => { setShowAnim(false); setAnimDone(true) }}>
+        <div onClick={() => {
+          setShowAnim(false); setAnimDone(true)
+          localStorage.setItem('fq_anim_shown', '1')
+        }}>
           <LoginAnimation
             role={currentMember.role}
             characterId={currentMember.character.characterId}
-            onComplete={() => { setShowAnim(false); setAnimDone(true) }}
+            onComplete={() => {
+              setShowAnim(false); setAnimDone(true)
+              localStorage.setItem('fq_anim_shown', '1')
+            }}
           />
         </div>
       )}
 
-      {/* 실시간 격려 팝업 (자녀 전용) */}
-      {isChild && familyId && (
-        <CheerOverlay familyId={familyId} memberId={currentMember.id} />
-      )}
-
       <div className="p-3 pb-4 space-y-3">
 
-        {/* ① 프로필 카드 — 무기·펫 풀셋 UI */}
+        {/* ① RPG 파노라마 캐릭터 카드 — 안 2: 상단 HUD·중앙 캐릭터·하단 EXP */}
         {(() => {
-          const bannerId = currentMember.character.worldBanner ?? 'overworld'
+          const bannerId   = currentMember.character.worldBanner ?? 'overworld'
           const bannerInfo = BANNER_UNLOCKS.find(b => b.id === bannerId)
+          const gradient   = BANNER_BG[bannerId] ?? 'from-grass to-green-700'
+          const hasBannerSvg = !!(bannerId && BANNER_SVG_SET.has(bannerId))
           return (
-            <PixelCard
-              variant="highlight"
-              padding="md"
-              className="bg-[#1a1510] relative overflow-hidden"
-            >
-              {/* 던전 픽셀 내부 테두리 */}
-              <div className="absolute inset-[3px] border border-gold/20 pointer-events-none" />
-              <div className="flex items-start gap-3 py-3 relative">
-                {/* 좌: 캐릭터 + 무기 배지 */}
-                <div className="flex-shrink-0 relative">
-                  <button
-                    type="button"
-                    onClick={() => navigate('/profile', { state: { panel: 'character' } })}
-                    className="relative active:scale-95 transition-transform block"
-                    title="캐릭터 변경"
-                  >
-                    <CharacterSprite
-                      characterId={displayCharId}
-                      role={currentMember.role}
-                      size="lg"
-                      animate={animDone ? 'bob' : 'none'}
-                    />
-                  </button>
-                  {/* 무기 배지 — 하단 좌측 */}
-                  <div
-                    className="absolute -bottom-1 -left-1 bg-panel-darkest border-2 border-gold
-                                px-1.5 py-0.5 flex items-center gap-0.5"
-                    title={WEAPON_LABEL[currentWeapon]}
-                  >
-                    <span className="text-sm leading-none">{WEAPON_ICON[currentWeapon] ?? '🗡️'}</span>
-                    <span className="font-pixel text-xs text-gold leading-none hidden sm:inline">
-                      {WEAPON_LABEL[currentWeapon]}
-                    </span>
-                  </div>
-                </div>
+            <div className="border-4 border-black relative overflow-hidden">
 
-                {/* 중: 이름·정보 */}
-                <div className="flex-1 min-w-0 py-1">
-                  <div className="flex items-center gap-1 flex-wrap">
-                    <span className="font-korean text-sm font-bold text-cream">
-                      {currentMember.name}
+              {/* ── 배경 (전체) ── */}
+              {hasBannerSvg ? (
+                <img src={`/assets/backgrounds/${bannerId}.svg`} aria-hidden="true"
+                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                    objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
+              ) : (
+                <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
+              )}
+              {/* 내부 테두리 */}
+              <div className="absolute inset-[3px] border border-white/10 pointer-events-none" />
+
+              {/* ── 상단 HUD 바 ── */}
+              <div className="relative flex items-center px-3 py-1 bg-black/50 border-b border-white/10">
+                {/* 좌: 아이=ATK / 부모=역할 */}
+                <div className="flex-1">
+                  {isChild ? (
+                    <span className="font-pixel text-xs text-yellow-300">⭐ {atkCount}</span>
+                  ) : (
+                    <span className="font-pixel text-[11px] text-cream/90">
+                      {currentMember.role === 'DAD' ? 'Master' : 'Parent'}
                     </span>
-                    {currentMember.realName && currentMember.realName !== currentMember.name && (
-                      <span className="font-korean text-xs text-cream/70">({currentMember.realName})</span>
-                    )}
-                  </div>
-                  {jobLabel && (
-                    <span className="font-korean text-xs text-cream/80">· {jobLabel}</span>
-                  )}
-                  {isParent && (
-                    <p className="font-korean text-xs text-cream/80 mt-0.5">
-                      관리자 · {currentMember.role === 'DAD' ? '아빠' : '엄마'}
-                    </p>
-                  )}
-                  {isChild && (
-                    <ExpBar exp={currentMember.exp} level={currentMember.level} className="mt-1" />
                   )}
                 </div>
-
-                {/* 우: 마이펫 + 등급 배너 */}
-                <div className="flex flex-col items-end justify-between flex-shrink-0 self-stretch py-0.5">
-                  <div className="flex items-start gap-1.5">
-                    {isChild && familyId && (
-                      <QuestionBalloonButton member={currentMember} familyId={familyId} />
-                    )}
-                    {/* 펫 스프라이트 — 레트로 인벤토리 프레임 */}
-                    <button
-                      type="button"
-                      onClick={() => navigate('/profile', { state: { panel: 'pet' } })}
-                      className="relative active:scale-95 transition-transform"
-                      title="마이펫 변경"
-                    >
-                      <div className="bg-panel-darkest border-2 border-gold/60 p-1
-                                       shadow-[inset_2px_2px_0px_#00000090,inset_-1px_-1px_0px_#ffffff15]">
-                        <PetSprite petId={displayPetId} size="sm" />
-                      </div>
-                    </button>
-                  </div>
-                  {bannerInfo && (
-                    <button
-                      type="button"
-                      onClick={() => navigate('/profile', { state: { panel: 'banner' } })}
-                      className="mt-auto active:scale-95 transition-transform"
-                      title="등급 변경"
-                    >
-                      <span className="font-korean text-xs font-bold text-gold
-                                       bg-panel-darkest px-1.5 py-0.5 border border-gold/40
-                                       flex items-center gap-1">
-                        {bannerInfo.emoji} {bannerInfo.label}
-                      </span>
-                    </button>
+                {/* 중앙: 이름 + 직업명 */}
+                <div className="flex-1 flex items-center justify-center gap-1.5 min-w-0">
+                  <p className="font-korean text-sm font-bold text-white t-pixel-shadow truncate">
+                    {currentMember.name}
+                  </p>
+                  {CHARACTER_LABELS[displayCharId] && (
+                    <span className="font-korean text-[10px] text-gold/90 bg-black/50 px-1 border border-gold/30 flex-shrink-0 truncate max-w-[60px]">
+                      {CHARACTER_LABELS[displayCharId]}
+                    </span>
+                  )}
+                </div>
+                {/* 우: 아이=QST / 부모=레벨(내 땅은 하단에만) */}
+                <div className="flex-1 text-right">
+                  {isChild ? (
+                    <span className="font-pixel text-xs text-blue-300">⚔️ {myActiveMissions.length}</span>
+                  ) : (
+                    <span className="font-pixel text-xs text-cream/50">Lv.{currentMember.level}</span>
                   )}
                 </div>
               </div>
-            </PixelCard>
+
+              {/* ── 중앙: 캐릭터 + 펫 + 캐미오 ── */}
+              <div className="relative flex items-end justify-center min-h-[158px]">
+
+                {/* 두근두근 풍선 (아이, 좌 고정) */}
+                {isChild && familyId && (
+                  <div className="absolute left-2 bottom-2 z-10">
+                    <QuestionBalloonButton member={currentMember} familyId={familyId} />
+                  </div>
+                )}
+
+                {/* ── 캐미오 캐릭터 ── */}
+                {cameo && (
+                  <div
+                    className="absolute bottom-0 z-10 flex flex-col items-center"
+                    onClick={handleCameoTap}
+                    style={{
+                      left: '50%',
+                      transform: `translateX(calc(-50% + ${cameo.x}px))`,
+                      opacity: cameo.show ? 1 : 0,
+                      transition: 'opacity 0.5s ease',
+                      cursor: 'pointer',
+                      position: 'relative',
+                    }}
+                  >
+                    {/* 캐미오 skull 버블 */}
+                    {cameoBubble && (
+                      <div className="absolute animate-emotion-float pointer-events-none"
+                        style={{ right: '-10px', top: '-20px', zIndex: 120 }}>
+                        <img src="/assets/icons/skull.svg" width={32} height={32}
+                          style={{ imageRendering: 'pixelated', filter: 'drop-shadow(0 0 5px #E53935)' }} />
+                      </div>
+                    )}
+                    {/* 캐미오 말풍선 */}
+                    {cameo.speech && (
+                      <div className="animate-speech-pop mb-0.5 px-2 py-0.5 bg-white border-2 border-black whitespace-nowrap relative"
+                        style={{ transform: 'translateX(-50%)', position: 'absolute', bottom: '100%', left: '50%' }}>
+                        <span className="font-pixel text-[10px] text-black">{cameo.speech}</span>
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-black" />
+                      </div>
+                    )}
+                    {/* 캐미오 스프라이트 (작게 0.75배) */}
+                    <div className={rolling ? 'animate-char-roll' : ''}>
+                      <div style={{ transform: 'scale(0.75)', transformOrigin: 'bottom center' }}>
+                        <CharacterSprite
+                          characterId={cameo.charId}
+                          role={cameo.charId.includes('dad') ? 'DAD' : cameo.charId.includes('mom') ? 'MOM' : 'CHILD'}
+                          size="lg"
+                          animate={animDone ? 'bob' : 'none'}
+                          petId={null}
+                          weapon={null}
+                          transparent
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* ── 메인 캐릭터 (지그재그 이동 — transform만 사용, 레이아웃 무영향) ── */}
+                <div
+                  onClick={handleCharOrPetTap}
+                  style={{
+                    position: 'relative',
+                    flexShrink: 0,
+                    cursor: 'pointer',
+                    transform: `translateX(${charPos.x}px) translateY(${charPos.y}px)`,
+                    transition: isWalking ? 'transform 1.8s ease-in-out' : 'transform 0.3s ease-out',
+                    zIndex: 20,
+                  }}
+                >
+                  {/* ── 감정 버블 (캐릭터 우상단에서 위로 플로팅) ── */}
+                  {emotionBubbles.map(b => (
+                    <div
+                      key={b.id}
+                      className="absolute animate-emotion-float"
+                      style={{ right: `${-b.xOff}px`, top: '-18px', zIndex: 110 }}
+                    >
+                      <img
+                        src={`/assets/icons/${b.icon}.svg`}
+                        width={36} height={36}
+                        style={{
+                          imageRendering: 'pixelated',
+                          filter: b.icon === 'skull'
+                            ? 'drop-shadow(0 0 5px #E53935) drop-shadow(0 0 2px #000)'
+                            : 'drop-shadow(0 0 4px rgba(255,215,0,0.9)) drop-shadow(0 0 1px #000)',
+                        }}
+                      />
+                    </div>
+                  ))}
+
+                  {/* 말풍선 (이동 따라가지만 flip 영향 안받게 flip 바깥) */}
+                  {mainSpeech && (
+                    <div
+                      className={`absolute z-[100] px-2 py-1 bg-white border-2 border-black whitespace-nowrap pointer-events-none
+                        ${mainSpeech.fading ? 'animate-speech-fade' : 'animate-speech-pop'}`}
+                      style={{ bottom: '100%', left: '50%', transform: 'translateX(-50%)', marginBottom: 4 }}
+                    >
+                      <span className="font-pixel text-xs text-black">{mainSpeech.word}</span>
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[6px] border-t-black" />
+                      <div className="absolute top-[calc(100%-1px)] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[5px] border-t-white" />
+                    </div>
+                  )}
+
+                  {/* 방향 반전 wrapper (X flip) */}
+                  <div style={{
+                    transform: `scaleX(${facingLeft ? -1 : 1})`,
+                    transition: 'transform 0.25s ease',
+                    transformOrigin: 'center bottom',
+                  }}>
+                    {/* 구르기 / 귀찮음 / 걷기 / 정지 애니메이션 */}
+                    <div className={
+                      rolling            ? 'animate-char-roll' :
+                      annoyedLevel >= 2  ? 'animate-char-very-annoyed' :
+                      annoyedLevel >= 1  ? 'animate-char-annoyed' :
+                      isWalking          ? 'animate-char-walk' : ''
+                    }>
+                      {/* scale + bob (정지 시에만 bob) */}
+                      <div
+                        className={!isWalking && !rolling && animDone ? 'animate-character-bob' : ''}
+                        style={{ transform: 'scale(1.2)', transformOrigin: 'bottom center' }}
+                      >
+                        <CharacterSprite
+                          characterId={displayCharId}
+                          role={currentMember.role}
+                          size="xl"
+                          animate="none"
+                          petId={null} weapon={null} transparent
+                          gearWeapon={currentMember.character.equipment?.[0] || null}
+                          gearHelmet={currentMember.character.equipment?.[1] || null}
+                          gearShield={currentMember.character.equipment?.[2] || null}
+                          gearArmor={currentMember.character.equipment?.[3] || null}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── 펫 ── */}
+                {displayPetId && (
+                  <div
+                    className="absolute bottom-1 animate-bounce flex-shrink-0"
+                    onClick={handlePetTap}
+                    style={{
+                      right: `calc(8% + ${petXOffset < 0 ? Math.abs(petXOffset) : 0}px)`,
+                      left: petXOffset > 0 ? `calc(10% + ${petXOffset}px)` : undefined,
+                      animationDuration: '1.1s',
+                      opacity: petVisible ? 1 : 0,
+                      transition: 'opacity 0.4s ease, right 1.5s ease, left 1.5s ease',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {/* 펫 전용 감정 버블 */}
+                    <div style={{ position: 'relative' }}>
+                      {petEmotionBubbles.map(b => (
+                        <div key={b.id} className="absolute animate-emotion-float pointer-events-none"
+                          style={{ right: `${-b.xOff}px`, top: '-16px', zIndex: 110 }}>
+                          <img src={`/assets/icons/${b.icon}.svg`} width={30} height={30}
+                            style={{
+                              imageRendering: 'pixelated',
+                              filter: b.icon === 'skull'
+                                ? 'drop-shadow(0 0 5px #E53935) drop-shadow(0 0 2px #000)'
+                                : 'drop-shadow(0 0 3px rgba(255,215,0,0.9))',
+                            }} />
+                        </div>
+                      ))}
+                      <img
+                        src={`/assets/pets/${displayPetId}.svg`}
+                        width={48} height={48}
+                        style={{ imageRendering: 'pixelated', objectFit: 'contain', display: 'block' }}
+                        onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* ── 하단 EXP 바 (아이) / 정보+편집 (부모) ── */}
+              <div className="relative bg-black/50 px-3 py-2 border-t border-white/10">
+                {isChild ? (
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-pixel text-[10px] text-gold/90">❤️ EXP</span>
+                      <span className="font-pixel text-[10px] text-cream/60">
+                        Lv.{currentMember.level} → Lv.{currentMember.level + 1}
+                      </span>
+                    </div>
+                    <ExpBar exp={currentMember.exp} level={currentMember.level} />
+                    <div className="flex justify-end mt-1">
+                      <button type="button" onClick={() => navigate('/profile')}
+                        className="font-korean text-xs text-white/60 hover:text-white active:scale-95 transition-all">
+                        ✏️ 편집
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between">
+                    <span className="font-korean text-xs text-gold/80">
+                      {bannerInfo ? `${bannerInfo.emoji} ${bannerInfo.label}` : '🌍 초원'}
+                    </span>
+                    <button type="button" onClick={() => navigate('/profile')}
+                      className="font-korean text-xs text-white/70 hover:text-white active:scale-95 transition-all">
+                      ✏️ 캐릭터 편집
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           )
         })()}
 
-        {/* ② 랜덤 가족 응원 말풍선 (자녀 전용) */}
-        {isChild && members.length > 0 && (
-          <RandomCheerBubble members={members} />
-        )}
-
-        {/* ③ 칭찬 화이트보드 (자녀 전용) */}
-        {isChild && familyId && (
-          <PraiseWhiteboard familyId={familyId} memberId={currentMember.id} />
-        )}
-
-        {/* ④ 부모 관리자 퀵 메뉴 */}
+        {/* ② 부모 관리자 퀵 메뉴 */}
         {isParent && (
           <div className="grid grid-cols-3 gap-2">
             {[
-              { to: '/missions/new', icon: '⚔️', label: '퀘스트 생성' },
-              { to: '/begging/manage', icon: '🙏', label: '조르기 관리' },
-              { to: '/rewards', icon: '🏆', label: '보상 현황' },
+              { to: '/missions/new',   svg: '/assets/icons/sword.svg',    label: '퀘스트 생성' },
+              { to: '/begging/manage', svg: '/assets/icons/begging.svg',  label: '조르기 관리' },
+              { to: '/rewards',        svg: '/assets/icons/trophy.svg',   label: '보상 현황' },
             ].map(item => (
               <Link key={item.to} to={item.to}
-                className="card-pixel flex flex-col items-center gap-1 py-3
+                className="card-pixel flex flex-col items-center gap-1.5 py-3
                            hover:border-gold/60 active:translate-y-0.5 transition-all">
-                <span className="text-xl">{item.icon}</span>
+                <img src={item.svg} alt={item.label} draggable={false}
+                  style={{ width: 28, height: 28, imageRendering: 'pixelated' }} />
                 <span className="font-korean text-xs font-bold text-cream text-center leading-tight">
                   {item.label}
                 </span>
@@ -363,7 +632,10 @@ export default function HomePage() {
         {feedItems.length > 0 && (
           <PixelCard variant="dark" padding="sm">
             <div className="flex items-center justify-between mb-2">
-              <p className="t-heading text-gold">📜 용사의 여정</p>
+              <div className="flex items-center gap-2">
+                <img src="/assets/icons/star.svg" width={18} height={18} style={{ imageRendering: 'pixelated' }} />
+                <p className="t-sub font-bold text-gold t-pixel-shadow">용사의 여정</p>
+              </div>
               <Link to="/notifications" className="font-korean text-xs text-panel-sub underline">
                 전체 보기
               </Link>
@@ -379,8 +651,6 @@ export default function HomePage() {
                     hour: '2-digit', minute: '2-digit', hour12: false,
                   })
                   : ''
-                const icon = NOTIF_ICON[notif.type] ?? '📌'
-
                 const getNavPath = () => {
                   switch (notif.type) {
                     case 'NEW_MESSAGE': case 'CHEER': case 'MOM_CHEER': return '/messages'
@@ -400,12 +670,19 @@ export default function HomePage() {
                     className="flex items-start gap-2 py-2 border-b border-panel-border last:border-0
                                cursor-pointer hover:bg-panel-surface/30 active:bg-panel-surface/50
                                transition-colors"
-                    onClick={() => navigate(getNavPath())}
+                    onClick={() => {
+                      const path = getNavPath()
+                      if (notif.type === 'MISSION_APPROVED' || notif.type === 'BEG_RESULT') {
+                        setShowRewardEffect(true)
+                        rewardNavTimer.current = setTimeout(() => navigate(path), 1000)
+                      } else {
+                        navigate(path)
+                      }
+                    }}
                   >
-                    <span className="flex-shrink-0 text-base mt-0.5">{icon}</span>
-                    {!notif.isRead && (
-                      <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-rejected mt-2" />
-                    )}
+                    <span className={`flex-shrink-0 w-2 h-2 rounded-full mt-2 ${
+                      notif.isRead ? 'bg-panel-border' : 'bg-rejected'
+                    }`} />
                     <div className="flex-1 min-w-0">
                       {relatedMission && notif.type !== 'MISSION_EXPIRED' && (
                         <p className="font-korean text-xs font-bold text-gold truncate">
@@ -432,19 +709,25 @@ export default function HomePage() {
           </PixelCard>
         )}
 
-        {/* ⑥ 공지사항 아코디언 */}
+        {/* ⑥ 공지사항 (용사의 여정과 동일 PixelCard 구조) */}
         {notices.length > 0 && (
           <PixelCard variant="dark" padding="sm">
-            <div className="flex items-center justify-between mb-2">
-              <p className="t-heading text-gold">📢 공지사항</p>
+            <div className="flex items-center gap-2 mb-2">
+              <img src="/assets/icons/megaphone.svg" width={18} height={18} style={{ imageRendering: 'pixelated' }} />
+              <p className="t-sub font-bold text-gold t-pixel-shadow">공지사항</p>
             </div>
-            <div>
-              {notices.slice(0, 5).map(n => <NoticeItem key={n.id} notice={n} />)}
+            <div className="space-y-0">
+              {notices.slice(0, 3).map(n => <NoticeItem key={n.id} notice={n} />)}
             </div>
           </PixelCard>
         )}
 
-        {/* ⑦ 조르기 플로팅 버튼 (자녀) */}
+        {/* ⑦ 칭찬 화이트보드 (자녀 전용 — 하단) */}
+        {isChild && familyId && (
+          <PraiseWhiteboard familyId={familyId} memberId={currentMember.id} />
+        )}
+
+        {/* ⑧ 조르기 플로팅 버튼 (자녀) */}
         {isChild && (
           <Link
             to="/begging"
@@ -452,7 +735,8 @@ export default function HomePage() {
                        shadow-pixel flex flex-col items-center justify-center gap-0.5
                        active:translate-y-0.5 active:shadow-none z-30 animate-beg-bounce"
           >
-            <span className="text-2xl leading-none">🙏</span>
+            <img src="/assets/icons/begging.svg" alt="조르기" draggable={false}
+              style={{ width: 28, height: 28, imageRendering: 'pixelated' }} />
             <span className="font-korean text-xs font-bold text-pixel-dark leading-none">
               조르기
             </span>

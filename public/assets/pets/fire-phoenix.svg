@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 불꽃 꼬리 (아래) -->
+  <rect x="5" y="11" width="2" height="5" fill="#FF4400"/>
+  <rect x="7" y="12" width="2" height="4" fill="#FF8800"/>
+  <rect x="9" y="11" width="2" height="5" fill="#FF4400"/>
+  <rect x="6" y="13" width="4" height="3" fill="#FFCC00"/>
+  <!-- 날개 불꽃 -->
+  <rect x="0" y="4" width="5" height="7" fill="#FF4400"/>
+  <rect x="11" y="4" width="5" height="7" fill="#FF4400"/>
+  <rect x="1" y="5" width="4" height="5" fill="#FF6600"/>
+  <rect x="11" y="5" width="4" height="5" fill="#FF6600"/>
+  <rect x="2" y="6" width="3" height="4" fill="#FF8800"/>
+  <rect x="11" y="6" width="3" height="4" fill="#FF8800"/>
+  <rect x="3" y="7" width="2" height="3" fill="#FFCC00"/>
+  <rect x="11" y="7" width="2" height="3" fill="#FFCC00"/>
+  <!-- 몸 (황금) -->
+  <rect x="5" y="5" width="6" height="7" fill="#FF6600"/>
+  <rect x="4" y="6" width="8" height="6" fill="#FF8800"/>
+  <!-- 가슴 (황금빛) -->
+  <rect x="6" y="7" width="4" height="4" fill="#FFCC00"/>
+  <!-- 머리 -->
+  <rect x="5" y="2" width="6" height="5" fill="#FF6600"/>
+  <rect x="4" y="3" width="8" height="4" fill="#FF8800"/>
+  <!-- 볏 -->
+  <rect x="6" y="0" width="4" height="3" fill="#FF4400"/>
+  <rect x="7" y="0" width="2" height="2" fill="#FFCC00"/>
+  <!-- 눈 (불꽃) -->
+  <rect x="6" y="4" width="2" height="2" fill="#FFEE00"/>
+  <rect x="7" y="4" width="1" height="2" fill="#1A0808"/>
+  <rect x="6" y="4" width="1" height="1" fill="#FFFFFF"/>
+  <!-- 부리 -->
+  <rect x="10" y="5" width="3" height="2" fill="#FFD700"/>
+</svg>

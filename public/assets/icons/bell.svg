@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 종 몸체 (밝은 노랑) -->
+  <rect x="6"  y="1" width="4" height="2" fill="#FFDD00"/>
+  <rect x="5"  y="3" width="6" height="2" fill="#FFDD00"/>
+  <rect x="4"  y="5" width="8" height="5" fill="#FFDD00"/>
+  <rect x="3"  y="6" width="10" height="4" fill="#FFDD00"/>
+  <!-- 종 하이라이트 -->
+  <rect x="6"  y="2" width="2" height="1" fill="#FFFF88"/>
+  <rect x="5"  y="3" width="2" height="2" fill="#FFFF88"/>
+  <!-- 종 손잡이 -->
+  <rect x="7"  y="0" width="2" height="2" fill="#CCAA00"/>
+  <!-- 경보음 선 (옆) -->
+  <rect x="1"  y="5" width="2" height="2" fill="#FFEE44"/>
+  <rect x="13" y="5" width="2" height="2" fill="#FFEE44"/>
+  <rect x="1"  y="8" width="2" height="2" fill="#FFEE44"/>
+  <rect x="13" y="8" width="2" height="2" fill="#FFEE44"/>
+  <!-- 받침대 -->
+  <rect x="3"  y="10" width="10" height="2" fill="#CCAA00"/>
+  <rect x="3"  y="10" width="10" height="1" fill="#FFDD00"/>
+  <!-- 추 -->
+  <rect x="7"  y="12" width="2" height="2" fill="#CCAA00"/>
+  <rect x="6"  y="13" width="4" height="2" fill="#CCAA00"/>
+  <rect x="7"  y="13" width="2" height="1" fill="#FFEE44"/>
+</svg>

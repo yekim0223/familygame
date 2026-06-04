@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 수정 뿜기 -->
+  <rect x="6" y="0" width="1" height="3" fill="#88DDFF"/>
+  <rect x="8" y="0" width="1" height="4" fill="#AAEEFF"/>
+  <rect x="10" y="0" width="1" height="3" fill="#88DDFF"/>
+  <rect x="7" y="0" width="2" height="2" fill="#CCFFFF"/>
+  <!-- 등지느러미 (수정) -->
+  <rect x="9" y="2" width="3" height="4" fill="#5599CC"/>
+  <rect x="10" y="1" width="2" height="4" fill="#66AADD"/>
+  <!-- 몸 (수정빛) -->
+  <rect x="2" y="5" width="12" height="6" fill="#4488BB"/>
+  <rect x="1" y="6" width="14" height="4" fill="#5599CC"/>
+  <rect x="3" y="5" width="10" height="1" fill="#77BBEE"/>
+  <!-- 수정 무늬 -->
+  <rect x="4" y="7" width="2" height="2" fill="#88CCFF"/>
+  <rect x="8" y="6" width="2" height="3" fill="#88CCFF"/>
+  <!-- 배 (수정빛 흰) -->
+  <rect x="3" y="9" width="8" height="2" fill="#CCEEFF"/>
+  <!-- 눈 (수정 보라) -->
+  <rect x="11" y="7" width="2" height="2" fill="#9966FF"/>
+  <rect x="11" y="7" width="1" height="1" fill="#FFFFFF"/>
+  <!-- 주둥이 -->
+  <rect x="13" y="7" width="3" height="2" fill="#4488BB"/>
+  <!-- 꼬리 -->
+  <rect x="0" y="6" width="3" height="3" fill="#3377AA"/>
+  <rect x="0" y="5" width="2" height="3" fill="#4488BB"/>
+  <rect x="0" y="9" width="2" height="3" fill="#4488BB"/>
+  <!-- 지느러미 -->
+  <rect x="5" y="10" width="4" height="3" fill="#3377AA"/>
+</svg>

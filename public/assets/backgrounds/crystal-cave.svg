@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <rect x="0" y="0" width="32" height="16" fill="#0A0818"/>
+  <!-- 수정 발광 -->
+  <rect x="3"  y="4" width="3" height="7" fill="#2A2060"/>
+  <rect x="4"  y="3" width="1" height="4" fill="#8060FF"/>
+  <rect x="3"  y="4" width="1" height="3" fill="#C0A0FF"/>
+  <rect x="10" y="5" width="4" height="6" fill="#1A3060"/>
+  <rect x="12" y="3" width="2" height="5" fill="#4080FF"/>
+  <rect x="11" y="4" width="1" height="4" fill="#80C0FF"/>
+  <rect x="20" y="3" width="3" height="8" fill="#2A0060"/>
+  <rect x="21" y="2" width="1" height="5" fill="#A020FF"/>
+  <rect x="20" y="3" width="1" height="4" fill="#E080FF"/>
+  <rect x="27" y="5" width="3" height="6" fill="#1A2060"/>
+  <rect x="28" y="4" width="1" height="5" fill="#4060FF"/>
+  <!-- 발광 웅덩이 -->
+  <rect x="5"  y="13" width="6" height="2" fill="#2040A0"/>
+  <rect x="6"  y="13" width="4" height="1" fill="#4080E0"/>
+  <rect x="18" y="12" width="8" height="3" fill="#4000808"/>
+  <rect x="19" y="12" width="6" height="1" fill="#8040C0"/>
+  <!-- 작은 수정들 -->
+  <rect x="8"  y="10" width="1" height="2" fill="#60A0FF"/>
+  <rect x="16" y="8"  width="1" height="3" fill="#FF80FF"/>
+  <rect x="24" y="9"  width="1" height="2" fill="#80FF80"/>
+  <!-- 천장 수정 (종유석형) -->
+  <rect x="7"  y="0" width="2" height="4" fill="#4080FF"/>
+  <rect x="7"  y="0" width="1" height="3" fill="#80C0FF"/>
+  <rect x="15" y="0" width="2" height="5" fill="#A020FF"/>
+  <rect x="15" y="0" width="1" height="4" fill="#E080FF"/>
+  <rect x="23" y="0" width="2" height="4" fill="#4060FF"/>
+</svg>

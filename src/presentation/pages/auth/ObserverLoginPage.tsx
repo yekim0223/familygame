@@ -17,9 +17,9 @@ interface CheckForm  { phoneLast4: string }
 const STATUS_INFO: Record<ObserverStatus, { emoji: string; title: string; desc: string; color: string }> = {
   pending:   { emoji: '⏳', title: '승인 대기 중',   desc: '아빠가 확인하면 접속할 수 있어요!',       color: 'text-hold' },
   approved:  { emoji: '✅', title: '접속 승인됨!',   desc: '24시간 접속이 활성화됐어요. 아래 버튼으로 입장하세요.', color: 'text-approved' },
-  expired:   { emoji: '⌛', title: '접속 시간 만료', desc: '24시간이 지났어요. 다시 신청해주세요.',    color: 'text-stone' },
+  expired:   { emoji: '⌛', title: '접속 시간 만료', desc: '24시간이 지났어요. 다시 신청해주세요.',    color: 'text-cream/70' },
   rejected:  { emoji: '❌', title: '승인 거절됨',    desc: '아빠가 접속을 거절했어요.',              color: 'text-rejected' },
-  'not-found': { emoji: '🔍', title: '신청 기록 없음', desc: '전화번호 뒤 4자리를 다시 확인해주세요.', color: 'text-stone' },
+  'not-found': { emoji: '🔍', title: '신청 기록 없음', desc: '전화번호 뒤 4자리를 다시 확인해주세요.', color: 'text-cream/70' },
 }
 
 export default function ObserverLoginPage() {
@@ -57,7 +57,7 @@ export default function ObserverLoginPage() {
 
   const tabCls = (t: Tab) =>
     `flex-1 py-2.5 font-korean text-sm font-bold transition-colors
-     ${tab === t ? 'bg-purple text-white' : 'bg-cream text-stone hover:bg-purple/10'}`
+     ${tab === t ? 'bg-purple text-white' : 'bg-cream text-cream/70 hover:bg-purple/10'}`
 
   return (
     <div className="min-h-screen bg-minecraft flex flex-col">
@@ -88,7 +88,7 @@ export default function ObserverLoginPage() {
             <PixelCard className="text-center space-y-4">
               <div className="text-5xl">👀</div>
               <p className="font-korean text-base font-bold text-pixel-dark">접속 신청 완료!</p>
-              <p className="font-korean text-sm text-stone">
+              <p className="font-korean text-sm text-cream/70">
                 아빠가 승인하면 접속할 수 있어요.<br/>
                 "상태 확인" 탭에서 전화번호 뒤 4자리를 입력하면<br/>승인 여부를 확인할 수 있어요.
               </p>
@@ -98,7 +98,7 @@ export default function ObserverLoginPage() {
             </PixelCard>
           ) : (
             <PixelCard className="space-y-4">
-              <p className="font-korean text-sm text-stone">
+              <p className="font-korean text-sm text-cream/70">
                 앱 계정 없이 아이들 활동을 구경할 수 있어요 👴👵<br/>
                 신청 후 아빠 승인 시 24시간 접속 가능해요.
               </p>
@@ -116,7 +116,7 @@ export default function ObserverLoginPage() {
 
               <div>
                 <label className="font-korean text-xs font-bold text-pixel-dark block mb-1">
-                  핸드폰 뒤 4자리 <span className="text-stone font-normal">(상태 확인에 사용)</span>
+                  핸드폰 뒤 4자리 <span className="text-cream/70 font-normal">(상태 확인에 사용)</span>
                 </label>
                 <input
                   {...applyForm.register('phoneLast4', { required: true, maxLength: 4 })}
@@ -186,7 +186,7 @@ export default function ObserverLoginPage() {
                 <PixelCard className="text-center space-y-3">
                   <div className="text-4xl">{info.emoji}</div>
                   <p className={`font-korean text-base font-bold ${info.color}`}>{info.title}</p>
-                  <p className="font-korean text-sm text-stone">{info.desc}</p>
+                  <p className="font-korean text-sm text-cream/70">{info.desc}</p>
                   {checkStatus === 'approved' && (
                     <PixelButton variant="gold" fullWidth onClick={() => navigate('/home')}>
                       지금 입장하기 →

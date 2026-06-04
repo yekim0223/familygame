@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated;image-rendering:crisp-edges">
+  <!-- 얼음 크리스탈 왕관 -->
+  <rect x="8"  y="2" width="16" height="3" fill="#88CCEE"/>
+  <rect x="7"  y="3" width="18" height="2" fill="#AADDFF"/>
+  <!-- 크리스탈 스파이크 -->
+  <rect x="9"  y="0" width="3"  height="4" fill="#CCEEFF"/>
+  <rect x="14" y="0" width="4"  height="5" fill="#CCEEFF"/>
+  <rect x="20" y="0" width="3"  height="4" fill="#CCEEFF"/>
+  <rect x="10" y="0" width="1"  height="3" fill="#FFFFFF"/>
+  <rect x="15" y="0" width="2"  height="4" fill="#FFFFFF"/>
+  <rect x="21" y="0" width="1"  height="3" fill="#FFFFFF"/>
+
+  <!-- ══ 머리 (은발) ══ -->
+  <rect x="8"  y="4" width="2"  height="9" fill="#C0D8F0"/>
+  <rect x="22" y="4" width="2"  height="9" fill="#C0D8F0"/>
+  <rect x="7"  y="6" width="2"  height="7" fill="#A0C0E0"/>
+  <rect x="23" y="6" width="2"  height="7" fill="#A0C0E0"/>
+  <rect x="8"  y="13" width="3" height="2" fill="#C0D8F0"/>
+  <rect x="21" y="13" width="3" height="2" fill="#C0D8F0"/>
+  <!-- 은발 하이라이트 -->
+  <rect x="12" y="4" width="8"  height="1" fill="#E8F4FF"/>
+
+  <!-- ══ 얼굴 (창백) ══ -->
+  <rect x="9"  y="5"  width="14" height="9" fill="#EEDDCC"/>
+  <rect x="10" y="14" width="12" height="1" fill="#EEDDCC"/>
+  <rect x="11" y="15" width="10" height="1" fill="#EEDDCC"/>
+
+  <!-- ══ 눈썹·눈 ══ -->
+  <rect x="10" y="6"  width="4" height="1" fill="#7090A0"/>
+  <rect x="18" y="6"  width="4" height="1" fill="#7090A0"/>
+  <rect x="10" y="8"  width="5" height="4" fill="#1A0828"/>
+  <rect x="10" y="8"  width="5" height="3" fill="#2070A0"/>
+  <rect x="10" y="8"  width="5" height="1" fill="#50B0E0"/>
+  <rect x="14" y="8"  width="1" height="1" fill="#FFFFFF"/>
+  <rect x="17" y="8"  width="5" height="4" fill="#1A0828"/>
+  <rect x="17" y="8"  width="5" height="3" fill="#2070A0"/>
+  <rect x="17" y="8"  width="5" height="1" fill="#50B0E0"/>
+  <rect x="17" y="8"  width="1" height="1" fill="#FFFFFF"/>
+
+  <!-- ══ 볼·입 ══ -->
+  <rect x="9"  y="11" width="3" height="1" fill="#C0D0E0"/>
+  <rect x="20" y="11" width="3" height="1" fill="#C0D0E0"/>
+  <rect x="13" y="12" width="6" height="1" fill="#6090B0"/>
+  <rect x="14" y="13" width="4" height="1" fill="#4070908"/>
+
+  <!-- ══ 목 ══ -->
+  <rect x="14" y="16" width="4" height="2" fill="#EEDDCC"/>
+
+  <!-- ══ 얼음 로브 ══ -->
+  <!-- 칼라 -->
+  <rect x="10" y="17" width="12" height="2" fill="#88CCEE"/>
+  <rect x="10" y="17" width="12" height="1" fill="#AADDFF"/>
+  <!-- 로브 -->
+  <rect x="8"  y="19" width="16" height="9" fill="#5090C0"/>
+  <rect x="7"  y="20" width="18" height="8" fill="#6090C8"/>
+  <rect x="9"  y="19" width="5"  height="3" fill="#70A0D8"/>
+  <!-- 얼음 결정 무늬 -->
+  <rect x="14" y="22" width="4"  height="1" fill="#AADDFF"/>
+  <rect x="15" y="21" width="2"  height="3" fill="#AADDFF"/>
+  <rect x="13" y="22" width="6"  height="1" fill="#CCEEFF"/>
+  <rect x="11" y="25" width="2"  height="2" fill="#88CCEE"/>
+  <rect x="19" y="25" width="2"  height="2" fill="#88CCEE"/>
+  <!-- 로브 옆 -->
+  <rect x="6"  y="20" width="3"  height="8" fill="#4080B0"/>
+  <rect x="23" y="20" width="3"  height="8" fill="#4080B0"/>
+
+  <!-- ══ 다리·부츠 ══ -->
+  <rect x="10" y="28" width="5" height="2" fill="#3070A0"/>
+  <rect x="17" y="28" width="5" height="2" fill="#3070A0"/>
+  <rect x="9"  y="30" width="6" height="2" fill="#4080B0"/>
+  <rect x="9"  y="30" width="6" height="1" fill="#6090C8"/>
+  <rect x="17" y="30" width="6" height="2" fill="#4080B0"/>
+  <rect x="17" y="30" width="6" height="1" fill="#6090C8"/>
+</svg>

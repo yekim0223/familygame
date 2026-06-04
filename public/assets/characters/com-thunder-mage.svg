@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated;image-rendering:crisp-edges">
+  <!-- 번개 마법사 — 전기 머리 (노랑) -->
+  <rect x="10" y="0" width="2"  height="3" fill="#FFEE00"/>
+  <rect x="14" y="0" width="4"  height="4" fill="#FFD700"/>
+  <rect x="19" y="0" width="2"  height="3" fill="#FFEE00"/>
+  <rect x="9"  y="1" width="14" height="3" fill="#E8C000"/>
+  <rect x="8"  y="3" width="16" height="3" fill="#C8A000"/>
+  <rect x="7"  y="5" width="2"  height="7" fill="#C8A000"/>
+  <rect x="23" y="5" width="2"  height="7" fill="#C8A000"/>
+  <rect x="8"  y="12" width="3" height="2" fill="#C8A000"/>
+  <rect x="21" y="12" width="3" height="2" fill="#C8A000"/>
+  <!-- 전기 스파크 -->
+  <rect x="6"  y="4" width="2"  height="1" fill="#FFFFFF"/>
+  <rect x="24" y="6" width="2"  height="1" fill="#FFFFFF"/>
+  <!-- ══ 얼굴 ══ -->
+  <rect x="9"  y="5"  width="14" height="8" fill="#F5C17A"/>
+  <rect x="10" y="13" width="12" height="1" fill="#F5C17A"/>
+  <rect x="11" y="14" width="10" height="1" fill="#F5C17A"/>
+  <!-- 눈썹·눈 -->
+  <rect x="10" y="6"  width="6" height="1" fill="#906000"/>
+  <rect x="16" y="6"  width="6" height="1" fill="#906000"/>
+  <rect x="10" y="8"  width="5" height="4" fill="#1A0828"/>
+  <rect x="10" y="8"  width="5" height="3" fill="#C08000"/>
+  <rect x="10" y="8"  width="5" height="1" fill="#FFDD00"/>
+  <rect x="14" y="8"  width="1" height="1" fill="#FFFFFF"/>
+  <rect x="17" y="8"  width="5" height="4" fill="#1A0828"/>
+  <rect x="17" y="8"  width="5" height="3" fill="#C08000"/>
+  <rect x="17" y="8"  width="5" height="1" fill="#FFDD00"/>
+  <rect x="17" y="8"  width="1" height="1" fill="#FFFFFF"/>
+  <!-- 볼·입 -->
+  <rect x="9"  y="11" width="3" height="1" fill="#E09060"/>
+  <rect x="20" y="11" width="3" height="1" fill="#E09060"/>
+  <rect x="13" y="12" width="6" height="1" fill="#CC5533"/>
+  <!-- 목 -->
+  <rect x="14" y="15" width="4" height="2" fill="#F5C17A"/>
+  <!-- ══ 번개 로브 ══ -->
+  <rect x="9"  y="17" width="14" height="2" fill="#806000"/>
+  <rect x="9"  y="17" width="14" height="1" fill="#C09000"/>
+  <rect x="9"  y="19" width="14" height="8" fill="#604800"/>
+  <rect x="8"  y="20" width="16" height="7" fill="#805800"/>
+  <rect x="10" y="19" width="4"  height="3" fill="#9A7010"/>
+  <!-- 번개 문양 -->
+  <rect x="16" y="21" width="2"  height="6" fill="#FFDD00"/>
+  <rect x="14" y="23" width="6"  height="2" fill="#FFDD00"/>
+  <rect x="12" y="25" width="4"  height="2" fill="#FFD700"/>
+  <!-- 전기 아우라 (양옆) -->
+  <rect x="5"  y="19" width="4"  height="8" fill="#FFD700"/>
+  <rect x="5"  y="20" width="3"  height="6" fill="#FFEE88"/>
+  <rect x="23" y="19" width="4"  height="8" fill="#FFD700"/>
+  <rect x="24" y="20" width="3"  height="6" fill="#FFEE88"/>
+  <!-- 다리·부츠 -->
+  <rect x="10" y="27" width="5" height="3" fill="#4A3400"/>
+  <rect x="17" y="27" width="5" height="3" fill="#4A3400"/>
+  <rect x="9"  y="30" width="6" height="2" fill="#604800"/>
+  <rect x="9"  y="30" width="6" height="1" fill="#FFDD00"/>
+  <rect x="17" y="30" width="6" height="2" fill="#604800"/>
+  <rect x="17" y="30" width="6" height="1" fill="#FFDD00"/>
+</svg>

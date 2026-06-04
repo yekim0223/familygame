@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <rect x="0" y="0" width="32" height="16" fill="#080420"/>
+  <!-- 성운 색상 -->
+  <rect x="0"  y="0" width="16" height="8"  fill="#180838"/>
+  <rect x="16" y="0" width="16" height="8"  fill="#082030"/>
+  <rect x="4"  y="2" width="8"  height="5"  fill="#281050"/>
+  <rect x="18" y="1" width="10" height="6"  fill="#082840"/>
+  <!-- 성운 빛 -->
+  <rect x="6"  y="3" width="4"  height="3"  fill="#A020FF44"/>
+  <rect x="20" y="2" width="6"  height="4"  fill="#00C0FF44"/>
+  <rect x="8"  y="4" width="2"  height="2"  fill="#FF40FF"/>
+  <rect x="22" y="3" width="3"  height="2"  fill="#40FFFF"/>
+  <!-- 동굴 천장/벽 -->
+  <rect x="0"  y="0" width="32" height="3"  fill="#080420"/>
+  <rect x="0"  y="13" width="32" height="3" fill="#080420"/>
+  <!-- 수정 기둥 (성운빛) -->
+  <rect x="3"  y="3" width="2"  height="9"  fill="#3A1060"/>
+  <rect x="4"  y="3" width="1"  height="5"  fill="#C040FF"/>
+  <rect x="12" y="4" width="2"  height="8"  fill="#1A3060"/>
+  <rect x="13" y="3" width="1"  height="6"  fill="#40C0FF"/>
+  <rect x="21" y="3" width="2"  height="9"  fill="#3A1060"/>
+  <rect x="21" y="3" width="1"  height="5"  fill="#FF80FF"/>
+  <rect x="28" y="4" width="2"  height="8"  fill="#082040"/>
+  <rect x="28" y="3" width="1"  height="5"  fill="#00FFCC"/>
+  <!-- 별들 -->
+  <rect x="9"  y="1" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="16" y="2" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="25" y="1" width="1" height="1" fill="#FFFFFF"/>
+</svg>

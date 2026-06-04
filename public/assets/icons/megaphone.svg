@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 메가폰 (공지사항 — 황금) -->
+  <!-- 손잡이 -->
+  <rect x="0"  y="6"  width="3"  height="4"  fill="#CC8800"/>
+  <rect x="0"  y="7"  width="3"  height="2"  fill="#FFD700"/>
+  <!-- 확성기 몸통 -->
+  <rect x="3"  y="5"  width="4"  height="6"  fill="#FFD700"/>
+  <rect x="3"  y="6"  width="4"  height="4"  fill="#FFE84D"/>
+  <!-- 확성기 나팔 (점점 넓어짐) -->
+  <rect x="7"  y="3"  width="4"  height="10" fill="#CC8800"/>
+  <rect x="7"  y="4"  width="4"  height="8"  fill="#FFB800"/>
+  <rect x="11" y="2"  width="3"  height="12" fill="#CC8800"/>
+  <rect x="11" y="3"  width="3"  height="10" fill="#FF9900"/>
+  <!-- 소리파동 -->
+  <rect x="14" y="4"  width="1"  height="2"  fill="#FFE84D"/>
+  <rect x="15" y="6"  width="1"  height="4"  fill="#FFE84D"/>
+  <rect x="14" y="10" width="1"  height="2"  fill="#FFE84D"/>
+  <!-- 하이라이트 -->
+  <rect x="7"  y="4"  width="1"  height="7"  fill="#FFE84D"/>
+  <rect x="3"  y="5"  width="1"  height="5"  fill="#FFEE88"/>
+</svg>

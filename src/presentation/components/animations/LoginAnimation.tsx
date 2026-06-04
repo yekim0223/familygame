@@ -21,11 +21,8 @@ export function LoginAnimation({ role, onComplete }: LoginAnimationProps) {
   const scene = ROLE_SCENES[role]
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setVisible(false)
-      onComplete?.()
-    }, 2500)
-    return () => clearTimeout(timer)
+    const t = setTimeout(() => { setVisible(false); onComplete?.() }, 2000)
+    return () => clearTimeout(t)
   }, [])
 
   if (!visible) return null
@@ -41,10 +38,11 @@ export function LoginAnimation({ role, onComplete }: LoginAnimationProps) {
         <div className="text-4xl animate-pixel-bounce">
           {scene.action}
         </div>
-        {/* 로딩 텍스트 — tap to skip의 3배 크기, 금색 */}
-        <p className="font-pixel text-2xl text-gold tracking-wide">Loading...</p>
+        <p className="font-pixel text-2xl tracking-wide text-gold t-pixel-shadow scale-110">
+          START! 🎮
+        </p>
         {/* 스킵 안내 */}
-        <p className="font-pixel text-xs text-stone animate-pulse">tap to skip</p>
+        <p className="font-pixel text-xs text-cream/70 animate-pulse">tap to skip</p>
       </div>
     </div>
   )

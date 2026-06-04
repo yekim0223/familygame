@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <rect x="0" y="0" width="32" height="16" fill="#1A0808"/>
+  <!-- 연기 구름 -->
+  <rect x="10" y="0" width="12" height="3" fill="#404040"/>
+  <rect x="12" y="0" width="8"  height="4" fill="#505050"/>
+  <rect x="14" y="0" width="4"  height="5" fill="#606060"/>
+  <!-- 화산 -->
+  <rect x="6"  y="5" width="20" height="11" fill="#4A1808"/>
+  <rect x="10" y="3" width="12" height="9"  fill="#5A2010"/>
+  <rect x="13" y="1" width="6"  height="7"  fill="#6A2818"/>
+  <!-- 분화구 -->
+  <rect x="14" y="4" width="4"  height="3"  fill="#FF4400"/>
+  <rect x="14" y="4" width="4"  height="1"  fill="#FF8800"/>
+  <!-- 용암 흐름 -->
+  <rect x="0"  y="12" width="32" height="4" fill="#FF3300"/>
+  <rect x="0"  y="12" width="32" height="1" fill="#FF6600"/>
+  <rect x="4"  y="11" width="3"  height="3" fill="#FF4400"/>
+  <rect x="25" y="10" width="3"  height="4" fill="#FF4400"/>
+  <rect x="14" y="7"  width="2"  height="6" fill="#FF6600"/>
+  <rect x="14" y="8"  width="1"  height="1" fill="#FFCC00"/>
+  <!-- 불꽃 -->
+  <rect x="13" y="3"  width="1"  height="2" fill="#FFAA00"/>
+  <rect x="16" y="2"  width="1"  height="2" fill="#FF8800"/>
+  <rect x="18" y="3"  width="1"  height="2" fill="#FFAA00"/>
+</svg>

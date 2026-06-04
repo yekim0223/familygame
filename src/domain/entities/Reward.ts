@@ -10,5 +10,5 @@ export interface RewardRecord {
   approvedAt: Date
   isPaid: boolean
   paidAt?: Date
-  source?: 'mission' | 'manual' | 'begging' | 'question'  // 보상 출처
+  source?: 'mission' | 'manual' | 'begging' | 'question' | 'xp_question' | 'xp_quest' | 'xp_game'
 }

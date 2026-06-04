@@ -25,7 +25,7 @@ export default function RewardTypesPage() {
           className="font-korean text-sm font-bold text-pixel-dark">◀ 뒤로</button>
         <h1 className="font-korean text-base font-bold text-purple">💰 보상 종류 관리</h1>
       </div>
-      <p className="font-korean text-xs text-stone">
+      <p className="font-korean text-xs text-cream/70">
         커스텀 보상은 최대 10종까지 등록 가능해요. (사용중 {DEFAULT_REWARDS.filter(r=>r.active).length}종)
       </p>
       <div className="space-y-2">
@@ -35,12 +35,12 @@ export default function RewardTypesPage() {
               <span className="text-2xl flex-shrink-0">{item.emoji}</span>
               <div className="flex-1 min-w-0">
                 <p className="font-korean text-sm font-bold text-pixel-dark">{item.label}</p>
-                <p className="font-korean text-xs text-stone">{item.unit}</p>
+                <p className="font-korean text-xs text-cream/70">{item.unit}</p>
               </div>
               <span className={`font-korean text-xs font-bold px-2 py-1 border-2 flex-shrink-0
                 ${item.active
                   ? 'bg-approved text-white border-green-800'
-                  : 'bg-cream text-stone border-stone'}`}>
+                  : 'bg-cream text-cream/70 border-stone'}`}>
                 {item.active ? '사용중' : '대기'}
               </span>
             </div>

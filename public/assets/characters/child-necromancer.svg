@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated;image-rendering:crisp-edges">
+  <!-- 강령술사 후드 (해골 문양) -->
+  <rect x="8"  y="1" width="16" height="5" fill="#0A0818"/>
+  <rect x="7"  y="3" width="18" height="4" fill="#100A20"/>
+  <rect x="9"  y="1" width="14" height="2" fill="#1A1030"/>
+  <!-- 해골 문양 -->
+  <rect x="13" y="2" width="6"  height="4" fill="#CCCCDD"/>
+  <rect x="14" y="2" width="4"  height="3" fill="#EEEEFF"/>
+  <rect x="13" y="4" width="2"  height="1" fill="#0A0818"/>
+  <rect x="17" y="4" width="2"  height="1" fill="#0A0818"/>
+  <rect x="14" y="5" width="4"  height="1" fill="#0A0818"/>
+  <rect x="15" y="5" width="1"  height="1" fill="#CCCCDD"/>
+  <rect x="17" y="5" width="1"  height="1" fill="#CCCCDD"/>
+
+  <!-- ══ 머리 (창백) ══ -->
+  <rect x="7"  y="5" width="2"  height="9" fill="#0A0818"/>
+  <rect x="23" y="5" width="2"  height="9" fill="#0A0818"/>
+  <rect x="8"  y="14" width="3" height="2" fill="#0A0818"/>
+  <rect x="21" y="14" width="3" height="2" fill="#0A0818"/>
+
+  <!-- ══ 얼굴 (매우 창백) ══ -->
+  <rect x="9"  y="6"  width="14" height="9" fill="#D0C8D8"/>
+  <rect x="10" y="15" width="12" height="1" fill="#D0C8D8"/>
+  <rect x="11" y="16" width="10" height="1" fill="#D0C8D8"/>
+
+  <!-- ══ 눈썹·눈 (공허 녹색) ══ -->
+  <rect x="10" y="7"  width="5" height="1" fill="#0A0818"/>
+  <rect x="17" y="7"  width="5" height="1" fill="#0A0818"/>
+  <rect x="10" y="9"  width="5" height="4" fill="#1A0828"/>
+  <rect x="10" y="9"  width="5" height="3" fill="#008040"/>
+  <rect x="10" y="9"  width="5" height="1" fill="#00FF80"/>
+  <rect x="14" y="9"  width="1" height="1" fill="#FFFFFF"/>
+  <rect x="17" y="9"  width="5" height="4" fill="#1A0828"/>
+  <rect x="17" y="9"  width="5" height="3" fill="#008040"/>
+  <rect x="17" y="9"  width="5" height="1" fill="#00FF80"/>
+  <rect x="17" y="9"  width="1" height="1" fill="#FFFFFF"/>
+
+  <!-- ══ 입 (차가운) ══ -->
+  <rect x="13" y="13" width="6" height="1" fill="#8080A0"/>
+  <rect x="14" y="14" width="4" height="1" fill="#6060808"/>
+
+  <!-- ══ 목 ══ -->
+  <rect x="14" y="17" width="4" height="2" fill="#D0C8D8"/>
+
+  <!-- ══ 강령술사 로브 ══ -->
+  <rect x="8"  y="19" width="16" height="2" fill="#0A0818"/>
+  <rect x="8"  y="19" width="16" height="1" fill="#100A20"/>
+  <rect x="9"  y="21" width="14" height="8" fill="#060410"/>
+  <rect x="8"  y="22" width="16" height="7" fill="#0A0818"/>
+  <rect x="10" y="21" width="4"  height="3" fill="#100A20"/>
+  <!-- 언데드 문양 -->
+  <rect x="14" y="24" width="4"  height="4" fill="#00C040"/>
+  <rect x="13" y="25" width="6"  height="2" fill="#00C040"/>
+  <rect x="15" y="23" width="2"  height="5" fill="#00FF60"/>
+  <!-- 로브 옆 -->
+  <rect x="6"  y="22" width="3"  height="8" fill="#060410"/>
+  <rect x="23" y="22" width="3"  height="8" fill="#060410"/>
+
+  <!-- ══ 다리·부츠 ══ -->
+  <rect x="10" y="29" width="5" height="1" fill="#0A0818"/>
+  <rect x="17" y="29" width="5" height="1" fill="#0A0818"/>
+  <rect x="9"  y="30" width="6" height="2" fill="#060410"/>
+  <rect x="9"  y="30" width="6" height="1" fill="#100A20"/>
+  <rect x="17" y="30" width="6" height="2" fill="#060410"/>
+  <rect x="17" y="30" width="6" height="1" fill="#100A20"/>
+</svg>

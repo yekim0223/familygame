@@ -7,7 +7,7 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
 
   if (isRestoring) {
     return (
-      <div className="min-h-screen bg-minecraft flex items-center justify-center">
+      <div className="min-h-screen bg-panel-darkest flex items-center justify-center">
         <p className="font-korean text-cream text-sm animate-pulse">로딩 중...</p>
       </div>
     )

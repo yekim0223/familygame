@@ -10,7 +10,6 @@ import { useAuthStore } from '@/infrastructure/stores/authStore'
 import { getMember } from '@/infrastructure/firebase/collections/members'
 import LoginPage from '@/presentation/pages/auth/LoginPage'
 import RegisterPage from '@/presentation/pages/auth/RegisterPage'
-import ObserverLoginPage from '@/presentation/pages/auth/ObserverLoginPage'
 import HomePage from '@/presentation/pages/home/HomePage'
 import MissionListPage from '@/presentation/pages/missions/MissionListPage'
 import MissionDetailPage from '@/presentation/pages/missions/MissionDetailPage'
@@ -91,7 +90,6 @@ export default function App() {
         {/* 인증 전 화면 */}
         <Route path="/login"           element={<LoginPage />} />
         <Route path="/register"        element={<RegisterPage />} />
-        <Route path="/observer-login"  element={<ObserverLoginPage />} />
 
         {/* 인증 후 화면 (AppLayout 보호) */}
         <Route path="/" element={<AppLayout />}>

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <rect x="0" y="0" width="32" height="16" fill="#010110"/>
+  <!-- 배경 별 -->
+  <rect x="2"  y="1" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="9"  y="3" width="1" height="1" fill="#CCCCFF"/>
+  <rect x="22" y="2" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="29" y="1" width="1" height="1" fill="#AAAAFF"/>
+  <rect x="0"  y="12" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="31" y="12" width="1" height="1" fill="#CCCCFF"/>
+  <!-- 퀘이사 제트 (수직 광선 - 위아래) -->
+  <rect x="15" y="0" width="2" height="5" fill="#FFFFFF"/>
+  <rect x="14" y="0" width="1" height="4" fill="#AAFFFF"/>
+  <rect x="17" y="0" width="1" height="4" fill="#AAFFFF"/>
+  <rect x="13" y="0" width="1" height="3" fill="#6688FF"/>
+  <rect x="18" y="0" width="1" height="3" fill="#6688FF"/>
+  <rect x="15" y="11" width="2" height="5" fill="#FFFFFF"/>
+  <rect x="14" y="12" width="1" height="4" fill="#AAFFFF"/>
+  <rect x="17" y="12" width="1" height="4" fill="#AAFFFF"/>
+  <rect x="13" y="13" width="1" height="3" fill="#6688FF"/>
+  <rect x="18" y="13" width="1" height="3" fill="#6688FF"/>
+  <!-- 은하 원반 -->
+  <rect x="6"  y="7" width="20" height="2" fill="#442288"/>
+  <rect x="8"  y="6" width="16" height="1" fill="#553399"/>
+  <rect x="10" y="8" width="12" height="1" fill="#331177"/>
+  <!-- 중심 핵 (눈부신) -->
+  <rect x="13" y="5" width="6" height="6" fill="#8844FF"/>
+  <rect x="14" y="5" width="4" height="6" fill="#AABBFF"/>
+  <rect x="15" y="4" width="2" height="8" fill="#FFFFFF"/>
+  <rect x="14" y="6" width="4" height="4" fill="#DDBBFF"/>
+</svg>

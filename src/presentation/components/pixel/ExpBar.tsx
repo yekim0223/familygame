@@ -17,7 +17,7 @@ export function ExpBar({ exp, level, showLabel = true, className = '' }: ExpBarP
       {showLabel && (
         <div className="flex justify-between items-center">
           <span className="font-pixel text-xs text-purple">Lv.{level}</span>
-          <span className="font-korean text-xs text-stone">{current}/{needed} EXP</span>
+          <span className="font-korean text-xs text-cream/70">{current}/{needed} EXP</span>
         </div>
       )}
       <div className="exp-bar">

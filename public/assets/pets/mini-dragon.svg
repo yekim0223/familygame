@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 뿔 -->
+  <rect x="5" y="0" width="2" height="3" fill="#FF8800"/>
+  <rect x="9" y="0" width="2" height="3" fill="#FF8800"/>
+  <!-- 날개 -->
+  <rect x="0" y="5" width="4" height="5" fill="#FF4040"/>
+  <rect x="12" y="5" width="4" height="5" fill="#FF4040"/>
+  <rect x="1" y="5" width="3" height="4" fill="#FF8080"/>
+  <rect x="12" y="5" width="3" height="4" fill="#FF8080"/>
+  <!-- 머리 -->
+  <rect x="4" y="2" width="8" height="6" fill="#30A030"/>
+  <rect x="3" y="3" width="10" height="5" fill="#40B840"/>
+  <!-- 주둥이 -->
+  <rect x="11" y="5" width="4" height="3" fill="#30A030"/>
+  <!-- 눈 (노랑) -->
+  <rect x="5" y="4" width="3" height="2" fill="#FFD700"/>
+  <rect x="6" y="4" width="2" height="2" fill="#1A1A1A"/>
+  <rect x="6" y="4" width="1" height="1" fill="#FFFFFF"/>
+  <!-- 불꽃 -->
+  <rect x="13" y="6" width="3" height="2" fill="#FF8800"/>
+  <rect x="14" y="5" width="2" height="1" fill="#FFCC00"/>
+  <!-- 몸 -->
+  <rect x="4" y="8" width="8" height="5" fill="#30A030"/>
+  <rect x="3" y="9" width="9" height="4" fill="#40B840"/>
+  <!-- 꼬리 -->
+  <rect x="0" y="10" width="4" height="3" fill="#30A030"/>
+  <rect x="0" y="12" width="3" height="2" fill="#40B840"/>
+  <!-- 등 비늘 -->
+  <rect x="6" y="3" width="1" height="1" fill="#20802088"/>
+  <rect x="8" y="3" width="1" height="1" fill="#20802088"/>
+</svg>

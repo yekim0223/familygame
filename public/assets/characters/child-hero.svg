@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated;image-rendering:crisp-edges">
+  <!-- ══ HAIR (spiky red - hero energy!) ══ -->
+  <!-- spikes up -->
+  <rect x="11" y="0" width="2" height="3" fill="#C02020"/>
+  <rect x="14" y="0" width="4" height="2" fill="#C02020"/>
+  <rect x="19" y="0" width="2" height="3" fill="#C02020"/>
+  <rect x="10" y="1" width="12" height="2" fill="#E03030"/>
+  <rect x="9"  y="2" width="14" height="3" fill="#C02020"/>
+  <rect x="7"  y="4" width="2"  height="10" fill="#C02020"/>
+  <rect x="23" y="4" width="2"  height="10" fill="#C02020"/>
+  <!-- spike highlights -->
+  <rect x="12" y="0" width="1" height="2" fill="#FF5050"/>
+  <rect x="15" y="0" width="2" height="1" fill="#FF5050"/>
+  <rect x="20" y="0" width="1" height="2" fill="#FF5050"/>
+  <!-- hair bottom spikes -->
+  <rect x="8"  y="14" width="4" height="3" fill="#C02020"/>
+  <rect x="20" y="14" width="4" height="3" fill="#C02020"/>
+
+  <!-- ══ FACE skin ══ -->
+  <rect x="9"  y="4"  width="14" height="11" fill="#F5C17A"/>
+  <rect x="10" y="15" width="12" height="1"  fill="#F5C17A"/>
+  <rect x="11" y="16" width="10" height="1"  fill="#F5C17A"/>
+
+  <!-- ══ EYEBROWS (bold, determined) ══ -->
+  <rect x="10" y="5" width="6" height="1" fill="#8B1A1A"/>
+  <rect x="16" y="5" width="6" height="1" fill="#8B1A1A"/>
+  <rect x="15" y="5" width="1" height="1" fill="#6B0A0A"/>
+
+  <!-- ══ EYES LEFT (fiery gold - hero spirit) ══ -->
+  <rect x="10" y="7" width="5" height="4" fill="#1A0808"/>
+  <rect x="10" y="7" width="5" height="3" fill="#C08000"/>
+  <rect x="10" y="7" width="5" height="1" fill="#FFD000"/>
+  <rect x="14" y="7" width="1" height="1" fill="#FFFFFF"/>
+
+  <!-- ══ EYES RIGHT ══ -->
+  <rect x="17" y="7" width="5" height="4" fill="#1A0808"/>
+  <rect x="17" y="7" width="5" height="3" fill="#C08000"/>
+  <rect x="17" y="7" width="5" height="1" fill="#FFD000"/>
+  <rect x="17" y="7" width="1" height="1" fill="#FFFFFF"/>
+
+  <!-- ══ NOSE ══ -->
+  <rect x="15" y="10" width="2" height="1" fill="#DDA055"/>
+
+  <!-- ══ CHEEKS (battle flush) ══ -->
+  <rect x="9"  y="10" width="3" height="2" fill="#F08070"/>
+  <rect x="20" y="10" width="3" height="2" fill="#F08070"/>
+
+  <!-- ══ GRIN (confident hero) ══ -->
+  <rect x="12" y="12" width="8" height="1" fill="#CC3322"/>
+  <rect x="11" y="11" width="1" height="1" fill="#CC3322"/>
+  <rect x="20" y="11" width="1" height="1" fill="#CC3322"/>
+  <rect x="12" y="13" width="8" height="1" fill="#AA1100"/>
+  <!-- teeth -->
+  <rect x="13" y="12" width="6" height="1" fill="#FFFFFF"/>
+
+  <!-- ══ NECK ══ -->
+  <rect x="14" y="17" width="4" height="2" fill="#F5C17A"/>
+
+  <!-- ══ HERO SUIT (red + blue + gold) ══ -->
+  <!-- CAPE (behind, dark red) -->
+  <rect x="4"  y="19" width="4" height="12" fill="#880010"/>
+  <rect x="24" y="19" width="4" height="12" fill="#880010"/>
+  <rect x="4"  y="19" width="4" height="1"  fill="#AA0020"/>
+  <rect x="24" y="19" width="4" height="1"  fill="#AA0020"/>
+  <!-- cape flutter -->
+  <rect x="3"  y="24" width="3" height="7" fill="#770010"/>
+  <rect x="26" y="24" width="3" height="7" fill="#770010"/>
+
+  <!-- chest/suit -->
+  <rect x="8"  y="19" width="16" height="7" fill="#C02020"/>
+  <rect x="9"  y="19" width="5"  height="2" fill="#E03030"/>
+  <!-- hero emblem (star/lightning) -->
+  <rect x="14" y="21" width="4" height="4" fill="#FFD700"/>
+  <rect x="13" y="22" width="6" height="2" fill="#FFD700"/>
+  <rect x="15" y="20" width="2" height="5" fill="#FFD700"/>
+  <rect x="14" y="21" width="4" height="4" fill="#FFA000"/>
+  <rect x="15" y="21" width="2" height="4" fill="#FFD700"/>
+  <!-- suit trim -->
+  <rect x="8"  y="19" width="2" height="7" fill="#1A40C0"/>
+  <rect x="22" y="19" width="2" height="7" fill="#1A40C0"/>
+
+  <!-- ══ BELT ══ -->
+  <rect x="8"  y="26" width="16" height="2" fill="#FFD700"/>
+  <rect x="8"  y="26" width="16" height="1" fill="#FFEE00"/>
+  <rect x="14" y="25" width="4"  height="3" fill="#FFD700"/>
+
+  <!-- ══ LEGS (blue suit) ══ -->
+  <rect x="10" y="28" width="5" height="2" fill="#1A40C0"/>
+  <rect x="17" y="28" width="5" height="2" fill="#1A40C0"/>
+
+  <!-- ══ BOOTS (red hero boots) ══ -->
+  <rect x="9"  y="30" width="6" height="2" fill="#A01010"/>
+  <rect x="9"  y="30" width="6" height="1" fill="#C02020"/>
+  <rect x="17" y="30" width="6" height="2" fill="#A01010"/>
+  <rect x="17" y="30" width="6" height="1" fill="#C02020"/>
+</svg>

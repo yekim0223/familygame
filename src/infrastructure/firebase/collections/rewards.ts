@@ -65,6 +65,29 @@ export async function sendManualReward(
   return { error }
 }
 
+// XP 보상 기록 (경험치 지급 이력 — rewardType='XP', source='xp_*')
+export async function recordXPReward(
+  familyId: string,
+  memberId: string,
+  amount: number,
+  source: 'xp_question' | 'xp_quest' | 'xp_game',
+  customLabel: string,
+  approvedBy = 'system'
+): Promise<{ error: string | null }> {
+  const { error } = await fsAdd(col(familyId), {
+    missionId:   null,
+    memberId,
+    approvedBy,
+    rewardType:  'XP',
+    amount,
+    customLabel,
+    isPaid:      true,
+    approvedAt:  new Date(),
+    source,
+  })
+  return { error }
+}
+
 // 지급 완료 처리
 export async function markRewardPaid(
   familyId: string,

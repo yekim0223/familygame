@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 트로피 손잡이 (밝은 금) -->
+  <rect x="1"  y="3" width="2" height="5" fill="#FFB800"/>
+  <rect x="13" y="3" width="2" height="5" fill="#FFB800"/>
+  <rect x="1"  y="4" width="2" height="1" fill="#FFE566"/>
+  <rect x="13" y="4" width="2" height="1" fill="#FFE566"/>
+  <!-- 컵 본체 -->
+  <rect x="3"  y="2" width="10" height="7" fill="#FFDD00"/>
+  <rect x="3"  y="2" width="10" height="1" fill="#FFFF88"/>
+  <rect x="4"  y="2" width="5"  height="1" fill="#FFFFFF"/>
+  <!-- 컵 아랫부분 -->
+  <rect x="4"  y="9"  width="8" height="1" fill="#FFDD00"/>
+  <rect x="5"  y="10" width="6" height="1" fill="#DDAA00"/>
+  <rect x="6"  y="11" width="4" height="1" fill="#DDAA00"/>
+  <!-- 기둥 -->
+  <rect x="7"  y="12" width="2" height="2" fill="#DDAA00"/>
+  <!-- 받침대 -->
+  <rect x="4"  y="14" width="8" height="2" fill="#DDAA00"/>
+  <rect x="4"  y="14" width="8" height="1" fill="#FFDD00"/>
+  <!-- 컵 안 별 -->
+  <rect x="7"  y="4" width="2" height="1" fill="#CC8800"/>
+  <rect x="6"  y="5" width="4" height="1" fill="#CC8800"/>
+  <rect x="7"  y="6" width="2" height="1" fill="#CC8800"/>
+  <!-- 광택 -->
+  <rect x="4"  y="3" width="2" height="2" fill="#FFFFBB"/>
+</svg>

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <rect x="0" y="0" width="32" height="16" fill="#FFFFF0"/>
+  <!-- 하늘 빛 그라디언트 -->
+  <rect x="0"  y="0" width="32" height="4" fill="#FFFFFF"/>
+  <rect x="0"  y="4" width="32" height="3" fill="#FFFFF4"/>
+  <rect x="0"  y="7" width="32" height="3" fill="#FFFFFB"/>
+  <rect x="0"  y="10" width="32" height="6" fill="#FFFFF0"/>
+  <!-- 황금 기둥 (좌) -->
+  <rect x="3"  y="4" width="3" height="12" fill="#DDAA00"/>
+  <rect x="4"  y="4" width="1" height="12" fill="#FFDD44"/>
+  <rect x="3"  y="3" width="3" height="2"  fill="#FFEE66"/>
+  <!-- 황금 기둥 (우) -->
+  <rect x="26" y="4" width="3" height="12" fill="#DDAA00"/>
+  <rect x="27" y="4" width="1" height="12" fill="#FFDD44"/>
+  <rect x="26" y="3" width="3" height="2"  fill="#FFEE66"/>
+  <!-- 천상의 구름 -->
+  <rect x="6"  y="5" width="8" height="3" fill="#FFFFFF"/>
+  <rect x="7"  y="4" width="6" height="2" fill="#FFFFFF"/>
+  <rect x="18" y="6" width="8" height="3" fill="#FFFFFF"/>
+  <rect x="19" y="5" width="6" height="2" fill="#FFFFFF"/>
+  <!-- 빛 방사 (중앙 위) -->
+  <rect x="15" y="0" width="2" height="8" fill="#FFFFA0"/>
+  <rect x="14" y="0" width="1" height="6" fill="#FFFF88"/>
+  <rect x="17" y="0" width="1" height="6" fill="#FFFF88"/>
+  <rect x="13" y="0" width="1" height="4" fill="#FFFFCC"/>
+  <rect x="18" y="0" width="1" height="4" fill="#FFFFCC"/>
+  <!-- 황금 별 (신성한 빛) -->
+  <rect x="15" y="1" width="2" height="2" fill="#FFFFFF"/>
+  <rect x="14" y="2" width="4" height="2" fill="#FFFFAA"/>
+  <!-- 하단 성스러운 바닥 -->
+  <rect x="0"  y="13" width="32" height="3" fill="#EEE8C0"/>
+  <rect x="0"  y="13" width="32" height="1" fill="#FFE060"/>
+</svg>

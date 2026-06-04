@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <rect x="0" y="0" width="32" height="16" fill="#020018"/>
+  <!-- 배경 별 -->
+  <rect x="1"  y="2" width="1" height="1" fill="#AAAAFF"/>
+  <rect x="30" y="1" width="1" height="1" fill="#FFFFFF"/>
+  <rect x="5"  y="13" width="1" height="1" fill="#CCAAFF"/>
+  <rect x="27" y="14" width="1" height="1" fill="#AAAAFF"/>
+  <!-- 반물질 구름 (마젠타/보라) -->
+  <rect x="0"  y="6" width="14" height="4" fill="#220033"/>
+  <rect x="2"  y="5" width="10" height="6" fill="#440066"/>
+  <rect x="4"  y="4" width="8"  height="8" fill="#660099"/>
+  <rect x="5"  y="5" width="6"  height="6" fill="#8800BB"/>
+  <rect x="6"  y="6" width="4"  height="4" fill="#AA00DD"/>
+  <!-- 소멸 섬광 (백색+청색) -->
+  <rect x="11" y="7" width="2" height="2" fill="#FFFFFF"/>
+  <rect x="10" y="6" width="1" height="1" fill="#AAFFFF"/>
+  <rect x="13" y="6" width="1" height="1" fill="#AAFFFF"/>
+  <rect x="10" y="9" width="1" height="1" fill="#AAFFFF"/>
+  <rect x="13" y="9" width="1" height="1" fill="#AAFFFF"/>
+  <!-- 반물질 구름 2 (우측) -->
+  <rect x="18" y="5" width="14" height="6" fill="#330044"/>
+  <rect x="20" y="4" width="10" height="8" fill="#550077"/>
+  <rect x="22" y="5" width="8"  height="6" fill="#7700AA"/>
+  <rect x="23" y="6" width="6"  height="4" fill="#9900CC"/>
+  <!-- 소멸 섬광 2 -->
+  <rect x="26" y="7" width="2" height="2" fill="#FFFFFF"/>
+  <rect x="25" y="6" width="1" height="1" fill="#FFAAFF"/>
+  <rect x="28" y="6" width="1" height="1" fill="#FFAAFF"/>
+  <!-- 에너지 파동 -->
+  <rect x="14" y="7" width="4" height="2" fill="#CC44FF"/>
+  <rect x="14" y="7" width="4" height="1" fill="#FF88FF"/>
+</svg>

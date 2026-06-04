@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated;image-rendering:crisp-edges">
+  <!-- 마법부여사 — 빛나는 별 머리장식 -->
+  <rect x="14" y="0" width="4"  height="3" fill="#88CCFF"/>
+  <rect x="12" y="1" width="8"  height="2" fill="#AADDFF"/>
+  <rect x="8"  y="2" width="16" height="3" fill="#C0D8FF"/>
+  <!-- 빛 파티클 -->
+  <rect x="8"  y="1" width="2"  height="2" fill="#88CCFF"/>
+  <rect x="22" y="1" width="2"  height="2" fill="#88CCFF"/>
+  <rect x="10" y="0" width="1"  height="1" fill="#FFFFFF"/>
+  <rect x="21" y="0" width="1"  height="1" fill="#FFFFFF"/>
+  <!-- ══ 머리 (은빛) ══ -->
+  <rect x="7"  y="4" width="2"  height="8" fill="#C0C8E0"/>
+  <rect x="23" y="4" width="2"  height="8" fill="#C0C8E0"/>
+  <rect x="8"  y="12" width="3" height="1" fill="#C0C8E0"/>
+  <rect x="21" y="12" width="3" height="1" fill="#C0C8E0"/>
+  <!-- ══ 얼굴 ══ -->
+  <rect x="9"  y="4"  width="14" height="9" fill="#EEDDDD"/>
+  <rect x="10" y="13" width="12" height="1" fill="#EEDDDD"/>
+  <rect x="11" y="14" width="10" height="1" fill="#EEDDDD"/>
+  <!-- 마법 문양 볼 -->
+  <rect x="9"  y="9"  width="2" height="2" fill="#88CCFF"/>
+  <rect x="21" y="9"  width="2" height="2" fill="#88CCFF"/>
+  <!-- 눈썹·눈 -->
+  <rect x="10" y="5"  width="5" height="1" fill="#8090B0"/>
+  <rect x="17" y="5"  width="5" height="1" fill="#8090B0"/>
+  <rect x="10" y="7"  width="5" height="4" fill="#1A0828"/>
+  <rect x="10" y="7"  width="5" height="3" fill="#2060A8"/>
+  <rect x="10" y="7"  width="5" height="1" fill="#60B0FF"/>
+  <rect x="14" y="7"  width="1" height="1" fill="#FFFFFF"/>
+  <rect x="17" y="7"  width="5" height="4" fill="#1A0828"/>
+  <rect x="17" y="7"  width="5" height="3" fill="#2060A8"/>
+  <rect x="17" y="7"  width="5" height="1" fill="#60B0FF"/>
+  <rect x="17" y="7"  width="1" height="1" fill="#FFFFFF"/>
+  <!-- 볼·입 -->
+  <rect x="9"  y="10" width="3" height="1" fill="#D0B0C8"/>
+  <rect x="20" y="10" width="3" height="1" fill="#D0B0C8"/>
+  <rect x="13" y="12" width="6" height="1" fill="#BB7799"/>
+  <!-- 목 -->
+  <rect x="14" y="15" width="4" height="2" fill="#EEDDDD"/>
+  <!-- ══ 마법부여 의상 ══ -->
+  <rect x="9"  y="17" width="14" height="2" fill="#4060A0"/>
+  <rect x="9"  y="17" width="14" height="1" fill="#6080C0"/>
+  <rect x="9"  y="19" width="14" height="8" fill="#3050808"/>
+  <rect x="8"  y="20" width="16" height="7" fill="#405090"/>
+  <rect x="10" y="19" width="4"  height="3" fill="#5060A0"/>
+  <!-- 마법 룬 문자 (의상) -->
+  <rect x="11" y="23" width="2"  height="3" fill="#88CCFF"/>
+  <rect x="14" y="22" width="4"  height="5" fill="#88CCFF"/>
+  <rect x="15" y="22" width="2"  height="5" fill="#AADDFF"/>
+  <rect x="19" y="23" width="2"  height="3" fill="#88CCFF"/>
+  <!-- 마법 구슬 (양손) -->
+  <rect x="5"  y="20" width="4"  height="4" fill="#88CCFF"/>
+  <rect x="6"  y="20" width="3"  height="3" fill="#AADDFF"/>
+  <rect x="6"  y="20" width="2"  height="1" fill="#FFFFFF"/>
+  <rect x="23" y="20" width="4"  height="4" fill="#FFCCFF"/>
+  <rect x="23" y="20" width="3"  height="3" fill="#FFAAFF"/>
+  <rect x="23" y="20" width="2"  height="1" fill="#FFFFFF"/>
+  <!-- 로브 옆 -->
+  <rect x="7"  y="20" width="3"  height="8" fill="#3050808"/>
+  <rect x="22" y="20" width="3"  height="8" fill="#305080"/>
+  <!-- 다리·부츠 -->
+  <rect x="10" y="27" width="5" height="3" fill="#304070"/>
+  <rect x="17" y="27" width="5" height="3" fill="#304070"/>
+  <rect x="9"  y="30" width="6" height="2" fill="#405090"/>
+  <rect x="9"  y="30" width="6" height="1" fill="#6080C0"/>
+  <rect x="17" y="30" width="6" height="2" fill="#405090"/>
+  <rect x="17" y="30" width="6" height="1" fill="#6080C0"/>
+</svg>

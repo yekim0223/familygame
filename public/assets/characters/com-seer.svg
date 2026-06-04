@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated;image-rendering:crisp-edges">
+  <!-- 선견자 — 제3의 눈 이마 문양 -->
+  <rect x="9"  y="1" width="14" height="4" fill="#2A1848"/>
+  <rect x="8"  y="2" width="16" height="3" fill="#3A2860"/>
+  <!-- 눈 문양 이마 -->
+  <rect x="14" y="1" width="4"  height="3" fill="#9040C0"/>
+  <rect x="15" y="1" width="2"  height="2" fill="#E080FF"/>
+  <rect x="15" y="1" width="2"  height="1" fill="#FFFFFF"/>
+  <!-- ══ 머리 (자수정빛) ══ -->
+  <rect x="7"  y="4" width="2"  height="8" fill="#5A3888"/>
+  <rect x="23" y="4" width="2"  height="8" fill="#5A3888"/>
+  <rect x="6"  y="6" width="2"  height="6" fill="#3A1860"/>
+  <rect x="24" y="6" width="2"  height="6" fill="#3A1860"/>
+  <rect x="7"  y="12" width="3" height="2" fill="#5A3888"/>
+  <rect x="22" y="12" width="3" height="2" fill="#5A3888"/>
+  <!-- ══ 얼굴 ══ -->
+  <rect x="9"  y="5"  width="14" height="8" fill="#E8D8E8"/>
+  <rect x="10" y="13" width="12" height="1" fill="#E8D8E8"/>
+  <rect x="11" y="14" width="10" height="1" fill="#E8D8E8"/>
+  <!-- 제3의 눈 -->
+  <rect x="15" y="6"  width="2"  height="2" fill="#9040C0"/>
+  <rect x="15" y="6"  width="2"  height="1" fill="#E080FF"/>
+  <!-- 눈썹·눈 -->
+  <rect x="10" y="7"  width="4" height="1" fill="#3A1860"/>
+  <rect x="18" y="7"  width="4" height="1" fill="#3A1860"/>
+  <rect x="10" y="9"  width="5" height="4" fill="#1A0828"/>
+  <rect x="10" y="9"  width="5" height="3" fill="#6830A8"/>
+  <rect x="10" y="9"  width="5" height="1" fill="#E080FF"/>
+  <rect x="14" y="9"  width="1" height="1" fill="#FFFFFF"/>
+  <rect x="17" y="9"  width="5" height="4" fill="#1A0828"/>
+  <rect x="17" y="9"  width="5" height="3" fill="#6830A8"/>
+  <rect x="17" y="9"  width="5" height="1" fill="#E080FF"/>
+  <rect x="17" y="9"  width="1" height="1" fill="#FFFFFF"/>
+  <!-- 볼·입 -->
+  <rect x="9"  y="11" width="3" height="1" fill="#D0B8D0"/>
+  <rect x="20" y="11" width="3" height="1" fill="#D0B8D0"/>
+  <rect x="13" y="13" width="6" height="1" fill="#9870B0"/>
+  <!-- 목 -->
+  <rect x="14" y="15" width="4" height="2" fill="#E8D8E8"/>
+  <!-- ══ 선견자 로브 ══ -->
+  <rect x="9"  y="17" width="14" height="2" fill="#2A1848"/>
+  <rect x="9"  y="17" width="14" height="1" fill="#4A2870"/>
+  <rect x="9"  y="19" width="14" height="8" fill="#1A1030"/>
+  <rect x="8"  y="20" width="16" height="7" fill="#2A1848"/>
+  <rect x="10" y="19" width="4"  height="3" fill="#3A2060"/>
+  <!-- 눈 문양 로브 -->
+  <rect x="13" y="22" width="6"  height="4" fill="#9040C0"/>
+  <rect x="12" y="23" width="8"  height="2" fill="#9040C0"/>
+  <rect x="15" y="22" width="2"  height="4" fill="#E080FF"/>
+  <rect x="14" y="23" width="4"  height="2" fill="#2A1848"/>
+  <rect x="15" y="23" width="2"  height="2" fill="#E080FF"/>
+  <rect x="16" y="24" width="1"  height="1" fill="#FFFFFF"/>
+  <!-- 수정 구슬 (양옆) -->
+  <rect x="5"  y="21" width="4"  height="4" fill="#9040C0"/>
+  <rect x="6"  y="21" width="3"  height="3" fill="#E080FF"/>
+  <rect x="6"  y="21" width="2"  height="1" fill="#FFFFFF"/>
+  <rect x="23" y="21" width="4"  height="4" fill="#9040C0"/>
+  <rect x="23" y="21" width="3"  height="3" fill="#E080FF"/>
+  <!-- 로브 옆 -->
+  <rect x="7"  y="20" width="3"  height="8" fill="#1A1030"/>
+  <rect x="22" y="20" width="3"  height="8" fill="#1A1030"/>
+  <!-- 다리·부츠 -->
+  <rect x="10" y="27" width="5" height="3" fill="#1A1030"/>
+  <rect x="17" y="27" width="5" height="3" fill="#1A1030"/>
+  <rect x="9"  y="30" width="6" height="2" fill="#2A1848"/>
+  <rect x="9"  y="30" width="6" height="1" fill="#4A2870"/>
+  <rect x="17" y="30" width="6" height="2" fill="#2A1848"/>
+  <rect x="17" y="30" width="6" height="1" fill="#4A2870"/>
+</svg>

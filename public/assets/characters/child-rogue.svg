@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated;image-rendering:crisp-edges">
+  <!-- ══ HOOD (dark purple) ══ -->
+  <rect x="8"  y="1" width="16" height="4" fill="#2A1040"/>
+  <rect x="9"  y="0" width="14" height="2" fill="#3A1850"/>
+  <!-- hood shadow over face -->
+  <rect x="9"  y="4" width="14" height="3" fill="#2A1040"/>
+  <rect x="8"  y="5" width="16" height="2" fill="#200C30"/>
+
+  <!-- ══ HAIR (black-purple, partly hidden) ══ -->
+  <rect x="7"  y="4" width="2"  height="10" fill="#1A0828"/>
+  <rect x="23" y="4" width="2"  height="10" fill="#1A0828"/>
+  <!-- hair escaping hood -->
+  <rect x="6"  y="7" width="2"  height="7" fill="#2A1040"/>
+  <rect x="24" y="7" width="2"  height="7" fill="#2A1040"/>
+
+  <!-- ══ FACE skin (shadowed) ══ -->
+  <rect x="9"  y="7"  width="14" height="8" fill="#E0A860"/>
+  <rect x="10" y="15" width="12" height="1" fill="#E0A860"/>
+  <rect x="11" y="16" width="10" height="1" fill="#E0A860"/>
+
+  <!-- ══ EYES (sharp, mischievous violet) ══ -->
+  <rect x="10" y="8" width="5" height="4" fill="#1A0828"/>
+  <rect x="10" y="8" width="5" height="3" fill="#6030B0"/>
+  <rect x="10" y="8" width="5" height="1" fill="#9060E0"/>
+  <rect x="14" y="8" width="1" height="1" fill="#FFFFFF"/>
+
+  <rect x="17" y="8" width="5" height="4" fill="#1A0828"/>
+  <rect x="17" y="8" width="5" height="3" fill="#6030B0"/>
+  <rect x="17" y="8" width="5" height="1" fill="#9060E0"/>
+  <rect x="17" y="8" width="1" height="1" fill="#FFFFFF"/>
+
+  <!-- ══ NOSE ══ -->
+  <rect x="15" y="11" width="2" height="1" fill="#C08040"/>
+
+  <!-- ══ SMIRK ══ -->
+  <rect x="14" y="13" width="7" height="1" fill="#AA3311"/>
+  <rect x="13" y="12" width="1" height="1" fill="#AA3311"/>
+  <rect x="20" y="12" width="1" height="1" fill="#AA3311"/>
+
+  <!-- ══ NECK ══ -->
+  <rect x="14" y="17" width="4" height="2" fill="#E0A860"/>
+
+  <!-- ══ ROGUE OUTFIT (dark with purple) ══ -->
+  <!-- scarf/cowl -->
+  <rect x="8"  y="17" width="16" height="3" fill="#2A1040"/>
+  <rect x="8"  y="17" width="16" height="1" fill="#4020608"/>
+  <!-- vest/chest -->
+  <rect x="9"  y="20" width="14" height="6" fill="#1A1228"/>
+  <rect x="10" y="20" width="4"  height="2" fill="#2A1C38"/>
+  <!-- leather straps X-cross -->
+  <rect x="9"  y="20" width="2" height="6" fill="#4A3020"/>
+  <rect x="21" y="20" width="2" height="6" fill="#4A3020"/>
+  <rect x="9"  y="20" width="14" height="1" fill="#3A2438"/>
+  <!-- dagger hilt (right hip) -->
+  <rect x="21" y="24" width="3" height="3" fill="#8A7860"/>
+  <rect x="22" y="23" width="1" height="4" fill="#C0A870"/>
+
+  <!-- ══ BELT ══ -->
+  <rect x="9"  y="26" width="14" height="2" fill="#2A1C10"/>
+  <rect x="9"  y="26" width="14" height="1" fill="#3A2C20"/>
+  <!-- belt pouches -->
+  <rect x="9"  y="25" width="3" height="3" fill="#4A3820"/>
+  <rect x="20" y="25" width="3" height="3" fill="#4A3820"/>
+
+  <!-- ══ LEGS ══ -->
+  <rect x="10" y="28" width="5" height="2" fill="#181020"/>
+  <rect x="17" y="28" width="5" height="2" fill="#181020"/>
+
+  <!-- ══ BOOTS (dark, silent) ══ -->
+  <rect x="9"  y="30" width="6" height="2" fill="#100A18"/>
+  <rect x="9"  y="30" width="6" height="1" fill="#201828"/>
+  <rect x="17" y="30" width="6" height="2" fill="#100A18"/>
+  <rect x="17" y="30" width="6" height="1" fill="#201828"/>
+</svg>

@@ -84,7 +84,7 @@
 .exp-bar-fill {
   background: linear-gradient(90deg, #43A047, #66BB6A);
   height: 100%;
-  transition: width 0.5s steps(10);
+  transition: width 0.6s ease-out;
   position: relative;
 }
 .exp-bar-fill::after {
@@ -272,3 +272,236 @@
 .animate-beg-bounce      { animation: begBounce      30s ease-in-out infinite; }
 .animate-balloon-bob     { animation: balloonBob     2s ease-in-out infinite; }
 .animate-slide-up        { animation: slideUp        0.25s ease-out forwards; }
+
+/* ── 골드 파티클 (G슬롯 Good 클릭 시) ─────────────────────── */
+@keyframes goldParticle {
+  0%   { opacity: 1; transform: translateY(0) translateX(var(--px, 0px)) scale(1.2); }
+  100% { opacity: 0; transform: translateY(-48px) translateX(var(--px, 0px)) scale(0.4); }
+}
+.animate-gold-particle { animation: goldParticle 0.45s ease-out forwards; }
+
+/* ── 레벨업 전체화면 플래시 ────────────────────────────────── */
+@keyframes levelUpFlash {
+  0%   { opacity: 0; }
+  15%  { opacity: 0.85; }
+  75%  { opacity: 0.85; }
+  100% { opacity: 0; }
+}
+@keyframes levelUpText {
+  0%   { opacity: 0; transform: scale(0.5); }
+  20%  { opacity: 1; transform: scale(1.1); }
+  40%  { transform: scale(1.0); }
+  80%  { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.0); }
+}
+.animate-level-up-flash { animation: levelUpFlash 2.2s ease-in-out forwards; }
+.animate-level-up-text  { animation: levelUpText  2.2s ease-in-out forwards; }
+
+/* ── EffectOverlay 파티클 키프레임 ─────────────────────────── */
+
+/* T1·T4·T5·T7: 폭죽 파티클 — 중앙→방사형 */
+@keyframes confettiFly {
+  0%   { opacity: 1; transform: translate(0,0) rotate(0deg) scale(1); }
+  100% { opacity: 0; transform: translate(var(--ex,0px), var(--ey,-120px)) rotate(var(--er,360deg)) scale(0.3); }
+}
+.animate-confetti { animation: confettiFly var(--dur,1.2s) ease-out forwards; animation-delay: var(--delay,0s); }
+
+/* T3·T7: 하트 부유 — 아래→위 S커브 */
+@keyframes heartFloat {
+  0%   { opacity: 0; transform: translateY(0) translateX(0) scale(0.5); }
+  20%  { opacity: 1; transform: translateY(-30px) translateX(var(--hx,8px)) scale(1.1); }
+  80%  { opacity: 0.8; transform: translateY(-90px) translateX(var(--hx2,-6px)) scale(1); }
+  100% { opacity: 0; transform: translateY(-140px) translateX(var(--hx,8px)) scale(0.6); }
+}
+.animate-heart { animation: heartFloat var(--dur,1.4s) ease-out forwards; animation-delay: var(--delay,0s); }
+
+/* T4·T7: 별 낙하 — 위→아래 대각선 */
+@keyframes starShower {
+  0%   { opacity: 0; transform: translateY(-20px) translateX(0) scale(0.6); }
+  15%  { opacity: 1; }
+  85%  { opacity: 0.8; }
+  100% { opacity: 0; transform: translateY(var(--sy,100px)) translateX(var(--sx,20px)) scale(0.3) rotate(180deg); }
+}
+.animate-star { animation: starShower var(--dur,1.0s) ease-in forwards; animation-delay: var(--delay,0s); }
+
+/* T7: 불꽃 — 빠른 위방향 */
+@keyframes fireBurst {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  50%  { opacity: 0.9; transform: translateY(var(--fy,-60px)) scale(1.3); }
+  100% { opacity: 0; transform: translateY(var(--fy2,-110px)) scale(0.4); }
+}
+.animate-fire { animation: fireBurst var(--dur,0.9s) ease-out forwards; animation-delay: var(--delay,0s); }
+
+/* T4+T5: NEW RECORD 배너 스윕 */
+@keyframes recordBanner {
+  0%   { opacity: 0; transform: translateX(-60px) scale(0.8); }
+  20%  { opacity: 1; transform: translateX(0) scale(1.05); }
+  70%  { opacity: 1; transform: translateX(0) scale(1.0); }
+  100% { opacity: 0; transform: translateX(60px) scale(0.9); }
+}
+.animate-record-banner { animation: recordBanner 2.0s ease-in-out forwards; }
+
+/* T7: 특수 이모지 말풍선 아우라 펄스 */
+@keyframes specialBubbleGlow {
+  0%, 100% { box-shadow: 0 0 4px 1px var(--aura-color, #FFD700), inset 2px 2px 0px rgba(255,255,255,0.08); }
+  50%       { box-shadow: 0 0 12px 4px var(--aura-color, #FFD700), inset 2px 2px 0px rgba(255,255,255,0.12); }
+}
+.animate-special-bubble { animation: specialBubbleGlow 2s ease-in-out infinite; }
+
+/* T7: 이펙트 힌트 배지 */
+@keyframes effectBadgePop {
+  0%   { opacity: 0; transform: scale(0.5) translateY(4px); }
+  60%  { opacity: 1; transform: scale(1.15) translateY(-2px); }
+  100% { opacity: 1; transform: scale(1.0) translateY(0); }
+}
+.animate-effect-badge { animation: effectBadgePop 0.3s ease-out forwards; }
+
+/* ── 캐릭터 구르기 ────────────────────────────────────────── */
+@keyframes charRoll {
+  0%   { transform: rotate(0deg)   scale(1); }
+  30%  { transform: rotate(180deg) scale(0.82); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+.animate-char-roll { animation: charRoll 0.7s ease-in-out forwards; }
+
+/* ── 아빠 잡기: 타격 시 쓰러짐 ────────────────────────────── */
+@keyframes dadHit {
+  0%   { transform: rotate(0deg)   scale(1);    opacity: 1; }
+  25%  { transform: rotate(-25deg) scale(0.92); }
+  60%  { transform: rotate(55deg)  scale(0.85); }
+  100% { transform: rotate(80deg)  scale(0.78); opacity: 0.4; }
+}
+.animate-dad-hit { animation: dadHit 0.28s ease-out forwards; transform-origin: bottom center; }
+
+/* ── 걷기 (몸통 틸트 + 상하 바운스) ───────────────────────── */
+@keyframes charWalk {
+  0%   { transform: rotate(-2deg) translateY(0px); }
+  25%  { transform: rotate(0deg)  translateY(-2.5px); }
+  50%  { transform: rotate(2deg)  translateY(0px); }
+  75%  { transform: rotate(0deg)  translateY(-2.5px); }
+  100% { transform: rotate(-2deg) translateY(0px); }
+}
+.animate-char-walk {
+  animation: charWalk 0.42s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+/* ── 말풍선 ──────────────────────────────────────────────── */
+@keyframes speechPop {
+  0%   { opacity: 0; transform: translateX(-50%) scale(0.5); }
+  70%  { opacity: 1; transform: translateX(-50%) scale(1.08); }
+  100% { opacity: 1; transform: translateX(-50%) scale(1); }
+}
+@keyframes speechFade {
+  0%   { opacity: 1; transform: translateX(-50%) translateY(0); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+}
+.animate-speech-pop  { animation: speechPop  0.3s ease-out forwards; }
+.animate-speech-fade { animation: speechFade 0.5s ease-in  forwards; }
+
+/* ── 두더지잡기 전용 애니메이션 ─────────────────────────────── */
+@keyframes molePopup {
+  from { transform: translateY(60%) scale(0.6); opacity: 0.5; }
+  to   { transform: translateY(0)   scale(1);   opacity: 1; }
+}
+@keyframes whacHit {
+  0%   { transform: scale(1)   rotate(0deg);   opacity: 1; }
+  40%  { transform: scale(1.5) rotate(20deg);  opacity: 0.85; }
+  100% { transform: scale(0.3) rotate(-15deg); opacity: 0; }
+}
+@keyframes floatUp {
+  0%   { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-36px); }
+}
+.animate-mole-popup { animation: molePopup 0.18s ease-out forwards; }
+.animate-whac-hit   { animation: whacHit   0.28s ease-out forwards; }
+.animate-float-up   { animation: floatUp   0.85s ease-out forwards; }
+
+/* ── 캐릭터 터치 감정 아이콘 플로팅 ─────────────────────────── */
+@keyframes emotionFloat {
+  0%   { opacity: 0;   transform: translateY(0)     scale(0.5);  }
+  18%  { opacity: 1;   transform: translateY(-10px) scale(1.2);  }
+  60%  { opacity: 1;   transform: translateY(-52px) scale(1);    }
+  100% { opacity: 0;   transform: translateY(-78px) scale(0.72); }
+}
+.animate-emotion-float {
+  animation: emotionFloat 1.5s cubic-bezier(0.22,1,0.36,1) forwards;
+  pointer-events: none;
+}
+
+/* ── 귀찮음 레벨 1 (작은 흔들림) ───────────────────────────── */
+@keyframes charAnnoyed {
+  0%,100% { transform: translateX(0)    rotate(0deg);    }
+  20%     { transform: translateX(-3px) rotate(-2deg);   }
+  40%     { transform: translateX(3px)  rotate(2deg);    }
+  60%     { transform: translateX(-3px) rotate(-1.5deg); }
+  80%     { transform: translateX(2px)  rotate(1.5deg);  }
+}
+.animate-char-annoyed {
+  animation: charAnnoyed 0.48s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+/* ── 귀찮음 레벨 2 — 매우 화남 (큰 흔들림 + skull) ─────────── */
+@keyframes charVeryAnnoyed {
+  0%,100% { transform: translateX(0)    rotate(0deg);  }
+  12%     { transform: translateX(-7px) rotate(-5deg); }
+  28%     { transform: translateX(7px)  rotate(5deg);  }
+  44%     { transform: translateX(-6px) rotate(-4deg); }
+  60%     { transform: translateX(6px)  rotate(4deg);  }
+  76%     { transform: translateX(-5px) rotate(-3deg); }
+  92%     { transform: translateX(5px)  rotate(3deg);  }
+}
+.animate-char-very-annoyed {
+  animation: charVeryAnnoyed 0.32s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+/* ── 홈화면 감정 이모지 부유 ──────────────────────────────── */
+@keyframes emotionFloat {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(0)    scale(0.7); }
+  20%  { opacity: 1; transform: translateX(-50%) translateY(-8px)  scale(1.15); }
+  70%  { opacity: 0.8; }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-48px) scale(0.8); }
+}
+.animate-emotion { animation: emotionFloat 2.3s ease-out forwards; }
+
+/* ── 언도쿠 슈웅 애니메이션 ──────────────────────────────── */
+@keyframes swoosh-lr {
+  0%   { transform: translateX(-150%) skewX(-12deg); opacity: 0; }
+  12%  { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { transform: translateX(150vw)  skewX(-12deg); opacity: 0; }
+}
+@keyframes swoosh-rl {
+  0%   { transform: translateX(150%)   skewX(12deg); opacity: 0; }
+  12%  { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { transform: translateX(-150vw) skewX(12deg); opacity: 0; }
+}
+
+/* ── 슈웅 대각선 변형 (사선/랜덤 경로) ────────────────────── */
+@keyframes swoosh-lr-down {
+  0%   { transform: translateX(-150%) translateY(-50px) skewX(-12deg); opacity: 0; }
+  12%  { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { transform: translateX(150vw)  translateY(50px)  skewX(-12deg); opacity: 0; }
+}
+@keyframes swoosh-lr-up {
+  0%   { transform: translateX(-150%) translateY(50px)  skewX(-12deg); opacity: 0; }
+  12%  { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { transform: translateX(150vw)  translateY(-50px) skewX(-12deg); opacity: 0; }
+}
+@keyframes swoosh-rl-down {
+  0%   { transform: translateX(150%)   translateY(-50px) skewX(12deg); opacity: 0; }
+  12%  { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { transform: translateX(-150vw) translateY(50px)  skewX(12deg); opacity: 0; }
+}
+@keyframes swoosh-rl-up {
+  0%   { transform: translateX(150%)   translateY(50px)  skewX(12deg); opacity: 0; }
+  12%  { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { transform: translateX(-150vw) translateY(-50px) skewX(12deg); opacity: 0; }
+}

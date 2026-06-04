@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useAuthStore } from '@/infrastructure/stores/authStore'
 import { subscribeMembers } from '@/infrastructure/firebase/collections/members'
 import { sendManualReward } from '@/infrastructure/firebase/collections/rewards'
+import { audioManager } from '@/infrastructure/audio/audioManager'
 import { PixelButton } from '@/presentation/components/pixel/PixelButton'
 import type { Member } from '@/domain/entities/Member'
 
@@ -19,6 +20,7 @@ export default function RewardSendPage() {
   const [rewardLabel,    setRewardLabel]    = useState('')
   const [sending,        setSending]        = useState(false)
   const [msg,            setMsg]            = useState('')
+  const [showCoins,      setShowCoins]      = useState(false)
 
   useEffect(() => {
     if (!familyId) return
@@ -42,6 +44,9 @@ export default function RewardSendPage() {
     setSending(false)
     if (error) { setMsg('error:발송 실패: ' + error); return }
     setMsg('ok:보상을 발송했어요!')
+    audioManager.rewardPayout()
+    setShowCoins(true)
+    setTimeout(() => setShowCoins(false), 1200)
     setRewardAmount('')
     setRewardLabel('')
     setTimeout(() => setMsg(''), 3000)
@@ -108,6 +113,17 @@ export default function RewardSendPage() {
           </p>
         )}
 
+        <div className="relative overflow-visible h-0 pointer-events-none" aria-hidden>
+          {showCoins && [0, 1, 2].map(i => (
+            <span
+              key={i}
+              className="absolute animate-coin-drop text-2xl select-none"
+              style={{ top: '-32px', left: `${15 + i * 35}%`, animationDelay: `${i * 0.22}s` }}
+            >
+              🪙
+            </span>
+          ))}
+        </div>
         <PixelButton
           variant="gold"
           size="lg"

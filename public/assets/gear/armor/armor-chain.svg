@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated">
+  <!-- 사슬 갑옷 -->
+  <!-- 어깨 -->
+  <rect x="2"  y="4"  width="9"  height="7"  fill="#707888"/>
+  <rect x="21" y="4"  width="9"  height="7"  fill="#707888"/>
+  <rect x="2"  y="4"  width="9"  height="1"  fill="#9AAABB"/>
+  <rect x="21" y="4"  width="9"  height="1"  fill="#9AAABB"/>
+  <!-- 사슬 패턴 (몸통) -->
+  <rect x="5"  y="9"  width="22" height="17" fill="#606878"/>
+  <rect x="3"  y="11" width="26" height="13" fill="#606878"/>
+  <!-- 사슬 링 패턴 -->
+  <rect x="6"  y="10" width="2"  height="2"  fill="#808898"/>
+  <rect x="10" y="10" width="2"  height="2"  fill="#808898"/>
+  <rect x="14" y="10" width="2"  height="2"  fill="#808898"/>
+  <rect x="18" y="10" width="2"  height="2"  fill="#808898"/>
+  <rect x="22" y="10" width="2"  height="2"  fill="#808898"/>
+  <rect x="8"  y="13" width="2"  height="2"  fill="#808898"/>
+  <rect x="12" y="13" width="2"  height="2"  fill="#808898"/>
+  <rect x="16" y="13" width="2"  height="2"  fill="#808898"/>
+  <rect x="20" y="13" width="2"  height="2"  fill="#808898"/>
+  <rect x="6"  y="16" width="2"  height="2"  fill="#808898"/>
+  <rect x="10" y="16" width="2"  height="2"  fill="#808898"/>
+  <rect x="14" y="16" width="2"  height="2"  fill="#808898"/>
+  <rect x="18" y="16" width="2"  height="2"  fill="#808898"/>
+  <rect x="22" y="16" width="2"  height="2"  fill="#808898"/>
+  <rect x="8"  y="19" width="2"  height="2"  fill="#808898"/>
+  <rect x="12" y="19" width="2"  height="2"  fill="#808898"/>
+  <rect x="16" y="19" width="2"  height="2"  fill="#808898"/>
+  <rect x="20" y="19" width="2"  height="2"  fill="#808898"/>
+  <!-- 가슴 판 (중앙 보강) -->
+  <rect x="12" y="10" width="8"  height="10" fill="#7088A0"/>
+  <rect x="13" y="11" width="6"  height="8"  fill="#8098B0"/>
+  <rect x="13" y="11" width="2"  height="4"  fill="#9AAABB"/>
+  <!-- 하단 -->
+  <rect x="5"  y="25" width="22" height="3"  fill="#505868"/>
+</svg>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 큰 머리 -->
+  <rect x="7" y="1" width="8" height="5" fill="#5A8A18"/>
+  <rect x="6" y="2" width="9" height="4" fill="#6AA020"/>
+  <rect x="8" y="1" width="6" height="1" fill="#80C030"/>
+  <!-- 이빨 -->
+  <rect x="9" y="6" width="1" height="2" fill="#FFFFFF"/>
+  <rect x="11" y="6" width="1" height="2" fill="#FFFFFF"/>
+  <rect x="13" y="6" width="1" height="2" fill="#FFFFFF"/>
+  <rect x="9" y="5" width="6" height="1" fill="#4A6A10"/>
+  <!-- 눈 (노랑) -->
+  <rect x="8" y="2" width="3" height="2" fill="#FFD700"/>
+  <rect x="9" y="2" width="2" height="2" fill="#1A0808"/>
+  <rect x="9" y="2" width="1" height="1" fill="#FFFFFF"/>
+  <!-- 몸통 -->
+  <rect x="3" y="6" width="7" height="7" fill="#5A8A18"/>
+  <rect x="2" y="7" width="8" height="5" fill="#6AA020"/>
+  <!-- 짧은 팔 -->
+  <rect x="10" y="7" width="3" height="3" fill="#5A8A18"/>
+  <!-- 배 -->
+  <rect x="4" y="8" width="4" height="4" fill="#AABB50"/>
+  <!-- 꼬리 (수평) -->
+  <rect x="0" y="8" width="4" height="3" fill="#5A8A18"/>
+  <rect x="0" y="9" width="3" height="2" fill="#4A7A10"/>
+  <!-- 발 -->
+  <rect x="3" y="13" width="3" height="3" fill="#4A7A10"/>
+  <rect x="7" y="13" width="3" height="3" fill="#4A7A10"/>
+  <!-- 발가락 -->
+  <rect x="2" y="15" width="2" height="1" fill="#3A6A08"/>
+  <rect x="5" y="15" width="2" height="1" fill="#3A6A08"/>
+</svg>

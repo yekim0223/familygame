@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 16" style="image-rendering:pixelated">
+  <!-- 하늘 (어두운 빨강) -->
+  <rect x="0" y="0" width="32" height="16" fill="#3A0808"/>
+  <!-- 용암 빛 반사 -->
+  <rect x="0" y="10" width="32" height="6" fill="#4A0A0A"/>
+  <!-- 용암 강 -->
+  <rect x="0" y="12" width="32" height="4" fill="#FF4400"/>
+  <rect x="0" y="12" width="32" height="1" fill="#FF6600"/>
+  <rect x="4" y="13" width="6" height="1" fill="#FFCC00"/>
+  <rect x="18" y="12" width="8" height="1" fill="#FFCC00"/>
+  <!-- 네더랙 기둥 -->
+  <rect x="2" y="4" width="4" height="8" fill="#6A1818"/>
+  <rect x="2" y="4" width="4" height="2" fill="#8A2828"/>
+  <rect x="13" y="2" width="3" height="10" fill="#6A1818"/>
+  <rect x="13" y="2" width="3" height="2" fill="#8A2828"/>
+  <rect x="24" y="5" width="4" height="7" fill="#6A1818"/>
+  <rect x="24" y="5" width="4" height="2" fill="#8A2828"/>
+  <!-- 불 파티클 -->
+  <rect x="5"  y="8" width="1" height="2" fill="#FF8800"/>
+  <rect x="15" y="6" width="1" height="2" fill="#FF6600"/>
+  <rect x="26" y="7" width="1" height="2" fill="#FF8800"/>
+  <rect x="9"  y="9" width="1" height="1" fill="#FFCC00"/>
+  <rect x="21" y="8" width="1" height="1" fill="#FFCC00"/>
+  <!-- 해골 -->
+  <rect x="8" y="11" width="2" height="1" fill="#DDDDCC"/>
+</svg>

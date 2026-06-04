@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" style="image-rendering:pixelated;image-rendering:crisp-edges">
+  <!-- 장인 두건 (갈색 가죽) -->
+  <rect x="9"  y="2" width="14" height="4" fill="#6B3A18"/>
+  <rect x="8"  y="3" width="16" height="3" fill="#8B5A28"/>
+  <rect x="9"  y="2" width="14" height="1" fill="#A07040"/>
+  <!-- ══ 머리 ══ -->
+  <rect x="7"  y="5" width="2"  height="7" fill="#5A3010"/>
+  <rect x="23" y="5" width="2"  height="7" fill="#5A3010"/>
+  <rect x="8"  y="12" width="3" height="1" fill="#5A3010"/>
+  <rect x="21" y="12" width="3" height="1" fill="#5A3010"/>
+  <!-- ══ 얼굴 ══ -->
+  <rect x="9"  y="5"  width="14" height="8" fill="#E8A860"/>
+  <rect x="10" y="13" width="12" height="1" fill="#E8A860"/>
+  <rect x="11" y="14" width="10" height="1" fill="#E8A860"/>
+  <!-- 눈썹·눈 -->
+  <rect x="10" y="6"  width="5" height="1" fill="#3A1808"/>
+  <rect x="17" y="6"  width="5" height="1" fill="#3A1808"/>
+  <rect x="10" y="8"  width="5" height="3" fill="#1A0828"/>
+  <rect x="10" y="8"  width="5" height="2" fill="#604820"/>
+  <rect x="10" y="8"  width="5" height="1" fill="#A07040"/>
+  <rect x="14" y="8"  width="1" height="1" fill="#FFFFFF"/>
+  <rect x="17" y="8"  width="5" height="3" fill="#1A0828"/>
+  <rect x="17" y="8"  width="5" height="2" fill="#604820"/>
+  <rect x="17" y="8"  width="5" height="1" fill="#A07040"/>
+  <rect x="17" y="8"  width="1" height="1" fill="#FFFFFF"/>
+  <!-- 볼·입 -->
+  <rect x="9"  y="10" width="3" height="1" fill="#C08050"/>
+  <rect x="20" y="10" width="3" height="1" fill="#C08050"/>
+  <rect x="13" y="12" width="6" height="1" fill="#AA5533"/>
+  <!-- 목 -->
+  <rect x="14" y="15" width="4" height="2" fill="#E8A860"/>
+  <!-- ══ 장인 작업복 ══ -->
+  <rect x="9"  y="17" width="14" height="2" fill="#5A3818"/>
+  <rect x="9"  y="17" width="14" height="1" fill="#8B5A28"/>
+  <rect x="9"  y="19" width="14" height="9" fill="#6A4828"/>
+  <rect x="8"  y="20" width="16" height="8" fill="#7A5838"/>
+  <rect x="10" y="19" width="4"  height="3" fill="#8A6848"/>
+  <!-- 가죽 앞치마 -->
+  <rect x="11" y="20" width="10" height="8" fill="#8B5A1A"/>
+  <rect x="11" y="20" width="10" height="1" fill="#A07030"/>
+  <!-- 도구 (오른손 — 끌) -->
+  <rect x="22" y="17" width="2"  height="9" fill="#808080"/>
+  <rect x="21" y="16" width="4"  height="2" fill="#C8A060"/>
+  <!-- 나무 조각 (왼손) -->
+  <rect x="6"  y="20" width="5"  height="5" fill="#C8A060"/>
+  <rect x="7"  y="21" width="3"  height="3" fill="#E8C080"/>
+  <!-- 장인 문양 -->
+  <rect x="14" y="23" width="4"  height="4" fill="#C8A060"/>
+  <rect x="13" y="24" width="6"  height="2" fill="#C8A060"/>
+  <rect x="15" y="23" width="2"  height="4" fill="#A08040"/>
+  <!-- 다리·부츠 -->
+  <rect x="10" y="28" width="5" height="2" fill="#4A3010"/>
+  <rect x="17" y="28" width="5" height="2" fill="#4A3010"/>
+  <rect x="9"  y="30" width="6" height="2" fill="#6A4818"/>
+  <rect x="9"  y="30" width="6" height="1" fill="#9A6828"/>
+  <rect x="17" y="30" width="6" height="2" fill="#6A4818"/>
+  <rect x="17" y="30" width="6" height="1" fill="#9A6828"/>
+</svg>

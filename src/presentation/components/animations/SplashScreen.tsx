@@ -193,7 +193,7 @@ export function SplashScreen({ onDone }: SplashScreenProps) {
         </div>
 
         {/* 슬로건 */}
-        <p className="font-korean text-stone text-sm"
+        <p className="font-korean text-cream/70 text-sm"
           style={{
             letterSpacing: '0.16em',
             opacity:   show(3) ? 1 : 0,
@@ -221,7 +221,7 @@ export function SplashScreen({ onDone }: SplashScreenProps) {
 
       {/* 하단 안내 텍스트 */}
       <p
-        className="absolute bottom-12 font-korean text-stone"
+        className="absolute bottom-12 font-korean text-cream/70"
         style={{
           fontSize: '10px', letterSpacing: '0.1em',
           opacity:   show(3) ? 0.4 : 0,

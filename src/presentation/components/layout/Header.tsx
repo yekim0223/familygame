@@ -62,6 +62,7 @@ export function Header() {
   }, [])
 
   const handleLogout = async () => {
+    audioManager.keyClick()
     setShowMenu(false)
     await logout()
   }
@@ -87,20 +88,11 @@ export function Header() {
     }
   }
 
-  const handleNextTheme = () => {
-    audioManager.resume()
-    const musicThemes: BGMTheme[] = ['DEFAULT', 'JOYFUL', 'CALM']
-    const cur = musicThemes.indexOf(bgmTheme as 'DEFAULT' | 'JOYFUL' | 'CALM')
-    const next = musicThemes[(cur + 1) % musicThemes.length]
-    handleAudioTheme(next)
-  }
-
   const isHome = location.pathname === '/home' || location.pathname === '/'
 
   // 알림·설정 공통 버튼 스타일
-  const iconBtn = 'relative w-8 h-8 flex items-center justify-center text-lg ' +
-    'bg-black/30 border-2 border-black/50 hover:border-gold hover:bg-black/40 ' +
-    'transition-all active:scale-95 focus:outline-none'
+  const iconBtn = 'relative w-8 h-8 flex items-center justify-center ' +
+    'hover:opacity-80 transition-all active:scale-95 focus:outline-none'
 
   return (
     <header className="bg-panel-darkest fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[428px]
@@ -112,7 +104,7 @@ export function Header() {
         {!isHome ? (
           <button
             type="button"
-            onClick={() => navigate(-1)}
+            onClick={() => { audioManager.keyClick(); navigate(-1) }}
             className="w-8 h-8 flex items-center justify-center
                        bg-black/30 border-2 border-black/50
                        hover:border-gold hover:bg-black/40 transition-all active:scale-95
@@ -151,83 +143,69 @@ export function Header() {
       {/* 우측: 오디오 플레이어 + 알림 + 설정 */}
       <div className="flex items-center gap-1">
 
-        {/* ── 미니 오디오 플레이어 ─────────────────────────────── */}
+        {/* ── 오디오 — 테마 아이콘 단일 버튼 + 드롭다운 ─────────── */}
         {currentMember && (
-          <div className="flex items-center border-2 border-black/50 bg-black/30 divide-x divide-black/40">
-            {/* 재생/일시정지 */}
+          <div className="relative">
             <button
               type="button"
-              onClick={handlePlayPause}
-              disabled={bgmTheme === 'MUTE'}
-              aria-label={isPlaying ? '일시정지' : '재생'}
-              className="w-6 h-7 flex items-center justify-center text-[10px] text-cream/80
-                         hover:text-gold hover:bg-white/10
-                         active:scale-95 transition-transform duration-100
-                         disabled:opacity-30 select-none"
+              onClick={() => setShowAudioMenu(p => !p)}
+              aria-label="사운드 설정"
+              className={`${iconBtn} text-sm`}
             >
-              {isPlaying ? '⏸' : '▶'}
+              <img
+                src={bgmTheme === 'MUTE' ? '/assets/icons/music-mute.svg' : '/assets/icons/music.svg'}
+                alt="music" width={24} height={24}
+                style={{ imageRendering: 'pixelated' }}
+              />
             </button>
 
-            {/* 다음 테마 순환 (DEFAULT → JOYFUL → CALM → 반복) */}
-            <button
-              type="button"
-              onClick={handleNextTheme}
-              aria-label="다음 무드"
-              className="w-6 h-7 flex items-center justify-center text-[9px] text-cream/80
-                         hover:text-gold hover:bg-white/10
-                         active:scale-95 transition-transform duration-100 select-none"
-            >
-              ▶▶
-            </button>
-
-            {/* 현재 무드 아이콘 → 클릭 시 셀렉터 팝업 */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setShowAudioMenu(p => !p)}
-                aria-label="사운드 무드 선택"
-                className="w-7 h-7 flex items-center justify-center text-sm
-                           hover:bg-white/10
-                           active:scale-95 transition-transform duration-100 select-none"
-              >
-                {THEME_ICON[bgmTheme]}
-              </button>
-
-              {showAudioMenu && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setShowAudioMenu(false)} />
-                  <div className="absolute right-0 top-8 z-50 min-w-[118px]
-                                  bg-panel-mid border-4 border-panel-border shadow-pixel">
-                    {BGM_ORDER.map(t => (
-                      <button
-                        key={t}
-                        type="button"
-                        onClick={() => handleAudioTheme(t)}
-                        className={[
-                          'w-full px-3 py-2 text-left font-korean text-xs flex items-center gap-2',
-                          'hover:bg-panel-surface transition-colors',
-                          'active:scale-95 transition-transform duration-100',
-                          'border-b border-panel-border last:border-0',
-                          bgmTheme === t ? 'text-gold font-bold' : 'text-cream',
-                        ].join(' ')}
-                      >
-                        <span className="text-sm">{THEME_ICON[t]}</span>
-                        <span>{THEME_LABEL[t]}</span>
-                        {bgmTheme === t && (
-                          <span className="ml-auto text-gold text-[10px]">▶</span>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
+            {showAudioMenu && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setShowAudioMenu(false)} />
+                <div className="absolute right-0 top-10 z-50 min-w-[140px]
+                                bg-panel-mid border-4 border-panel-border shadow-pixel">
+                  {/* 재생/일시정지 행 */}
+                  <button
+                    type="button"
+                    onClick={() => { handlePlayPause(); setShowAudioMenu(false) }}
+                    disabled={bgmTheme === 'MUTE'}
+                    className="w-full px-3 py-2 text-left font-korean text-xs flex items-center gap-2
+                               text-cream hover:bg-panel-surface border-b-2 border-panel-border
+                               disabled:opacity-40 transition-colors"
+                  >
+                    <span className="text-sm">{isPlaying ? '⏸' : '▶'}</span>
+                    <span>{isPlaying ? '일시정지' : '재생'}</span>
+                  </button>
+                  {/* 무드 선택 */}
+                  {BGM_ORDER.map(t => (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => handleAudioTheme(t)}
+                      className={[
+                        'w-full px-3 py-2 text-left font-korean text-xs flex items-center gap-2',
+                        'hover:bg-panel-surface transition-colors',
+                        'border-b border-panel-border last:border-0',
+                        bgmTheme === t ? 'text-gold font-bold' : 'text-cream',
+                      ].join(' ')}
+                    >
+                      <span className="text-sm">{THEME_ICON[t]}</span>
+                      <span>{THEME_LABEL[t]}</span>
+                      {bgmTheme === t && (
+                        <span className="ml-auto text-gold text-xs">▶</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         )}
 
         {/* 알림 */}
         <Link to="/notifications" className={iconBtn}>
-          🔔
+          <img src="/assets/icons/bell.svg" alt="notifications" width={24} height={24}
+            style={{ imageRendering: 'pixelated' }} />
           {unreadCount > 0 && (
             <span className="absolute -top-0.5 -right-0.5 w-3 h-3
                              bg-rejected rounded-full border-2 border-dirt" />
@@ -239,11 +217,12 @@ export function Header() {
           <div className="relative">
             <button
               type="button"
-              onClick={() => setShowMenu(p => !p)}
+              onClick={() => { audioManager.keyClick(); setShowMenu(p => !p) }}
               className={iconBtn}
               aria-label="설정 메뉴"
             >
-              ⚙️
+              <img src="/assets/icons/bag.svg" alt="settings" width={24} height={24}
+                style={{ imageRendering: 'pixelated' }} />
             </button>
 
             {showMenu && (
@@ -262,15 +241,22 @@ export function Header() {
                   </div>
                   {/* 프로필 설정 — 모든 역할 */}
                   <button type="button"
-                    onClick={() => { setShowMenu(false); navigate('/profile') }}
+                    onClick={() => { audioManager.keyClick(); setShowMenu(false); navigate('/profile') }}
                     className="w-full px-3 py-2 text-left font-korean text-xs text-cream
                                hover:bg-panel-surface border-b border-panel-border">
                     👤 프로필 설정
                   </button>
+                  {/* 멤버소개 — 모든 역할 */}
+                  <button type="button"
+                    onClick={() => { audioManager.keyClick(); setShowMenu(false); window.location.href = '/members.html' }}
+                    className="w-full px-3 py-2 text-left font-korean text-xs text-cream
+                               hover:bg-panel-surface border-b border-panel-border">
+                    👨‍👩‍👧‍👧 멤버소개
+                  </button>
                   {/* 작업공간 — 부모 전용 */}
                   {currentMember.role !== 'CHILD' && (
                     <button type="button"
-                      onClick={() => { setShowMenu(false); navigate('/settings') }}
+                      onClick={() => { audioManager.keyClick(); setShowMenu(false); navigate('/settings') }}
                       className="w-full px-3 py-2 text-left font-korean text-xs text-cream
                                  hover:bg-panel-surface border-b border-panel-border">
                       {currentMember.role === 'DAD' ? '🛠️ 아빠 작업공간' : '🛠️ 엄마 작업공간'}

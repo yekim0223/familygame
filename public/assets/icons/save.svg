@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 플로피 디스크 (저장 — 하늘색/청록) -->
+  <!-- 디스크 외곽 -->
+  <rect x="0"  y="0"  width="16" height="16" fill="#228899"/>
+  <!-- 상단 레이블 창 (하이라이트) -->
+  <rect x="2"  y="1"  width="10" height="6"  fill="#44CCDD"/>
+  <rect x="3"  y="2"  width="8"  height="4"  fill="#88EEFF"/>
+  <!-- 쓰기 보호 탭 -->
+  <rect x="12" y="1"  width="3"  height="3"  fill="#AAFFEE"/>
+  <rect x="13" y="2"  width="2"  height="2"  fill="#FFFFFF"/>
+  <!-- 디스크 내부 메탈 원 -->
+  <rect x="4"  y="9"  width="8"  height="6"  fill="#116677"/>
+  <rect x="5"  y="10" width="6"  height="4"  fill="#33AABB"/>
+  <rect x="6"  y="11" width="4"  height="2"  fill="#55CCDD"/>
+  <rect x="7"  y="12" width="2"  height="1"  fill="#88EEFF"/>
+  <!-- 외곽 테두리 (픽셀 외형) -->
+  <rect x="0"  y="14" width="16" height="2"  fill="#116677"/>
+  <rect x="14" y="0"  width="2"  height="16" fill="#116677"/>
+  <!-- 하이라이트 -->
+  <rect x="2"  y="2"  width="1"  height="4"  fill="#AAFFEE"/>
+</svg>

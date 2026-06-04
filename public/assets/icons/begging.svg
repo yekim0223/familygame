@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" style="image-rendering:pixelated">
+  <!-- 픽셀 하트 (빨간/분홍) -->
+  <!-- 상단 좌우 돌기 -->
+  <rect x="1"  y="1"  width="5"  height="1"  fill="#FF3366"/>
+  <rect x="9"  y="1"  width="5"  height="1"  fill="#FF3366"/>
+  <rect x="0"  y="2"  width="6"  height="3"  fill="#FF3366"/>
+  <rect x="9"  y="2"  width="6"  height="3"  fill="#FF3366"/>
+  <!-- 중앙 연결 + V 노치 위 채우기 -->
+  <rect x="3"  y="1"  width="9"  height="4"  fill="#FF3366"/>
+  <!-- 몸통 -->
+  <rect x="0"  y="5"  width="15" height="3"  fill="#FF3366"/>
+  <!-- 아래 삼각 점점 좁아짐 -->
+  <rect x="1"  y="8"  width="13" height="1"  fill="#FF3366"/>
+  <rect x="2"  y="9"  width="11" height="1"  fill="#FF3366"/>
+  <rect x="3"  y="10" width="9"  height="1"  fill="#FF3366"/>
+  <rect x="4"  y="11" width="7"  height="1"  fill="#FF3366"/>
+  <rect x="5"  y="12" width="5"  height="1"  fill="#FF3366"/>
+  <rect x="6"  y="13" width="3"  height="1"  fill="#FF3366"/>
+  <rect x="7"  y="14" width="1"  height="1"  fill="#FF3366"/>
+  <!-- 분홍 하이라이트 (상단 좌우 광택) -->
+  <rect x="1"  y="2"  width="3"  height="2"  fill="#FF88AA"/>
+  <rect x="9"  y="2"  width="3"  height="2"  fill="#FF88AA"/>
+  <!-- V 노치 (하트 윗 골) -->
+  <rect x="7"  y="1"  width="1"  height="2"  fill="#1A1208"/>
+</svg>
