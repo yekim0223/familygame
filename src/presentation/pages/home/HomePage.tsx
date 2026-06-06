@@ -63,7 +63,8 @@ export default function HomePage() {
   // animDone: 이미 본 경우 true로 초기화 (안 하면 캐릭터 영구 정지)
   const [showAnim, setShowAnim] = useState(() => !localStorage.getItem('fq_anim_shown'))
   const [animDone, setAnimDone] = useState(() => !!localStorage.getItem('fq_anim_shown'))
-  const [notices, setNotices] = useState<Notice[]>([])
+  const [notices, setNotices]     = useState<Notice[]>([])
+  const [noticeExpanded, setNoticeExpanded] = useState(false)
   const [showRewardEffect, setShowRewardEffect] = useState(false)
   // ── 생동감 애니메이션 상태 ──────────────────────────────────────
   const [rolling,    setRolling]    = useState<'place'|'left'|'right'|null>(null)
@@ -87,10 +88,23 @@ export default function HomePage() {
   const [petEmotionBubbles, setPetEmotionBubbles] = useState<EmotionBubble[]>([])
   const [cameoBubble,       setCameoBubble]        = useState<EmotionBubble|null>(null)
   const [annoyedLevel,      setAnnoyedLevel]       = useState(0)
+  const [charFallen,        setCharFallen]         = useState(false)  // 쓰러진 상태
+  const [petPanicking,      setPetPanicking]       = useState(false)  // 펫 패닉 모드
+  // ── 까마귀 비행 ───────────────────────────────────────────────
+  const [crow, setCrow] = useState<{ color: 0|1|2; dir: 'ltr'|'rtl'; y: number; key: number } | null>(null)
+  const crowTimerRef = useRef<ReturnType<typeof setTimeout>|null>(null)
+  const CROW_SVGS = ['crow-black', 'crow-blue', 'crow-white'] as const
   const tapCountRef        = useRef(0)
   const lastTapRef         = useRef(0)
   const annoyedLevelRef    = useRef(0)
   const annoyResetTimerRef = useRef<ReturnType<typeof setTimeout>|null>(null)
+  const fallenTimerRef     = useRef<ReturnType<typeof setTimeout>|null>(null)
+  const charFallenRef      = useRef(false)  // RAF 클로저용
+  const panicTimerRef      = useRef<ReturnType<typeof setTimeout>|null>(null)
+
+  // 펫 전용 밝은 감정 아이콘 (skull 없음)
+  const PET_BRIGHT_ICONS = ['music', 'star', 'emotion-happy', 'emotion-love', 'emotion-surprise', 'begging'] as const
+  const PET_PANIC_ICONS  = ['emotion-surprise', 'emotion-angry', 'emotion-sad'] as const
 
   // 역할별 캐미오 캐릭터 ID
   const CAMEO_BY_ROLE: Record<string, string[]> = {
@@ -113,7 +127,62 @@ export default function HomePage() {
     if (charAnimTimer.current)     clearTimeout(charAnimTimer.current)
     if (walkTimer.current)         clearTimeout(walkTimer.current)
     if (annoyResetTimerRef.current) clearTimeout(annoyResetTimerRef.current)
+    if (panicTimerRef.current)     clearTimeout(panicTimerRef.current)
+    if (crowTimerRef.current)      clearTimeout(crowTimerRef.current)
   }, [])
+
+  // ── 까마귀 비행 스케줄러 ─────────────────────────────────────
+  useEffect(() => {
+    if (!animDone) return
+    const scheduleCrow = () => {
+      // 18~45초 랜덤 간격
+      const delay = 18000 + Math.random() * 27000
+      crowTimerRef.current = setTimeout(() => {
+        const color = Math.floor(Math.random() * 3) as 0|1|2
+        const dir   = Math.random() < 0.5 ? 'ltr' : 'rtl'
+        // 캐릭터 박스 높이 내에서 랜덤 y (px, 0=상단, 70=하단 부근)
+        const y     = 8 + Math.random() * 55
+        setCrow({ color, dir, y, key: Date.now() })
+        // 10초 비행 후 사라지고 다음 스케줄
+        setTimeout(() => { setCrow(null); scheduleCrow() }, 11000)
+      }, delay)
+    }
+    scheduleCrow()
+    return () => { if (crowTimerRef.current) clearTimeout(crowTimerRef.current) }
+  }, [animDone])
+
+  // ── 펫 패닉 모드 (캐릭터 쓰러짐 동안) ────────────────────────────
+  useEffect(() => {
+    if (!charFallen) {
+      setPetPanicking(false)
+      if (panicTimerRef.current) clearTimeout(panicTimerRef.current)
+      // 회복 후 펫 위치 중앙 복귀
+      setPetXOffset(0)
+      return
+    }
+    setPetPanicking(true)
+    let active = true
+    const doPanic = () => {
+      if (!active) return
+      // 랜덤 위치로 이동
+      const nx = (Math.random() - 0.5) * 120
+      setPetXOffset(nx)
+      // 이따금 당황 이모지
+      if (Math.random() < 0.45) {
+        const icon = PET_PANIC_ICONS[Math.floor(Math.random() * PET_PANIC_ICONS.length)]
+        const id   = Date.now() + Math.floor(Math.random() * 999)
+        setPetEmotionBubbles(prev => [...prev.slice(-1), { id, icon, xOff: 6 + Math.floor(Math.random() * 10) }])
+        setTimeout(() => {
+          if (active) setPetEmotionBubbles(prev => prev.filter(b => b.id !== id))
+        }, 1100)
+      }
+      // 랜덤 간격 300~1000ms
+      panicTimerRef.current = setTimeout(doPanic, 300 + Math.random() * 700)
+    }
+    panicTimerRef.current = setTimeout(doPanic, 400)
+    return () => { active = false; clearTimeout(panicTimerRef.current!) }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [charFallen])
 
   // ── 애니메이션 스케줄러 ────────────────────────────────────────
   useEffect(() => {
@@ -199,7 +268,7 @@ export default function HomePage() {
       charAnimTimer.current = setTimeout(() => {
         if (!active) return
         // 귀찮음 상태면 이동/롤 등 모든 액션 스킵 (자리에서 멈춤)
-        if (annoyedLevelRef.current > 0) { schedule(role); return }
+        if (annoyedLevelRef.current > 0 || charFallenRef.current) { schedule(role); return }
         const r = Math.random()
         if      (r < 0.18)                        doWalk()
         else if (r < 0.30)                        doRoll('place')
@@ -224,7 +293,7 @@ export default function HomePage() {
   }, [animDone])
 
 
-  // ── 공통: 연타 카운터 처리 → icon + level 반환 ───────────────
+  // ── 캐릭터 연타 카운터 → icon + level 반환 ───────────────────
   const processTap = useCallback((): { icon: string; level: number } => {
     const now = Date.now()
     if (now - lastTapRef.current > 2500) tapCountRef.current = 0
@@ -240,25 +309,43 @@ export default function HomePage() {
     annoyResetTimerRef.current = setTimeout(() => {
       tapCountRef.current = 0; setAnnoyedLevel(0); annoyedLevelRef.current = 0
     }, 3000)
+    // 12회 연속: 쓰러짐 + 10초 무반응
+    if (count >= 12 && !charFallenRef.current) {
+      charFallenRef.current = true
+      setCharFallen(true)
+      setAnnoyedLevel(0); annoyedLevelRef.current = 0
+      setIsWalking(false)
+      setRolling(null)
+      setMainSpeech(null)
+      setEmotionBubbles([])
+      tapCountRef.current = 0
+      if (fallenTimerRef.current) clearTimeout(fallenTimerRef.current)
+      fallenTimerRef.current = setTimeout(() => {
+        charFallenRef.current = false
+        setCharFallen(false)
+      }, 10000)
+    }
     return { icon, level }
   }, [])
 
-  // ── 캐릭터 터치 ───────────────────────────────────────────────
+  // ── 캐릭터 터치 (skull 로직 유지, 쓰러짐 상태 시 무반응) ───────
   const handleCharOrPetTap = useCallback(() => {
+    if (charFallenRef.current) return  // 쓰러진 중 무반응
     const { icon } = processTap()
     const id = Date.now() + Math.floor(Math.random() * 999)
     setEmotionBubbles(prev => [...prev.slice(-5), { id, icon, xOff: 6 + Math.floor(Math.random() * 26) }])
     setTimeout(() => setEmotionBubbles(prev => prev.filter(b => b.id !== id)), 1600)
   }, [processTap])
 
-  // ── 펫 터치 (독립 버블 위치) ──────────────────────────────────
+  // ── 펫 터치 (독립 로직, 밝은 아이콘 / 패닉 중 무반응) ──────────
   const handlePetTap = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
-    const { icon } = processTap()
+    if (charFallenRef.current) return  // 패닉 중 무반응
+    const icon = PET_BRIGHT_ICONS[Math.floor(Math.random() * PET_BRIGHT_ICONS.length)]
     const id = Date.now() + Math.floor(Math.random() * 999)
     setPetEmotionBubbles(prev => [...prev.slice(-3), { id, icon, xOff: 4 + Math.floor(Math.random() * 14) }])
     setTimeout(() => setPetEmotionBubbles(prev => prev.filter(b => b.id !== id)), 1600)
-  }, [processTap])
+  }, [PET_BRIGHT_ICONS])
 
   // ── 캐미오(게스트) 터치 → skull 즉시, 700ms 후 소멸 ──────────
   const handleCameoTap = useCallback((e: React.MouseEvent) => {
@@ -318,7 +405,7 @@ export default function HomePage() {
         seen.add(key)
         return true
       })
-      .slice(0, 5)
+      .slice(0, 3)
   }, [notifications, isParent, getMissionById])
 
   return (
@@ -399,7 +486,31 @@ export default function HomePage() {
               </div>
 
               {/* ── 중앙: 캐릭터 + 펫 + 캐미오 ── */}
-              <div className="relative flex items-end justify-center min-h-[158px]">
+              <div className="relative flex items-end justify-center min-h-[158px]" style={{ overflow: 'hidden' }}>
+
+                {/* ── 까마귀 비행 (z-5 — 캐릭터보다 뒤) ── */}
+                {crow && (
+                  <div
+                    key={crow.key}
+                    className={crow.dir === 'ltr' ? 'animate-crow-ltr' : 'animate-crow-rtl'}
+                    style={{
+                      position: 'absolute',
+                      top: `${crow.y}px`,
+                      left: 0,
+                      zIndex: 5,
+                      pointerEvents: 'none',
+                    }}
+                  >
+                    <div className="animate-crow-flap">
+                      <img
+                        src={`/assets/characters/${CROW_SVGS[crow.color]}.svg`}
+                        width={60} height={38}
+                        draggable={false}
+                        style={{ imageRendering: 'pixelated', display: 'block' }}
+                      />
+                    </div>
+                  </div>
+                )}
 
                 {/* 두근두근 풍선 (아이, 좌 고정) */}
                 {isChild && familyId && (
@@ -487,8 +598,26 @@ export default function HomePage() {
                     </div>
                   ))}
 
+                  {/* Zzzz 수면 말풍선 (쓰러짐 상태 — 캐릭터 바로 위) */}
+                  {charFallen && (
+                    <div
+                      className="absolute pointer-events-none animate-speech-pop"
+                      style={{ bottom: '55%', left: '58%', transform: 'translateX(-50%)', zIndex: 105 }}
+                    >
+                      <div className="px-3 py-1 bg-white/15 backdrop-blur-sm border-2 border-dashed border-white/50 rounded-full whitespace-nowrap relative">
+                        <span className="font-pixel text-xs text-white" style={{ textShadow: '0 0 6px rgba(0,0,0,0.8)' }}>Zzzz..</span>
+                        {/* 꼬리 점 3개 */}
+                        <div className="absolute top-full left-1/2 flex flex-col items-center gap-[2px]" style={{ transform: 'translateX(-50%)', marginTop: 2 }}>
+                          <div className="w-[5px] h-[5px] rounded-full bg-white/50" />
+                          <div className="w-[3px] h-[3px] rounded-full bg-white/35" />
+                          <div className="w-[2px] h-[2px] rounded-full bg-white/20" />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* 말풍선 (이동 따라가지만 flip 영향 안받게 flip 바깥) */}
-                  {mainSpeech && (
+                  {!charFallen && mainSpeech && (
                     <div
                       className={`absolute z-[100] px-2 py-1 bg-white border-2 border-black whitespace-nowrap pointer-events-none
                         ${mainSpeech.fading ? 'animate-speech-fade' : 'animate-speech-pop'}`}
@@ -500,14 +629,17 @@ export default function HomePage() {
                     </div>
                   )}
 
-                  {/* 방향 반전 wrapper (X flip) */}
+                  {/* 방향 반전 wrapper (X flip) + 쓰러짐 90도 회전 */}
                   <div style={{
-                    transform: `scaleX(${facingLeft ? -1 : 1})`,
-                    transition: 'transform 0.25s ease',
+                    transform: charFallen
+                      ? `scaleX(${facingLeft ? -1 : 1}) rotate(90deg)`
+                      : `scaleX(${facingLeft ? -1 : 1})`,
+                    transition: charFallen ? 'transform 0.5s ease' : 'transform 0.25s ease',
                     transformOrigin: 'center bottom',
                   }}>
                     {/* 구르기 / 귀찮음 / 걷기 / 정지 애니메이션 */}
                     <div className={
+                      charFallen         ? '' :
                       rolling            ? 'animate-char-roll' :
                       annoyedLevel >= 2  ? 'animate-char-very-annoyed' :
                       annoyedLevel >= 1  ? 'animate-char-annoyed' :
@@ -537,15 +669,17 @@ export default function HomePage() {
                 {/* ── 펫 ── */}
                 {displayPetId && (
                   <div
-                    className="absolute bottom-1 animate-bounce flex-shrink-0"
+                    className={`absolute bottom-1 flex-shrink-0 ${petPanicking ? 'animate-pulse' : 'animate-bounce'}`}
                     onClick={handlePetTap}
                     style={{
                       right: `calc(8% + ${petXOffset < 0 ? Math.abs(petXOffset) : 0}px)`,
                       left: petXOffset > 0 ? `calc(10% + ${petXOffset}px)` : undefined,
-                      animationDuration: '1.1s',
+                      animationDuration: petPanicking ? '0.4s' : '1.1s',
                       opacity: petVisible ? 1 : 0,
-                      transition: 'opacity 0.4s ease, right 1.5s ease, left 1.5s ease',
-                      cursor: 'pointer',
+                      transition: petPanicking
+                        ? 'opacity 0.2s ease, right 0.35s ease-out, left 0.35s ease-out'
+                        : 'opacity 0.4s ease, right 1.5s ease, left 1.5s ease',
+                      cursor: petPanicking ? 'default' : 'pointer',
                     }}
                   >
                     {/* 펫 전용 감정 버블 */}
@@ -556,9 +690,7 @@ export default function HomePage() {
                           <img src={`/assets/icons/${b.icon}.svg`} width={30} height={30}
                             style={{
                               imageRendering: 'pixelated',
-                              filter: b.icon === 'skull'
-                                ? 'drop-shadow(0 0 5px #E53935) drop-shadow(0 0 2px #000)'
-                                : 'drop-shadow(0 0 3px rgba(255,215,0,0.9))',
+                              filter: 'drop-shadow(0 0 3px rgba(255,215,0,0.9))',
                             }} />
                         </div>
                       ))}
@@ -709,7 +841,7 @@ export default function HomePage() {
           </PixelCard>
         )}
 
-        {/* ⑥ 공지사항 (용사의 여정과 동일 PixelCard 구조) */}
+        {/* ⑥ 공지사항 */}
         {notices.length > 0 && (
           <PixelCard variant="dark" padding="sm">
             <div className="flex items-center gap-2 mb-2">
@@ -717,8 +849,22 @@ export default function HomePage() {
               <p className="t-sub font-bold text-gold t-pixel-shadow">공지사항</p>
             </div>
             <div className="space-y-0">
-              {notices.slice(0, 3).map(n => <NoticeItem key={n.id} notice={n} />)}
+              {(noticeExpanded ? notices.slice(0, 5) : notices.slice(0, 2)).map(n => (
+                <NoticeItem key={n.id} notice={n} />
+              ))}
             </div>
+            {notices.length > 2 && (
+              <button
+                type="button"
+                onClick={() => setNoticeExpanded(p => !p)}
+                className="mt-2 w-full font-korean text-xs text-panel-sub text-center
+                           hover:text-cream transition-colors active:scale-95"
+              >
+                {noticeExpanded
+                  ? '▲ 접기'
+                  : `▼ 더보기 (+${Math.min(notices.length - 2, 3)}건)`}
+              </button>
+            )}
           </PixelCard>
         )}
 

@@ -438,7 +438,7 @@ export function PonpokoGame({ onGameOver, charSvgUrl = '/assets/characters/base-
         <span className="font-korean text-xs text-cream/60">STG {uiStage}</span>
         <div className="flex items-center gap-2">
           <button type="button"
-            onTouchStart={togglePause} onMouseDown={togglePause}
+            onPointerDown={togglePause}
             className="min-w-[54px] h-9 px-2 bg-purple border-2 border-purple/60
                        flex items-center justify-center font-pixel text-xs
                        active:scale-95 select-none text-white">
@@ -446,7 +446,7 @@ export function PonpokoGame({ onGameOver, charSvgUrl = '/assets/characters/base-
           </button>
           {onBack && (
             <button type="button"
-              onTouchStart={onBack} onMouseDown={onBack}
+              onPointerDown={onBack}
               className="min-w-[54px] h-9 px-2 bg-rejected border-2 border-rejected/60
                          flex items-center justify-center font-pixel text-xs
                          active:scale-95 select-none text-white">

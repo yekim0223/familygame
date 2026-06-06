@@ -123,7 +123,7 @@ export default function MissionListPage() {
       {/* 전체 / 공동 / 개별 탭 — bg-panel-darkest 바, 활성: bg-panel-surface + gold 하단 라인 */}
       <div className="flex bg-panel-darkest border-4 border-panel-border overflow-hidden">
         {(['all', 'shared', 'individual'] as MissionMode[]).map(tab => {
-          const label = tab === 'all' ? '전체' : tab === 'shared' ? '👨‍👩‍👧‍👦 공동' : '👤 개별'
+          const label = tab === 'all' ? '전체' : tab === 'shared' ? '공동' : '개별'
           const isActive = mode === tab
           return (
             <button
@@ -176,7 +176,7 @@ export default function MissionListPage() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-48 gap-3">
-          <span className="text-5xl opacity-40">⚔️</span>
+          <img src="/assets/icons/sword.svg" width={52} height={52} alt="" style={{ imageRendering: 'pixelated', opacity: 0.35 }} />
           <p className="font-korean text-sm text-panel-sub text-center">
             {mode === 'all' ? '미션이 없어요' : mode === 'shared' ? '공동 미션이 없어요' : '개별 미션이 없어요'}
           </p>

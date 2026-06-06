@@ -1,10 +1,13 @@
 // Design Ref: §5.1 하단 탭 바 — 벽돌 텍스처 + 아이콘 선명 (테두리 없음)
+import { useState, useCallback } from 'react'
 import { NavLink } from 'react-router-dom'
 import { audioManager } from '@/infrastructure/audio/audioManager'
 import { useAuthStore } from '@/infrastructure/stores/authStore'
 import { useMissionStore } from '@/infrastructure/stores/missionStore'
 import { useMessageStore } from '@/infrastructure/stores/messageStore'
 import { useNotificationStore } from '@/infrastructure/stores/notificationStore'
+
+const LS_MISSION_SEEN = (memberId: string) => `fq_missions_seen_${memberId}`
 
 export function BottomNav() {
   const { currentMember }           = useAuthStore()
@@ -14,19 +17,35 @@ export function BottomNav() {
 
   const isParent = currentMember?.role === 'DAD' || currentMember?.role === 'MOM'
 
-  const missionBadge = isParent
-    ? missions.filter(m => m.status === 'PENDING_APPROVAL').length
-    : missions.filter(m =>
-        m.targetMemberIds.includes(currentMember?.id ?? '') && m.status === 'ACTIVE'
-      ).length
+  // 아이: 마지막 방문 이후 새로 생긴 미션 수만 배지 표시
+  // 부모: 확인 대기(PENDING_APPROVAL) 미션 수
+  const [, forceUpdate] = useState(0)
+  const missionBadge = (() => {
+    if (isParent) return missions.filter(m => m.status === 'PENDING_APPROVAL').length
+    if (!currentMember) return 0
+    const lastSeen = Number(localStorage.getItem(LS_MISSION_SEEN(currentMember.id)) ?? 0)
+    return missions.filter(m =>
+      m.targetMemberIds.includes(currentMember.id) &&
+      m.status === 'ACTIVE' &&
+      m.createdAt.getTime() > lastSeen
+    ).length
+  })()
+
+  const handleMissionsClick = useCallback(() => {
+    audioManager.keyClick()
+    if (!isParent && currentMember) {
+      localStorage.setItem(LS_MISSION_SEEN(currentMember.id), Date.now().toString())
+      forceUpdate(n => n + 1)  // 배지 즉시 갱신
+    }
+  }, [isParent, currentMember])
 
   const TABS = [
-    { to: '/home',     icon: '/assets/icons/home.svg',     alt: '홈',     badge: 0 },
-    { to: '/missions', icon: '/assets/icons/sword.svg',    alt: '퀘스트', badge: missionBadge },
-    { to: '/calendar', icon: '/assets/icons/calendar.svg', alt: '달력',   badge: 0 },
-    { to: '/messages', icon: '/assets/icons/message.svg',  alt: '메세지', badge: unreadGroupCount },
-    { to: '/rewards',  icon: '/assets/icons/trophy.svg',   alt: '보상',   badge: notifCount },
-    { to: '/game',     icon: '/assets/icons/gamepad.svg',  alt: '게임',   badge: 0 },
+    { to: '/home',     icon: '/assets/icons/home.svg',     alt: '홈',     badge: 0,              msgBadge: false },
+    { to: '/missions', icon: '/assets/icons/sword.svg',    alt: '퀘스트', badge: missionBadge,   msgBadge: false },
+    { to: '/calendar', icon: '/assets/icons/calendar.svg', alt: '달력',   badge: 0,              msgBadge: false },
+    { to: '/messages', icon: '/assets/icons/message.svg',  alt: '메세지', badge: unreadGroupCount, msgBadge: true },
+    { to: '/rewards',  icon: '/assets/icons/trophy.svg',   alt: '보상',   badge: notifCount,     msgBadge: false },
+    { to: '/game',     icon: '/assets/icons/gamepad.svg',  alt: '게임',   badge: 0,              msgBadge: false },
   ]
 
   return (
@@ -39,7 +58,7 @@ export function BottomNav() {
         <NavLink
           key={tab.to}
           to={tab.to}
-          onClick={() => audioManager.keyClick()}
+          onClick={tab.to === '/missions' ? handleMissionsClick : () => audioManager.keyClick()}
           className="relative flex-1 flex flex-col items-center justify-center
                      select-none gap-[3px] pt-1"
         >
@@ -67,12 +86,17 @@ export function BottomNav() {
                 }}
               />
 
-              {/* 빨간 콩 배지 — 활성 탭에선 즉시 사라짐 */}
+              {/* 배지 — 메시지: 숫자 텍스트 / 나머지: 빨간 점 */}
               {tab.badge > 0 && !isActive && (
-                <span
-                  className="absolute top-1.5 right-2.5 w-2.5 h-2.5
-                             bg-rejected rounded-full border border-black/60 shadow"
-                />
+                tab.msgBadge ? (
+                  <span className="absolute top-0.5 right-1.5 font-korean text-xs font-bold text-gold
+                                   leading-none">
+                    ({tab.badge > 99 ? '99+' : tab.badge})
+                  </span>
+                ) : (
+                  <span className="absolute top-1.5 right-2.5 w-2.5 h-2.5
+                                   bg-rejected rounded-full border border-black/60 shadow" />
+                )
               )}
             </>
           )}

@@ -4,25 +4,26 @@ import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/infrastructure/stores/authStore'
 import { useNotificationStore } from '@/infrastructure/stores/notificationStore'
 import { useMissionStore } from '@/infrastructure/stores/missionStore'
-import { markAllNotificationsRead } from '@/infrastructure/firebase/collections/notifications'
+import { markAllNotificationsRead, deleteAllNotifications } from '@/infrastructure/firebase/collections/notifications'
 import { PixelCard } from '@/presentation/components/pixel/PixelCard'
 import { PixelButton } from '@/presentation/components/pixel/PixelButton'
 import type { NotificationType, Notification } from '@/domain/entities/Message'
 
+// SVG 아이콘 경로 매핑
 const NOTIF_ICONS: Record<NotificationType, string> = {
-  MISSION_PENDING:    '⏳',
-  MISSION_APPROVED:   '🎉',
-  MISSION_REJECTED:   '💪',
-  MISSION_HOLD:       '🤔',
-  MISSION_CONFIRMED:  '✅',
-  LEVEL_UP:           '🆙',
-  BEG_RESULT:         '🙏',
-  BEGGING_REQUEST:    '🙏',
-  CHEER:              '💚',
-  NEW_MISSION:        '⚔️',
-  NEW_MESSAGE:        '💌',
-  MISSION_EXPIRED:    '💀',
-  MOM_CHEER:          '💖',
+  MISSION_PENDING:    '/assets/icons/star.svg',
+  MISSION_APPROVED:   '/assets/icons/check-circle.svg',
+  MISSION_REJECTED:   '/assets/icons/close-x.svg',
+  MISSION_HOLD:       '/assets/icons/save.svg',
+  MISSION_CONFIRMED:  '/assets/icons/check-circle.svg',
+  LEVEL_UP:           '/assets/icons/trophy.svg',
+  BEG_RESULT:         '/assets/icons/gift.svg',
+  BEGGING_REQUEST:    '/assets/icons/begging.svg',
+  CHEER:              '/assets/icons/emotion-happy.svg',
+  NEW_MISSION:        '/assets/icons/sword.svg',
+  NEW_MESSAGE:        '/assets/icons/letter.svg',
+  MISSION_EXPIRED:    '/assets/icons/skull.svg',
+  MOM_CHEER:          '/assets/icons/emotion-love.svg',
 }
 
 const NOTIF_LABEL: Record<NotificationType, string> = {
@@ -84,7 +85,11 @@ export default function NotificationsPage() {
   const { notifications }  = useNotificationStore()
   const { familyId }       = useAuthStore()
   const { getMissionById } = useMissionStore()
-  const [markingAll, setMarkingAll] = useState(false)
+  const [markingAll, setMarkingAll]     = useState(false)
+  const [deletingAll, setDeletingAll]   = useState(false)
+  const { currentMember } = useAuthStore()
+
+  // (자동 읽음 제거됨 — 사용자가 수동으로 전체 읽기 누를 때만 처리)
 
   const handleClick = async (group: StackedGroup) => {
     if (!group.allRead && familyId) {
@@ -110,6 +115,14 @@ export default function NotificationsPage() {
     setMarkingAll(false)
   }
 
+  const handleDeleteAll = async () => {
+    if (!familyId || !currentMember) return
+    if (!window.confirm('알림 이력을 모두 삭제할까요?\n되돌릴 수 없어요.')) return
+    setDeletingAll(true)
+    await deleteAllNotifications(familyId, currentMember.id)
+    setDeletingAll(false)
+  }
+
   const stacked = stackNotifications(notifications)
   const unreadCount = stacked.filter(g => !g.allRead).length
 
@@ -117,22 +130,34 @@ export default function NotificationsPage() {
     <div className="p-3">
       {/* 헤더 */}
       <div className="flex items-center justify-between mb-3">
-        <h1 className="t-heading text-gold t-pixel-shadow">🔔 알림</h1>
-        {unreadCount > 0 && (
-          <PixelButton
-            variant="ghost"
-            size="sm"
-            disabled={markingAll}
-            onClick={handleMarkAll}
-          >
-            {markingAll ? '처리 중...' : `전체 읽기 (${unreadCount})`}
-          </PixelButton>
+        <h1 className="t-heading text-gold t-pixel-shadow flex items-center gap-2">
+          <img src="/assets/icons/bell.svg" width={20} height={20} alt="" style={{ imageRendering: 'pixelated' }} />
+          알림
+        </h1>
+        {stacked.length > 0 && (
+          <div className="flex items-center gap-2">
+            <PixelButton
+              variant="ghost" size="sm"
+              disabled={markingAll || unreadCount === 0}
+              onClick={handleMarkAll}
+            >
+              {markingAll ? '처리 중...' : unreadCount > 0 ? `읽음 (${unreadCount})` : '모두 읽음'}
+            </PixelButton>
+            <div className="w-px h-5 bg-panel-border" />
+            <PixelButton
+              variant="danger" size="sm"
+              disabled={deletingAll}
+              onClick={handleDeleteAll}
+            >
+              {deletingAll ? '삭제 중...' : '전체 삭제'}
+            </PixelButton>
+          </div>
         )}
       </div>
 
       {stacked.length === 0 ? (
-        <div className="text-center py-10">
-          <p className="text-3xl mb-2">🔔</p>
+        <div className="text-center py-10 flex flex-col items-center gap-3">
+          <img src="/assets/icons/bell.svg" width={48} height={48} alt="" style={{ imageRendering: 'pixelated', opacity: 0.4 }} />
           <p className="font-korean text-sm text-panel-sub">새로운 알림이 없어요</p>
         </div>
       ) : (
@@ -149,9 +174,12 @@ export default function NotificationsPage() {
                 <PixelCard padding="sm" className={!allRead ? '!border-gold' : ''}>
                   <div className="flex items-start gap-2">
                     {/* 아이콘 */}
-                    <span className="text-2xl flex-shrink-0 leading-none mt-0.5">
-                      {NOTIF_ICONS[latest.type] ?? '🔔'}
-                    </span>
+                    <img
+                      src={NOTIF_ICONS[latest.type] ?? '/assets/icons/bell.svg'}
+                      width={24} height={24} alt=""
+                      className="flex-shrink-0 mt-0.5"
+                      style={{ imageRendering: 'pixelated' }}
+                    />
 
                     <div className="flex-1 min-w-0">
                       {/* 타입 배지 + 미션명 */}

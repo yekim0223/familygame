@@ -80,11 +80,32 @@ function EmptyDay() {
 function TimelineItem({ day, month, doc }: { day: number; month: number; doc: SpecialDayDoc }) {
   const icon = SPECIAL_DAY_ICON[doc.type] ?? doc.emoji
   const today = new Date()
+  const repeatType = doc.repeatType ?? 'yearly'
+
+  // 1회성: 이미 지난 경우 렌더 안 함
+  const todayNum = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate()
+  const eventYear = doc.repeatType === 'once' ? today.getFullYear() : today.getFullYear()
+  if (repeatType === 'once') {
+    const eventNum = eventYear * 10000 + doc.month * 100 + doc.day
+    if (eventNum < todayNum) return null  // 지난 1회성 이벤트 미노출
+  }
+
   const isPast = today.getMonth() + 1 > month ||
     (today.getMonth() + 1 === month && today.getDate() > day)
+
+  // D-day: yearly만 표시
+  const dDayLabel = (() => {
+    if (repeatType !== 'yearly') return null
+    const thisYear = today.getFullYear()
+    const target = new Date(thisYear, doc.month - 1, doc.day)
+    if (target < today) target.setFullYear(thisYear + 1)
+    const diff = Math.ceil((target.getTime() - today.getTime()) / 86400000)
+    return diff === 0 ? 'D-Day' : `D-${diff}`
+  })()
+
   return (
     <div className={`flex items-center gap-3 py-2 border-b border-panel-border last:border-0
-                     ${isPast ? 'opacity-50' : ''}`}>
+                     ${isPast && repeatType === 'yearly' ? 'opacity-50' : ''}`}>
       <span className="text-xl flex-shrink-0">{icon}</span>
       <div className="flex-1 min-w-0">
         <p className="font-korean text-sm font-bold text-cream truncate">{doc.name}</p>
@@ -93,13 +114,9 @@ function TimelineItem({ day, month, doc }: { day: number; month: number; doc: Sp
           {doc.type === 'birthday' ? ' · 생일' : ' · 기념일'}
         </p>
       </div>
-      <span className="font-pixel text-xs text-gold flex-shrink-0">D-{(() => {
-        const thisYear = today.getFullYear()
-        const target = new Date(thisYear, doc.month - 1, doc.day)
-        if (target < today) target.setFullYear(thisYear + 1)
-        const diff = Math.ceil((target.getTime() - today.getTime()) / 86400000)
-        return diff === 0 ? 'Day' : diff
-      })()}</span>
+      {dDayLabel && (
+        <span className="font-pixel text-xs text-gold flex-shrink-0">{dDayLabel}</span>
+      )}
     </div>
   )
 }
@@ -113,7 +130,8 @@ function NextMonthPreview({ year, month0, docs }: { year: number; month0: number
   return (
     <div className="card-pixel p-3 mt-3">
       <p className="t-sub text-gold t-pixel-shadow mb-2">
-        📅 {nextYear}년 {MONTHS_KO[nextMonth0]} 예고
+        <img src="/assets/icons/calendar.svg" width={14} height={14} alt="" className="inline mr-1.5" style={{ imageRendering: 'pixelated', verticalAlign: 'middle' }} />
+        {nextYear}년 {MONTHS_KO[nextMonth0]} 예고
       </p>
       <div className="space-y-0">
         {items.slice(0, 3).map(s => (
@@ -308,7 +326,8 @@ export default function CalendarPage() {
       return (
         <div className="card-pixel p-3">
           <p className="t-sub text-gold t-pixel-shadow mb-2">
-            📅 {year}년 {MONTHS_KO[month]} 일정 ({monthTimeline.length}건)
+            <img src="/assets/icons/calendar.svg" width={14} height={14} alt="" className="inline mr-1.5" style={{ imageRendering: 'pixelated', verticalAlign: 'middle' }} />
+            {year}년 {MONTHS_KO[month]} 일정 ({monthTimeline.length}건)
           </p>
           <div>
             {visible.map(s => (
@@ -337,7 +356,8 @@ export default function CalendarPage() {
       return (
         <div className="card-pixel p-3">
           <p className="t-sub text-gold t-pixel-shadow mb-2">
-            🗓️ 이번 주 일정 ({flatItems.length}건)
+            <img src="/assets/icons/calendar.svg" width={14} height={14} alt="" className="inline mr-1.5" style={{ imageRendering: 'pixelated', verticalAlign: 'middle' }} />
+            이번 주 일정 ({flatItems.length}건)
           </p>
           <div>
             {visible.map(({ date, doc }, i) => (

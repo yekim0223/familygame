@@ -1,4 +1,4 @@
-// WhacAMoleGame — 두더지 잡기 (DOM 기반, 30초 타이머)
+// WhacAMoleGame — 아빠 잡기 (DOM 기반, 60초 타이머)
 import { useState, useEffect, useRef, useReducer } from 'react'
 import { audioManager } from '@/infrastructure/audio/audioManager'
 import { EffectOverlay } from '@/presentation/components/effects/EffectOverlay'
@@ -14,11 +14,12 @@ interface FloatText {
   positive: boolean
 }
 
-const GAME_DURATION = 30
-const MAX_DURATION  = 60  // 엄마 보너스 포함 최대 60초
-const HOLE_COUNT    = 9
+const GAME_DURATION   = 30   // 기본 30초
+const MAX_BONUS_TIME  = 30   // 엄마 보너스 최대 30초 (합계 최대 60초)
+const MAX_DURATION    = GAME_DURATION + MAX_BONUS_TIME  // 60초
+const HOLE_COUNT      = 9
 
-// 배경 5종 (구멍 그리드와 대비되는 테마)
+// 배경 5종
 const BG_THEMES = ['nether', 'ocean', 'aurora', 'mushroom', 'cave'] as const
 
 // ── 아빠 잡기 메인 컴포넌트 ──────────────────────────────────────────
@@ -28,11 +29,10 @@ export function WhacAMoleGame({ onGameOver, dadSvgUrl = '/assets/characters/base
   momSvgUrl?: string
   onBack?: () => void
 }) {
-  // cbRef 패턴 — 항상 최신 onGameOver 참조 (규칙 26)
   const cbRef = useRef(onGameOver)
   cbRef.current = onGameOver
 
-  // ── 게임 로직 Refs (stale closure 방지) ─────────────────────────
+  // ── 게임 로직 Refs ───────────────────────────────────────────────
   const holesRef    = useRef<HoleContent[]>(Array(HOLE_COUNT).fill('empty' as HoleContent))
   const hitAnimRef  = useRef<Set<number>>(new Set())
   const activeRef   = useRef<Set<number>>(new Set())
@@ -42,7 +42,8 @@ export function WhacAMoleGame({ onGameOver, dadSvgUrl = '/assets/characters/base
   const scoreRef    = useRef(0)
   const comboRef    = useRef(0)
   const timeRef     = useRef(GAME_DURATION)
-  const floatKeyRef = useRef(0)
+  const floatKeyRef     = useRef(0)
+  const bonusGivenRef   = useRef(0)  // 엄마 보너스로 추가된 누적 시간 (MAX_BONUS_TIME 초과 방지)
 
   // ── React 상태 (UI 렌더용) ────────────────────────────────────────
   const [, forceRender]     = useReducer((n: number) => n + 1, 0)
@@ -53,8 +54,8 @@ export function WhacAMoleGame({ onGameOver, dadSvgUrl = '/assets/characters/base
   const [phase,    setPhase]     = useState<GamePhase>('playing')
   const [effect,   setEffect]    = useState<{ type: EffectType; cnt: number; key: number } | null>(null)
   const [floatTexts, setFloatTexts] = useState<FloatText[]>([])
-  const [uiPaused,      setUiPaused]      = useState(false)
-  const [momBonusFlash, setMomBonusFlash] = useState(0)  // 0=없음, 5 or 10 = 보너스 초
+  const [uiPaused, setUiPaused]    = useState(false)
+  const [momBonusFlash, setMomBonusFlash] = useState(0)
   const [bgTheme]                         = useState(() => BG_THEMES[Math.floor(Math.random() * BG_THEMES.length)])
   const pausedRef  = useRef(false)
 
@@ -71,7 +72,9 @@ export function WhacAMoleGame({ onGameOver, dadSvgUrl = '/assets/characters/base
     setTimeout(() => setFloatTexts(prev => prev.filter(f => f.key !== key)), 900)
   }
 
+  // 구멍 초기화 — genRef도 함께 증가시켜 진행 중인 타이머 무효화
   const clearHole = (idx: number) => {
+    genRef.current[idx]++  // 이 칸의 진행 중 타이머를 모두 무효화
     holesRef.current[idx] = 'empty'
     hitAnimRef.current.delete(idx)
     activeRef.current.delete(idx)
@@ -84,28 +87,35 @@ export function WhacAMoleGame({ onGameOver, dadSvgUrl = '/assets/characters/base
     const content = holesRef.current[idx]
     if (content === 'empty') return
 
-    // 자동 숨김 타이머 취소 + generation 증가
+    // generation 증가 → 자동 숨김 타이머 무효화
     genRef.current[idx]++
     if (holeTimers.current[idx]) {
       clearTimeout(holeTimers.current[idx]!)
       holeTimers.current[idx] = null
     }
-    activeRef.current.delete(idx)
+    // activeRef는 여기서 삭제하지 않음 — clearHole(250ms)에서 처리
+    // (히트 애니 250ms 동안 같은 칸에 새 두더지 스폰 방지)
 
-    // 타격 애니메이션 시작
     hitAnimRef.current.add(idx)
     forceRender()
     setTimeout(() => clearHole(idx), 250)
 
     if (content === 'mom') {
-      // 엄마 포착 → 시간 보너스! (5초 60% / 10초 40%)
-      const bonus = Math.random() < 0.4 ? 10 : 5
-      const capped = Math.min(MAX_DURATION, timeRef.current + bonus)
-      timeRef.current = capped
-      setTimeLeft(capped)
-      setMomBonusFlash(bonus)
-      setTimeout(() => setMomBonusFlash(0), 1800)
-      showFloat(idx, `+${bonus}s ⏱️`, true)
+      // 엄마 포착 → 랜덤 시간 보너스 (총 보너스 MAX_BONUS_TIME 초과 불가)
+      const remaining = MAX_BONUS_TIME - bonusGivenRef.current
+      if (remaining > 0) {
+        const maxBonus = Math.min(remaining, 8)
+        const bonus    = Math.max(1, Math.floor(Math.random() * maxBonus) + 3)  // 3~8초 랜덤
+        const capped   = Math.min(bonus, remaining)
+        bonusGivenRef.current += capped
+        timeRef.current = Math.min(MAX_DURATION, timeRef.current + capped)
+        setTimeLeft(timeRef.current)
+        setMomBonusFlash(capped)
+        setTimeout(() => setMomBonusFlash(0), 1800)
+        showFloat(idx, `+${capped}s ⏱️`, true)
+      } else {
+        showFloat(idx, '❤️ MAX!', true)
+      }
       audioManager.coinCollect()
       setEffect({ type: 'hearts', cnt: 18, key: Date.now() })
 
@@ -144,20 +154,23 @@ export function WhacAMoleGame({ onGameOver, dadSvgUrl = '/assets/characters/base
 
   // ── 게임 루프 ─────────────────────────────────────────────────────
   useEffect(() => {
-    gameActive.current = true
-    timeRef.current    = GAME_DURATION
-    scoreRef.current   = 0
-    comboRef.current   = 0
-    holesRef.current   = Array(HOLE_COUNT).fill('empty' as HoleContent)
-    hitAnimRef.current = new Set()
-    activeRef.current  = new Set()
-    genRef.current     = Array(HOLE_COUNT).fill(0)
+    gameActive.current   = true
+    timeRef.current      = GAME_DURATION
+    scoreRef.current     = 0
+    comboRef.current     = 0
+    bonusGivenRef.current = 0
+    holesRef.current     = Array(HOLE_COUNT).fill('empty' as HoleContent)
+    hitAnimRef.current   = new Set()
+    activeRef.current    = new Set()
+    genRef.current       = Array(HOLE_COUNT).fill(0)
 
     // 두더지/폭탄 생성
     const spawnMole = () => {
-      if (!gameActive.current) return
-      const t         = timeRef.current
-      const maxActive = t > 20 ? 1 : t > 10 ? 2 : 3
+      if (!gameActive.current || pausedRef.current) return
+      const t = timeRef.current
+
+      // 잔여 시간에 따라 최대 동시 활성 수 조정 (60→30초: 1개, 30→15초: 2개, 15초↓: 3개)
+      const maxActive = t > 30 ? 1 : t > 15 ? 2 : 3
       if (activeRef.current.size >= maxActive) return
 
       const emptyIdxs: number[] = []
@@ -166,23 +179,31 @@ export function WhacAMoleGame({ onGameOver, dadSvgUrl = '/assets/characters/base
       }
       if (emptyIdxs.length === 0) return
 
-      const idx     = emptyIdxs[Math.floor(Math.random() * emptyIdxs.length)]
-      // 엄마: 시간 줄수록 확률 상승 (잡기 힘든 캐릭터)
-      const momPct  = t > 20 ? 0.03 : t > 10 ? 0.05 : 0.08
-      // 해골: 처음부터 낮은 확률로 등장, 시간 줄수록 증가
-      const bombPct = t > 20 ? 0.06 : t > 10 ? 0.12 : 0.22
+      const idx = emptyIdxs[Math.floor(Math.random() * emptyIdxs.length)]
+
+      // 엄마: 전 구간 5~12% 랜덤 확률 (더 예측 불가능하게)
+      const momPct  = 0.05 + Math.random() * 0.07
+      // 해골: 시간 줄수록 확률 상승
+      const bombPct = t > 40 ? 0.06 : t > 20 ? 0.12 : 0.22
       const roll    = Math.random()
       const content: HoleContent = roll < momPct ? 'mom' : roll < momPct + bombPct ? 'bomb' : 'mole'
       const gen     = ++genRef.current[idx]
-      // 엄마: 0.9초 표시 (아빠 1.2초보다 짧아 잡기 어려움)
-      const showDur = content === 'mom' ? 900 : t > 20 ? 1200 : t > 10 ? 900 : 600
+
+      // 엄마: 표시 시간 무작위 (350~700ms, 매우 빠르고 예측 불가)
+      // 아빠: 잔여 시간에 따라 1200→900→600ms
+      let showDur: number
+      if (content === 'mom') {
+        showDur = 350 + Math.floor(Math.random() * 350)  // 350~700ms 랜덤
+      } else {
+        showDur = t > 40 ? 1200 : t > 20 ? 900 : 600
+      }
 
       holesRef.current[idx] = content
       activeRef.current.add(idx)
       forceRender()
 
       holeTimers.current[idx] = setTimeout(() => {
-        if (genRef.current[idx] !== gen) return
+        if (genRef.current[idx] !== gen) return  // 이미 처리됨(탭 or clearHole)
         genRef.current[idx]++
 
         // 두더지 놓침 — 감점
@@ -202,7 +223,7 @@ export function WhacAMoleGame({ onGameOver, dadSvgUrl = '/assets/characters/base
 
     const spawnLoop = setInterval(spawnMole, 500)
 
-    // 타이머 카운트다운 (최대 MAX_DURATION=60초)
+    // 타이머 카운트다운
     const timerTick = setInterval(() => {
       if (pausedRef.current) return
       timeRef.current = Math.max(0, timeRef.current - 1)
@@ -222,7 +243,6 @@ export function WhacAMoleGame({ onGameOver, dadSvgUrl = '/assets/characters/base
         setPhase('over')
         audioManager.gameOver()
 
-        // 5초 후 결과 화면 (기존 게임들과 통일)
         setTimeout(() => cbRef.current(scoreRef.current), 5000)
       }
     }, 1000)
@@ -236,7 +256,7 @@ export function WhacAMoleGame({ onGameOver, dadSvgUrl = '/assets/characters/base
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── 계산값 ──────────────────────────────────────────────────────
-  const timePercent = (timeLeft / MAX_DURATION) * 100   // 60초 기준 바
+  const timePercent = (timeLeft / MAX_DURATION) * 100
   const comboMult   = combo >= 5 ? 3 : combo >= 3 ? 2 : combo >= 2 ? 1.5 : 1
 
   // ── 렌더 ────────────────────────────────────────────────────────
@@ -255,7 +275,7 @@ export function WhacAMoleGame({ onGameOver, dadSvgUrl = '/assets/characters/base
       {bombFlash && (
         <div className="absolute inset-0 bg-rejected/25 z-10 pointer-events-none" />
       )}
-      {/* 엄마 보너스 — HUD 바로 아래, 그리드 밖 상단에 표시 */}
+      {/* 엄마 보너스 플래시 */}
       {momBonusFlash > 0 && (
         <div className="absolute left-0 right-0 z-25 pointer-events-none flex justify-center animate-fade-slide-up"
           style={{ top: '58px' }}>
@@ -293,12 +313,12 @@ export function WhacAMoleGame({ onGameOver, dadSvgUrl = '/assets/characters/base
           <p className="font-korean text-xs text-panel-sub">점수</p>
         </div>
 
-        {/* 타이머 바 */}
+        {/* 타이머 바 (60초 기준) */}
         <div className="flex-1 flex flex-col gap-1">
           <div className="h-3 bg-panel-surface border border-panel-border overflow-hidden">
             <div
               className={`h-full transition-[width] linear ${
-                timeLeft > 15 ? 'bg-approved' : timeLeft > 8 ? 'bg-hold' : 'bg-rejected animate-pulse'
+                timeLeft > 20 ? 'bg-approved' : timeLeft > 10 ? 'bg-hold' : 'bg-rejected animate-pulse'
               }`}
               style={{ width: `${timePercent}%`, transitionDuration: '1s' }}
             />
@@ -319,14 +339,14 @@ export function WhacAMoleGame({ onGameOver, dadSvgUrl = '/assets/characters/base
             <p className="font-pixel text-xs text-panel-sub/30">- -</p>
           )}
           <div className="flex items-center gap-1.5 mt-0.5">
-            <button type="button" onClick={togglePause}
+            <button type="button" onPointerDown={togglePause}
               className="min-w-[54px] h-9 px-2 bg-purple border-2 border-purple/60
                          flex items-center justify-center font-pixel text-xs text-white
                          active:scale-95 transition-transform">
               {uiPaused ? '▶' : 'PAUSE'}
             </button>
             {onBack && (
-              <button type="button" onClick={onBack}
+              <button type="button" onPointerDown={onBack}
                 className="min-w-[54px] h-9 px-2 bg-rejected border-2 border-rejected/60
                            flex items-center justify-center font-pixel text-xs text-white
                            active:scale-95 transition-transform">
@@ -362,7 +382,6 @@ export function WhacAMoleGame({ onGameOver, dadSvgUrl = '/assets/characters/base
                     borderColor: content !== 'empty' ? '#C87040 #4A2008 #4A2008 #C87040' : '#8A5030 #2A1008 #2A1008 #8A5030',
                     cursor: content !== 'empty' ? 'pointer' : 'default',
                     transition: 'all 0.1s',
-                    transform: content !== 'empty' && !isHit ? undefined : undefined,
                   }}
                   className={isHit ? 'active:scale-90' : ''}
                 >
@@ -375,7 +394,6 @@ export function WhacAMoleGame({ onGameOver, dadSvgUrl = '/assets/characters/base
                           className={isHit ? 'animate-dad-hit' : ''}
                           style={{ width: '80%', height: '80%', imageRendering: 'pixelated', objectFit: 'contain' }} />
                       ) : content === 'mom' ? (
-                        /* 엄마: 분홍 테두리 + 빠르게 사라짐 */
                         <div className="relative flex items-center justify-center w-full h-full">
                           {!isHit && <div className="absolute inset-0 border-4 border-pink/60 animate-pulse pointer-events-none" />}
                           <img src={momSvgUrl} alt="엄마" draggable={false}

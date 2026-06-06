@@ -505,3 +505,33 @@
   88%  { opacity: 1; }
   100% { transform: translateX(-150vw) translateY(-50px) skewX(12deg); opacity: 0; }
 }
+
+/* ── 까마귀 비행 애니메이션 ──────────────────────────────── */
+@keyframes crow-fly-ltr {
+  0%   { transform: translateX(-80px); opacity: 0; }
+  5%   { opacity: 1; }
+  95%  { opacity: 1; }
+  100% { transform: translateX(calc(100vw + 80px)); opacity: 0; }
+}
+@keyframes crow-fly-rtl {
+  0%   { transform: translateX(calc(100vw + 80px)) scaleX(-1); opacity: 0; }
+  5%   { opacity: 1; }
+  95%  { opacity: 1; }
+  100% { transform: translateX(-80px) scaleX(-1); opacity: 0; }
+}
+/* 날개짓 — 위아래 살짝 흔들리며 날갯짓 느낌 */
+@keyframes crow-flap {
+  0%, 100% { transform: translateY(0px) scaleY(1); }
+  25%       { transform: translateY(-4px) scaleY(0.92); }
+  50%       { transform: translateY(2px) scaleY(1.04); }
+  75%       { transform: translateY(-2px) scaleY(0.96); }
+}
+.animate-crow-ltr {
+  animation: crow-fly-ltr 10s linear forwards;
+}
+.animate-crow-rtl {
+  animation: crow-fly-rtl 10s linear forwards;
+}
+.animate-crow-flap {
+  animation: crow-flap 0.55s ease-in-out infinite;
+}

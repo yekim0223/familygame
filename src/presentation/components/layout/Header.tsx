@@ -9,10 +9,10 @@ import type { BGMTheme } from '@/infrastructure/audio/audioManager'
 
 // ── 오디오 플레이어 상수 ──────────────────────────────────────────────
 const THEME_ICON: Record<BGMTheme, string> = {
-  DEFAULT: '🎵',
-  JOYFUL:  '🎶',
-  CALM:    '🌙',
-  MUTE:    '🔇',
+  DEFAULT: '/assets/icons/music.svg',
+  JOYFUL:  '/assets/icons/emotion-happy.svg',
+  CALM:    '/assets/icons/star.svg',
+  MUTE:    '/assets/icons/music-mute.svg',
 }
 const THEME_LABEL: Record<BGMTheme, string> = {
   DEFAULT: '메인',
@@ -173,7 +173,10 @@ export function Header() {
                                text-cream hover:bg-panel-surface border-b-2 border-panel-border
                                disabled:opacity-40 transition-colors"
                   >
-                    <span className="text-sm">{isPlaying ? '⏸' : '▶'}</span>
+                    <img
+                      src={isPlaying ? '/assets/icons/save.svg' : '/assets/icons/music.svg'}
+                      width={14} height={14} alt="" style={{ imageRendering: 'pixelated', opacity: 0.85 }}
+                    />
                     <span>{isPlaying ? '일시정지' : '재생'}</span>
                   </button>
                   {/* 무드 선택 */}
@@ -189,10 +192,14 @@ export function Header() {
                         bgmTheme === t ? 'text-gold font-bold' : 'text-cream',
                       ].join(' ')}
                     >
-                      <span className="text-sm">{THEME_ICON[t]}</span>
+                      <img
+                        src={THEME_ICON[t]} width={14} height={14} alt=""
+                        style={{ imageRendering: 'pixelated', opacity: bgmTheme === t ? 1 : 0.7 }}
+                      />
                       <span>{THEME_LABEL[t]}</span>
                       {bgmTheme === t && (
-                        <span className="ml-auto text-gold text-xs">▶</span>
+                        <img src="/assets/icons/star.svg" width={12} height={12} alt="" className="ml-auto"
+                          style={{ imageRendering: 'pixelated' }} />
                       )}
                     </button>
                   ))}
@@ -253,15 +260,15 @@ export function Header() {
                                hover:bg-panel-surface border-b border-panel-border">
                     👨‍👩‍👧‍👧 멤버소개
                   </button>
-                  {/* 작업공간 — 부모 전용 */}
-                  {currentMember.role !== 'CHILD' && (
-                    <button type="button"
-                      onClick={() => { audioManager.keyClick(); setShowMenu(false); navigate('/settings') }}
-                      className="w-full px-3 py-2 text-left font-korean text-xs text-cream
-                                 hover:bg-panel-surface border-b border-panel-border">
-                      {currentMember.role === 'DAD' ? '🛠️ 아빠 작업공간' : '🛠️ 엄마 작업공간'}
-                    </button>
-                  )}
+                  {/* 작업공간 — 모든 역할 */}
+                  <button type="button"
+                    onClick={() => { audioManager.keyClick(); setShowMenu(false); navigate('/settings') }}
+                    className="w-full px-3 py-2 text-left font-korean text-xs text-cream
+                               hover:bg-panel-surface border-b border-panel-border">
+                    {currentMember.role === 'DAD' ? '🛠️ 아빠 작업공간'
+                      : currentMember.role === 'MOM' ? '🛠️ 엄마 작업공간'
+                      : '🛠️ 내 작업공간'}
+                  </button>
                   <button type="button" onClick={handleLogout}
                     className="w-full px-3 py-2 text-left font-korean text-xs text-rejected
                                hover:bg-rejected/10">

@@ -1,6 +1,5 @@
-// 엄마의 칭찬 스티커 화이트보드 — 아이별 누적 노출
+// 칭찬 스티커 화이트보드 — 가족 모두 서로 보낼 수 있음, SVG 아이콘, 2줄 페이지네이션
 import { useState, useEffect, useRef } from 'react'
-import { PixelModal } from '@/presentation/components/pixel/PixelModal'
 import {
   subscribePraiseStickers,
   STICKER_INFO,
@@ -13,17 +12,11 @@ interface Props {
   memberId: string
 }
 
-const MAX_VISIBLE = 9
+// 2줄(열3개) = 6개 단위로 페이지네이션
+const PAGE_SIZE = 6
 
-function StickerPost({
-  sticker,
-  index,
-}: {
-  sticker: PraiseSticker
-  index: number
-}) {
+function StickerPost({ sticker, index }: { sticker: PraiseSticker; index: number }) {
   const info = STICKER_INFO[sticker.stickerType] ?? STICKER_INFO.well_done
-  // 미세 회전으로 포스트잇 느낌
   const rotDeg = ((index * 7 + 2) % 9) - 4
   return (
     <div
@@ -32,7 +25,11 @@ function StickerPost({
       style={{ transform: `rotate(${rotDeg}deg)` }}
       title={sticker.message || info.label}
     >
-      <span className="text-2xl leading-none">{info.emoji}</span>
+      <img
+        src={info.svg} alt={info.label}
+        width={28} height={28}
+        style={{ imageRendering: 'pixelated' }}
+      />
       <span className="font-korean text-xs text-gold font-bold leading-tight text-center">
         {info.label}
       </span>
@@ -49,16 +46,15 @@ function StickerPost({
 }
 
 export function PraiseWhiteboard({ familyId, memberId }: Props) {
-  const [stickers,      setStickers]      = useState<PraiseSticker[]>([])
-  const [showAll,       setShowAll]       = useState(false)
-  const [showEffect,    setShowEffect]    = useState(false)
-  const prevCountRef  = useRef<number>(-1)
+  const [stickers,   setStickers]   = useState<PraiseSticker[]>([])
+  const [showCount,  setShowCount]  = useState(PAGE_SIZE)
+  const [showEffect, setShowEffect] = useState(false)
+  const prevCountRef = useRef<number>(-1)
 
   useEffect(() => {
     if (!familyId || !memberId) return
     return subscribePraiseStickers(familyId, memberId, (incoming) => {
       setStickers(incoming)
-      // 최초 로드(-1)를 건너뛰고, 신규 스티커 수신 시 이펙트 발동
       if (prevCountRef.current >= 0 && incoming.length > prevCountRef.current) {
         setShowEffect(true)
       }
@@ -66,8 +62,8 @@ export function PraiseWhiteboard({ familyId, memberId }: Props) {
     })
   }, [familyId, memberId])
 
-  const visible = stickers.slice(0, MAX_VISIBLE)
-  const extra   = stickers.length - MAX_VISIBLE
+  const visible = stickers.slice(0, showCount)
+  const hasMore = stickers.length > showCount
 
   return (
     <div className="card-pixel p-3">
@@ -76,7 +72,10 @@ export function PraiseWhiteboard({ familyId, memberId }: Props) {
       )}
       {/* 헤더 */}
       <div className="flex items-center justify-between mb-2">
-        <p className="t-sub text-gold t-pixel-shadow">📌 엄마의 칭찬 보드</p>
+        <div className="flex items-center gap-2">
+          <img src="/assets/icons/star.svg" width={16} height={16} alt="" style={{ imageRendering: 'pixelated' }} />
+          <p className="t-sub text-gold t-pixel-shadow">칭찬 보드</p>
+        </div>
         {stickers.length > 0 && (
           <span className="font-pixel text-xs text-gold">{stickers.length}개</span>
         )}
@@ -86,12 +85,9 @@ export function PraiseWhiteboard({ familyId, memberId }: Props) {
       <div className="bg-panel-darkest border-2 border-panel-border min-h-[90px] p-3">
         {stickers.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full py-2 gap-1">
-            <span className="text-3xl">📭</span>
+            <img src="/assets/icons/gift.svg" width={36} height={36} alt="" style={{ imageRendering: 'pixelated', opacity: 0.4 }} />
             <p className="font-korean text-xs text-panel-sub text-center">
               아직 칭찬 스티커가 없어요
-            </p>
-            <p className="font-korean text-xs text-panel-sub text-center">
-              열심히 하면 붙여줄게요! 🌟
             </p>
           </div>
         ) : (
@@ -99,35 +95,21 @@ export function PraiseWhiteboard({ familyId, memberId }: Props) {
             {visible.map((s, i) => (
               <StickerPost key={s.id} sticker={s} index={i} />
             ))}
-            {extra > 0 && (
-              <button
-                type="button"
-                onClick={() => setShowAll(true)}
-                className="inventory-slot !w-auto !h-auto px-3 py-2 flex items-center justify-center
-                           border-2 border-panel-border hover:border-gold transition-colors"
-              >
-                <span className="font-korean text-xs text-gold">+{extra}개 더</span>
-              </button>
-            )}
           </div>
         )}
       </div>
 
-      {/* 전체 보기 팝업 */}
-      <PixelModal
-        open={showAll}
-        title="📌 칭찬 스티커 전체"
-        onClose={() => setShowAll(false)}
-        size="sm"
-      >
-        <div className="max-h-64 overflow-y-auto">
-          <div className="flex flex-wrap gap-2 items-start p-1">
-            {stickers.map((s, i) => (
-              <StickerPost key={s.id} sticker={s} index={i} />
-            ))}
-          </div>
-        </div>
-      </PixelModal>
+      {/* 더보기 버튼 */}
+      {hasMore && (
+        <button
+          type="button"
+          onClick={() => setShowCount(c => c + PAGE_SIZE)}
+          className="mt-2 w-full font-korean text-xs text-panel-sub text-center
+                     hover:text-cream transition-colors active:scale-95"
+        >
+          ▼ 더 보기 (+{Math.min(PAGE_SIZE, stickers.length - showCount)}개)
+        </button>
+      )}
     </div>
   )
 }

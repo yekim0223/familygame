@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>패밀리 퀘스트 사용 설명서</title>
+  <style>
+    /* ── 전역 ── */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      background: linear-gradient(135deg, #1a0a2e 0%, #0d1b3e 50%, #0a1520 100%);
+      min-height: 100vh;
+      color: #e8e0ff;
+      padding: 20px;
+    }
+    .page { max-width: 800px; margin: 0 auto; }
+
+    /* ── 제목 ── */
+    h1 {
+      font-size: 2.2rem;
+      text-align: center;
+      color: #FFD700;
+      text-shadow: 0 0 20px rgba(255,215,0,0.5), 2px 2px 0 #000;
+      padding: 30px 0 10px;
+      line-height: 1.3;
+    }
+    .subtitle {
+      text-align: center;
+      color: #B8C0FF;
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+    }
+
+    /* ── 섹션 카드 ── */
+    .section {
+      background: rgba(255,255,255,0.06);
+      border: 2px solid rgba(255,255,255,0.15);
+      border-radius: 12px;
+      margin: 20px 0;
+      overflow: hidden;
+    }
+    .section-header {
+      padding: 16px 20px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-body { padding: 20px; }
+
+    /* 섹션 색상 */
+    .sec-blue  .section-header { background: linear-gradient(90deg, #1a3a7c, #2460c0); color: #fff; }
+    .sec-green .section-header { background: linear-gradient(90deg, #1a5c2a, #2a9040); color: #fff; }
+    .sec-gold  .section-header { background: linear-gradient(90deg, #7a5200, #d48a00); color: #fff; }
+    .sec-purple.section-header { background: linear-gradient(90deg, #4a1a7c, #7a40c0); color: #fff; }
+    .sec-red   .section-header { background: linear-gradient(90deg, #7c1a1a, #c03030); color: #fff; }
+    .sec-teal  .section-header { background: linear-gradient(90deg, #1a6060, #2a9090); color: #fff; }
+    .sec-pink  .section-header { background: linear-gradient(90deg, #7c1a5c, #c040a0); color: #fff; }
+    .sec-orange.section-header { background: linear-gradient(90deg, #7c4000, #c07000); color: #fff; }
+    .sec-gray  .section-header { background: linear-gradient(90deg, #303050, #505080); color: #fff; }
+
+    /* ── 텍스트 ── */
+    p { font-size: 1.05rem; line-height: 1.8; color: #d0d8ff; margin: 8px 0; }
+    h3 { font-size: 1.2rem; color: #FFD700; margin: 18px 0 8px; border-left: 4px solid #FFD700; padding-left: 10px; }
+    h4 { font-size: 1.05rem; color: #80d8ff; margin: 14px 0 6px; }
+    strong { color: #FFD700; }
+    em { color: #80FFB8; font-style: normal; font-weight: bold; }
+
+    /* ── 표 ── */
+    table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 1rem; }
+    th {
+      background: rgba(255,215,0,0.2);
+      color: #FFD700;
+      padding: 10px 14px;
+      text-align: left;
+      border: 1px solid rgba(255,215,0,0.3);
+      font-size: 1rem;
+    }
+    td {
+      padding: 10px 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #d0d8ff;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+    tr:nth-child(even) td { background: rgba(255,255,255,0.04); }
+    tr:hover td { background: rgba(255,215,0,0.06); }
+
+    /* ── 박스 ── */
+    .tip {
+      background: rgba(0,200,100,0.1);
+      border-left: 4px solid #00c864;
+      padding: 12px 16px;
+      margin: 12px 0;
+      border-radius: 0 8px 8px 0;
+      font-size: 1rem;
+      color: #80FFB8;
+    }
+    .warning {
+      background: rgba(255,80,80,0.1);
+      border-left: 4px solid #ff5050;
+      padding: 12px 16px;
+      margin: 12px 0;
+      border-radius: 0 8px 8px 0;
+      font-size: 1rem;
+      color: #FFB0B0;
+    }
+    .info {
+      background: rgba(80,160,255,0.1);
+      border-left: 4px solid #50a0ff;
+      padding: 12px 16px;
+      margin: 12px 0;
+      border-radius: 0 8px 8px 0;
+      font-size: 1rem;
+      color: #B0D8FF;
+    }
+
+    /* ── 목차 ── */
+    .toc { background: rgba(255,255,255,0.04); border-radius: 10px; padding: 20px; margin: 20px 0; }
+    .toc-title { font-size: 1.2rem; color: #FFD700; font-weight: bold; margin-bottom: 12px; }
+    .toc a { color: #80d8ff; text-decoration: none; display: block; padding: 4px 0; font-size: 1.05rem; }
+    .toc a:hover { color: #FFD700; }
+
+    /* ── EXP 배지 ── */
+    .badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #d48a00, #FFD700);
+      color: #000;
+      font-weight: bold;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      margin: 2px;
+    }
+
+    /* ── G/B/H 버튼 스타일 ── */
+    .btn-g  { background:#1a5c2a; color:#80FFB8; padding:4px 14px; border-radius:6px; display:inline-block; font-weight:bold; margin:2px; }
+    .btn-b  { background:#5c1a1a; color:#FFB0B0; padding:4px 14px; border-radius:6px; display:inline-block; font-weight:bold; margin:2px; }
+    .btn-h  { background:#5c3a00; color:#FFD080; padding:4px 14px; border-radius:6px; display:inline-block; font-weight:bold; margin:2px; }
+
+    /* ── 코드 블록 ── */
+    pre {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 14px;
+      font-family: monospace;
+      font-size: 0.95rem;
+      color: #80FFB8;
+      overflow-x: auto;
+      margin: 10px 0;
+      white-space: pre;
+    }
+
+    /* ── 인쇄용 ── */
+    @media print {
+      body { background: white; color: #111; padding: 0; }
+      .section { border: 1px solid #ccc; page-break-inside: avoid; }
+      .section-header { background: #f0f0f0 !important; color: #111 !important; }
+      th { background: #e0e0e0 !important; color: #111 !important; }
+      td { color: #111 !important; }
+      p, h3, h4 { color: #111 !important; }
+      .tip { background: #e8f8ee !important; color: #1a5c2a !important; }
+      .warning { background: #ffeaea !important; color: #7c1a1a !important; }
+      .info { background: #e8f0ff !important; color: #1a3a7c !important; }
+      h1 { color: #333 !important; text-shadow: none !important; }
+      .subtitle { color: #555 !important; }
+      .print-btn { display: none; }
+    }
+
+    /* ── 인쇄 버튼 ── */
+    .print-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #FFD700;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 999;
+    }
+    .print-btn:hover { background: #FFC200; }
+  </style>
+</head>
+<body>
+  <button class="print-btn" onclick="window.print()">🖨️ PDF 저장</button>
+  <div class="page">
+
+    <h1>🏰 패밀리 퀘스트<br>사용 설명서</h1>
+    <p class="subtitle">우리 가족 4명 모두를 위한 완전 안내서 ✨</p>
+
+    <!-- 목차 -->
+    <div class="toc">
+      <div class="toc-title">📋 목차</div>
+      <a href="#intro">1. 앱 소개</a>
+      <a href="#login">2. 시작하기 (로그인)</a>
+      <a href="#home">3. 홈 화면 둘러보기</a>
+      <a href="#quest">⚔️ 4. 퀘스트 시스템 (핵심!)</a>
+      <a href="#reward">🎁 5. 보상 받기</a>
+      <a href="#game">🎮 6. 미니게임 즐기기</a>
+      <a href="#chat">💬 7. 가족 채팅</a>
+      <a href="#char">🌟 8. 캐릭터 & 꾸미기</a>
+      <a href="#cal">📅 9. 기념일 & 달력</a>
+      <a href="#settings">⚙️ 10. 작업공간 (설정)</a>
+      <a href="#faq">❓ 11. 자주 묻는 질문</a>
+    </div>
+
+    <!-- 1. 앱 소개 -->
+    <div class="section sec-blue" id="intro">
+      <div class="section-header">🏰 1. 앱 소개</div>
+      <div class="section-body">
+        <p><strong>패밀리 퀘스트</strong>는 우리 가족 4명이 함께 사용하는 <strong>미션 보상 앱</strong>이에요!</p>
+        <table>
+          <tr><th>역할</th><th>할 수 있는 것</th></tr>
+          <tr><td>👶 <strong>아이들</strong></td><td>퀘스트 확인, 게임 즐기기, 보상 확인, 채팅</td></tr>
+          <tr><td>👩 <strong>엄마</strong></td><td>퀘스트 만들기, 평가하기, 보상 주기, 공지 관리</td></tr>
+          <tr><td>👨 <strong>아빠</strong></td><td>엄마 권한 + 대회 관리, 앱 전체 관리</td></tr>
+        </table>
+        <div class="tip">
+          💡 스마트폰 인터넷에서 앱 주소만 치면 바로 시작! 설치 불필요!
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 로그인 -->
+    <div class="section sec-teal" id="login">
+      <div class="section-header">🔑 2. 시작하기 (로그인)</div>
+      <div class="section-body">
+        <h3>처음 접속할 때</h3>
+        <p>① 스마트폰 인터넷 앱에서 앱 주소를 입력해요</p>
+        <p>② <strong>FAMILY LOGIN</strong> 버튼을 눌러요</p>
+        <p>③ 아빠·엄마가 만들어준 <strong>개인 ID</strong>를 입력해요</p>
+        <p>④ <strong>PIN 번호 4자리</strong>를 누르면 완료! 🎉</p>
+        <div class="tip">
+          👩 <strong>엄마 TIP</strong> : 아이들 폰에 한 번 설정해두면 매일 PIN 4자리만 누르면 돼요!
+        </div>
+        <h3>매일 사용할 때</h3>
+        <p>이미 로그인한 폰이라면 → 내 캐릭터 카드를 누르고 PIN만 입력!</p>
+      </div>
+    </div>
+
+    <!-- 3. 홈 화면 -->
+    <div class="section sec-green" id="home">
+      <div class="section-header">🏠 3. 홈 화면 둘러보기</div>
+      <div class="section-body">
+        <pre>
+┌─────────────────────────────┐
+│ ⚙️ 패밀리 퀘스트  🔔  🎒  │  ← 상단 메뉴바
+├─────────────────────────────┤
+│   🧙 내 캐릭터 & 반려동물   │  ← 캐릭터 카드
+│   Lv.12  [EXP ████░░]      │
+├─────────────────────────────┤
+│ 📜 용사의 여정 (최근 소식)  │
+│ 📢 공지사항                 │
+├─────────────────────────────┤
+│ 🏠 ⚔️ 📅 💬 🏆 🎮        │  ← 하단 메뉴
+└─────────────────────────────┘
+        </pre>
+        <table>
+          <tr><th>아이콘</th><th>이름</th><th>기능</th></tr>
+          <tr><td>🏠</td><td>홈</td><td>내 캐릭터와 최근 소식</td></tr>
+          <tr><td>⚔️</td><td>퀘스트</td><td>오늘의 미션 목록</td></tr>
+          <tr><td>📅</td><td>달력</td><td>생일, 기념일 확인</td></tr>
+          <tr><td>💬</td><td>채팅</td><td>가족 메시지 (미읽은 수 표시)</td></tr>
+          <tr><td>🏆</td><td>보상</td><td>받은 보상 확인</td></tr>
+          <tr><td>🎮</td><td>게임</td><td>미니게임 5종</td></tr>
+        </table>
+        <div class="info">
+          🐦 가끔 귀여운 까마귀 3종(검정/파랑/흰색)이 화면을 날아다녀요! 재미 요소예요 😄
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. 퀘스트 (핵심!) -->
+    <div class="section sec-gold" id="quest">
+      <div class="section-header">⚔️ 4. 퀘스트 시스템 (핵심!)</div>
+      <div class="section-body">
+
+        <div class="info">
+          📌 퀘스트는 <strong>이 앱의 가장 중요한 기능</strong>이에요! 꼼꼼히 읽어주세요 😊
+        </div>
+
+        <h3>퀘스트란?</h3>
+        <p>퀘스트는 <strong>엄마·아빠가 아이들에게 주는 미션</strong>이에요.</p>
+        <p>예시: <em>"매일 아침 양치하기"</em>, <em>"숙제 스스로 하기"</em>, <em>"방 정리하기"</em></p>
+
+        <h3>퀘스트 만들기 (부모님 전용)</h3>
+        <p>① 하단 <strong>⚔️ 퀘스트</strong> 메뉴 → ② 오른쪽 하단 <strong>＋ 버튼</strong> → ③ 정보 입력</p>
+        <table>
+          <tr><th>항목</th><th>설명</th><th>예시</th></tr>
+          <tr><td><strong>이름</strong></td><td>무슨 미션인지</td><td>"아침 양치하기"</td></tr>
+          <tr><td><strong>내용</strong></td><td>구체적인 설명</td><td>"밥 먹고 2분 이상 양치!"</td></tr>
+          <tr><td><strong>카테고리</strong></td><td>종류 선택</td><td>생활습관, 학습, 건강 등</td></tr>
+          <tr><td><strong>난이도</strong></td><td>1~5단계</td><td>어려울수록 EXP 많이!</td></tr>
+          <tr><td><strong>기간</strong></td><td>언제까지</td><td>이번 달 말까지</td></tr>
+          <tr><td><strong>대상</strong></td><td>누구에게</td><td>하윤, 서윤, 또는 둘 다</td></tr>
+        </table>
+        <div class="tip">
+          ⭐ <strong>특별 퀘스트</strong> — ✨ 버튼을 누르면 황금 테두리의 특별 퀘스트가 돼요!
+        </div>
+
+        <h3>아이들의 퀘스트 확인 & 완료 신청</h3>
+        <p>① <strong>⚔️ 퀘스트</strong> 메뉴 → ② 내 퀘스트 카드 클릭 → ③ <strong>"✅ 했어요!"</strong> 버튼</p>
+        <div class="tip">
+          📱 "✅ 했어요!" 버튼을 누르면 엄마·아빠에게 알림이 자동으로 가요!
+        </div>
+
+        <h3>⭐ 부모님의 날마다 평가 (G/B/H 시스템)</h3>
+        <p>아이가 확인 버튼을 누르면, 부모님이 <strong>날짜별로</strong> 평가해요.</p>
+        <p>
+          <span class="btn-g">G · GOOD</span> 잘했어요! 훌륭해! &nbsp;
+          <span class="btn-b">B · BAD</span> 이번엔 못했어요 &nbsp;
+          <span class="btn-h">H · HOLD</span> 확인 중이에요
+        </p>
+        <div class="info">
+          📅 평가는 <strong>날짜별</strong>로 기록돼요. 오늘 G를 받으면 오늘 날짜에 초록색 표시!
+        </div>
+
+        <h3>EXP (경험치) 얻기</h3>
+        <table>
+          <tr><th>방법</th><th>얻는 EXP</th></tr>
+          <tr><td>퀘스트 완료 (난이도 1)</td><td><span class="badge">+10 EXP</span></td></tr>
+          <tr><td>퀘스트 완료 (난이도 2)</td><td><span class="badge">+20 EXP</span></td></tr>
+          <tr><td>퀘스트 완료 (난이도 3)</td><td><span class="badge">+30 EXP</span></td></tr>
+          <tr><td>퀘스트 완료 (난이도 4)</td><td><span class="badge">+40 EXP</span></td></tr>
+          <tr><td>퀘스트 완료 (난이도 5)</td><td><span class="badge">+50 EXP</span></td></tr>
+          <tr><td>두근두근 질문 답하기</td><td><span class="badge">+10~20 EXP</span></td></tr>
+          <tr><td>게임 가족 1등!</td><td><span class="badge">+10 EXP</span></td></tr>
+        </table>
+        <div class="tip">
+          🎉 EXP가 쌓이면 <strong>레벨업</strong>! 새로운 캐릭터와 아이템을 얻을 수 있어요!
+        </div>
+
+        <h3>퀘스트 탭 설명</h3>
+        <table>
+          <tr><th>탭</th><th>설명</th></tr>
+          <tr><td><strong>전체</strong></td><td>모든 퀘스트 보기</td></tr>
+          <tr><td><strong>공동</strong></td><td>하윤·서윤 함께하는 퀘스트</td></tr>
+          <tr><td><strong>개별</strong></td><td>각자에게만 주어진 퀘스트</td></tr>
+        </table>
+
+        <h3>퀘스트 상태</h3>
+        <table>
+          <tr><th>상태</th><th>의미</th></tr>
+          <tr><td><em>진행 중</em></td><td>지금 할 수 있는 퀘스트</td></tr>
+          <tr><td><em>확인 요청</em></td><td>"했어요!" 누른 상태 — 엄마아빠 확인 대기</td></tr>
+          <tr><td><em>종료됨</em></td><td>기간이 끝난 퀘스트 (빨간색 표시)</td></tr>
+        </table>
+
+        <h3>엄마를 위한 퀘스트 TIP 💝</h3>
+        <div class="tip">
+          1️⃣ <strong>작은 것부터 시작하세요</strong> — 매일 할 수 있는 쉬운 것부터!<br>
+          2️⃣ <strong>구체적으로 적으세요</strong> — "방 정리" 보다 "장난감 바구니에 넣기"<br>
+          3️⃣ <strong>칭찬과 함께</strong> — G 줄 때 채팅으로 "잘했어!" 같이 보내기<br>
+          4️⃣ <strong>일관성 있게</strong> — 매일 같은 시간에 평가하면 아이들이 기대해요<br>
+          5️⃣ <strong>특별 퀘스트 활용</strong> — 특별한 도전에 황금 퀘스트를 써보세요
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. 보상 -->
+    <div class="section sec-pink" id="reward">
+      <div class="section-header">🎁 5. 보상 받기</div>
+      <div class="section-body">
+        <h3>보상의 종류</h3>
+        <table>
+          <tr><th>종류</th><th>설명</th></tr>
+          <tr><td><strong>EXP (경험치)</strong></td><td>캐릭터 레벨업!</td></tr>
+          <tr><td><strong>수동 보상</strong></td><td>엄마아빠가 직접 주는 특별 선물</td></tr>
+        </table>
+
+        <h3>🙏 조르기 (부탁해요) 기능</h3>
+        <p>특별히 원하는 게 있을 때 부모님께 부탁할 수 있어요!</p>
+        <p>① 홈 화면 하단 오른쪽 <strong>하트 버튼</strong> → ② 내용 적기 → ③ 제출!</p>
+        <p>엄마·아빠 <strong>둘 다</strong> 승인해야 보상 지급!</p>
+        <div class="warning">
+          ⚠️ 한 주에 조를 수 있는 횟수가 정해져 있어요. 신중하게 써요!
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. 게임 -->
+    <div class="section sec-purple" id="game">
+      <div class="section-header">🎮 6. 미니게임 즐기기</div>
+      <div class="section-body">
+        <table>
+          <tr><th>게임</th><th>설명</th><th>조작법</th></tr>
+          <tr><td><strong>갤러그</strong></td><td>우주 슈터</td><td>좌우 버튼, 자동 발사</td></tr>
+          <tr><td><strong>슈퍼점핑</strong></td><td>내 캐릭터가 달려요</td><td>점프! 이단점프 가능!</td></tr>
+          <tr><td><strong>마이펫 찾기</strong></td><td>지뢰찾기 변형</td><td>안전한 칸 열기</td></tr>
+          <tr><td><strong>아빠잡기</strong></td><td>아빠를 찾아 눌러요!</td><td>빠르게 탭! 엄마도 나와요</td></tr>
+          <tr><td><strong>언도쿠</strong></td><td>숫자 퍼즐</td><td>빈 칸에 올바른 숫자 넣기</td></tr>
+        </table>
+        <div class="tip">
+          🏆 게임에서 가족 중 처음으로 1등이 되면 <strong>+10 EXP</strong> 추가!
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. 채팅 -->
+    <div class="section sec-teal" id="chat">
+      <div class="section-header">💬 7. 가족 채팅</div>
+      <div class="section-body">
+        <h3>그룹 채팅</h3>
+        <p>가족 모두가 함께 이야기하는 채팅방!</p>
+        <div class="tip">
+          🎆 이펙트 이모지를 보내면 전체 화면 이펙트가 펑! 터져요! (약 4초간 지속)<br>
+          <strong>🎉 🎊 ❤️ 💖 💕 💗 🥰 ⭐ 🌟 ✨ 🔥</strong><br>
+          <strong style="color:#FFB7C5">🌸 💫 🦋 🌈 💎 🌺 🫶</strong> (여아 감성 신규!)
+        </div>
+        <div class="info">
+          💡 이펙트 이모지는 채팅 이모지 패널의 <strong>✨이펙트</strong> 탭에서 골라 보낼 수 있어요.<br>
+          이펙트 이모지를 탭하면 메시지창에 단독으로 입력돼요!
+        </div>
+
+        <h3>칭찬 스티커</h3>
+        <p><strong>작업공간 → 칭찬 스티커 보내기</strong>에서 가족에게 SVG 스티커를 보낼 수 있어요.</p>
+        <p>받은 스티커는 홈 화면 하단 <strong>칭찬 보드</strong>에 예쁘게 붙어요! 🌟</p>
+      </div>
+    </div>
+
+    <!-- 8. 캐릭터 -->
+    <div class="section sec-orange" id="char">
+      <div class="section-header">🌟 8. 캐릭터 & 꾸미기</div>
+      <div class="section-body">
+        <table>
+          <tr><th>종류</th><th>설명</th></tr>
+          <tr><td><strong>직업 캐릭터</strong></td><td>레벨업 시 새 직업으로 변신 (최대 100종!)</td></tr>
+          <tr><td><strong>마이펫</strong></td><td>귀여운 동물 친구 50종</td></tr>
+          <tr><td><strong>내 땅 배경</strong></td><td>캐릭터 배경 50종</td></tr>
+          <tr><td><strong>장비</strong></td><td>무기·투구·방패·갑옷</td></tr>
+        </table>
+        <div class="info">
+          👆 홈 화면 캐릭터를 탭하면 감정 이펙트가 나와요! 많이 연타하면...? 😴
+        </div>
+      </div>
+    </div>
+
+    <!-- 9. 달력 -->
+    <div class="section sec-blue" id="cal">
+      <div class="section-header">📅 9. 기념일 & 달력</div>
+      <div class="section-body">
+        <h3>기념일·생일 등록</h3>
+        <p><strong>누구나</strong> 기념일을 추가·수정할 수 있어요! (삭제는 엄마·아빠만)</p>
+        <table>
+          <tr><th>반복 타입</th><th>설명</th></tr>
+          <tr><td><strong>1회성</strong></td><td>한 번만 — 지난 날짜는 달력에서 안 보여요</td></tr>
+          <tr><td><strong>매월 반복</strong></td><td>매달 같은 날짜마다 표시</td></tr>
+          <tr><td><strong>연간 반복</strong></td><td>매년 — D-day 카운트다운 표시! 🎂</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 10. 설정 -->
+    <div class="section sec-gray" id="settings">
+      <div class="section-header">⚙️ 10. 작업공간 (설정)</div>
+      <div class="section-body">
+        <h3>아이들 작업공간</h3>
+        <table>
+          <tr><th>메뉴</th><th>기능</th></tr>
+          <tr><td>칭찬 스티커 보내기</td><td>가족에게 칭찬 스티커 발송</td></tr>
+          <tr><td>기념일·생일 관리</td><td>가족 기념일 추가·수정</td></tr>
+          <tr><td>엔진 완전 새로고침</td><td>앱 이상 시 리셋</td></tr>
+        </table>
+        <h3>아빠 전용</h3>
+        <table>
+          <tr><th>메뉴</th><th>기능</th></tr>
+          <tr><td>공지사항 관리</td><td>가족 공지 작성</td></tr>
+          <tr><td>주간 대회</td><td>게임 대회 시작·종료</td></tr>
+          <tr><td>게임 랭크 초기화</td><td>게임별 점수 삭제</td></tr>
+          <tr><td>상태 저장 & 롤백</td><td>앱 상태 백업·복원</td></tr>
+          <tr><td><strong>⚠️ 앱 완전 초기화</strong></td><td>모든 데이터 삭제 (신중히!)</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- 11. FAQ -->
+    <div class="section sec-red" id="faq">
+      <div class="section-header">❓ 11. 자주 묻는 질문</div>
+      <div class="section-body">
+        <h4>Q. PIN 번호를 까먹었어요!</h4>
+        <p>→ 아빠에게 물어보세요. 새로 설정해줄 수 있어요.</p>
+
+        <h4>Q. 앱이 느리거나 이상해요.</h4>
+        <p>→ <strong>작업공간 → 엔진 완전 새로고침</strong>을 눌러보세요.</p>
+
+        <h4>Q. "했어요!" 눌렀는데 아무것도 안 바뀌어요.</h4>
+        <p>→ 엄마·아빠가 평가해줄 때까지 기다려요. 알림이 가요!</p>
+
+        <h4>Q. EXP가 안 늘어요.</h4>
+        <p>→ EXP는 퀘스트가 <strong>종료(⏹ 버튼)</strong>될 때 지급돼요.</p>
+
+        <h4>Q. 채팅 이모지를 보냈는데 이펙트가 안 터져요.</h4>
+        <p>→ 🎵 ❤️ ⭐ 🔥 이 4가지만 이펙트가 터져요!</p>
+
+        <h4>Q. 칭찬 스티커는 어디서 확인해요?</h4>
+        <p>→ 홈 화면 아래쪽 <strong>칭찬 보드</strong>! "더 보기"를 눌러 모두 볼 수 있어요.</p>
+
+        <h4>Q. 달력에 기념일을 등록하고 싶어요.</h4>
+        <p>→ 아이들도 가능! <strong>상단 배낭(⚙️) → 작업공간 → 기념일·생일 관리</strong></p>
+      </div>
+    </div>
+
+    <p style="text-align:center; color:#666; padding:30px 0; font-size:0.9rem;">
+      패밀리 퀘스트 v8.x — 우리 가족만의 특별한 세계 🏰<br>
+      도움이 필요하면 아빠에게 물어보세요!
+    </p>
+  </div>
+</body>
+</html>

@@ -21,17 +21,26 @@ import type { EffectType } from '@/presentation/components/effects/EffectOverlay
 
 // ── 특수 이모지 감지 (모듈 레벨 — MessageBubble + T7 공유) ──────────
 const SPECIAL_EMOJI_MAP: Record<string, { effect: EffectType; label: string; auraColor: string }> = {
-  '🎉': { effect: 'confetti', label: '🎉 폭죽',  auraColor: '#FFD700' },
-  '🎊': { effect: 'confetti', label: '🎉 폭죽',  auraColor: '#FFD700' },
-  '❤️': { effect: 'hearts',   label: '❤️ 하트',   auraColor: '#FF6B6B' },
-  '💖': { effect: 'hearts',   label: '💖 하트',   auraColor: '#E8A0BF' },
-  '💕': { effect: 'hearts',   label: '💕 하트',   auraColor: '#E8A0BF' },
-  '💗': { effect: 'hearts',   label: '💗 하트',   auraColor: '#E8A0BF' },
-  '🥰': { effect: 'hearts',   label: '🥰 하트',   auraColor: '#E8A0BF' },
-  '⭐': { effect: 'stars',    label: '⭐ 별',     auraColor: '#FFE082' },
-  '🌟': { effect: 'stars',    label: '🌟 별',     auraColor: '#FFE082' },
-  '✨': { effect: 'stars',    label: '✨ 별',     auraColor: '#B39DDB' },
-  '🔥': { effect: 'fire',     label: '🔥 불꽃',   auraColor: '#FB8C00' },
+  // 기존 이펙트
+  '🎉': { effect: 'confetti', label: '🎉 폭죽',    auraColor: '#FFD700' },
+  '🎊': { effect: 'confetti', label: '🎊 폭죽',    auraColor: '#FFD700' },
+  '❤️': { effect: 'hearts',   label: '❤️ 하트',    auraColor: '#FF6B6B' },
+  '💖': { effect: 'hearts',   label: '💖 하트',    auraColor: '#E8A0BF' },
+  '💕': { effect: 'hearts',   label: '💕 하트',    auraColor: '#E8A0BF' },
+  '💗': { effect: 'hearts',   label: '💗 하트',    auraColor: '#E8A0BF' },
+  '🥰': { effect: 'hearts',   label: '🥰 하트',    auraColor: '#E8A0BF' },
+  '⭐': { effect: 'stars',    label: '⭐ 별',      auraColor: '#FFE082' },
+  '🌟': { effect: 'stars',    label: '🌟 별',      auraColor: '#FFE082' },
+  '✨': { effect: 'stars',    label: '✨ 별',      auraColor: '#B39DDB' },
+  '🔥': { effect: 'fire',     label: '🔥 불꽃',    auraColor: '#FB8C00' },
+  // 여아 감성 신규 7종
+  '🌸': { effect: 'hearts',   label: '🌸 벚꽃',    auraColor: '#FFB7C5' },
+  '💫': { effect: 'stars',    label: '💫 반짝',    auraColor: '#C8B4FF' },
+  '🦋': { effect: 'confetti', label: '🦋 나비',    auraColor: '#A0D8FF' },
+  '🌈': { effect: 'confetti', label: '🌈 무지개',  auraColor: '#FF9ECD' },
+  '💎': { effect: 'stars',    label: '💎 보석',    auraColor: '#80DFFF' },
+  '🌺': { effect: 'hearts',   label: '🌺 꽃',      auraColor: '#FF80A0' },
+  '🫶': { effect: 'hearts',   label: '🫶 사랑',    auraColor: '#FF6B8A' },
 }
 
 function detectSpecialEmoji(content: string): { effect: EffectType; label: string; auraColor: string } | null {
@@ -45,7 +54,7 @@ type MessageTab = 'group' | 'direct'
 type EmojiCat = '감정' | '동물' | '사물' | '음식' | '✨이펙트'
 
 const EMOJI_CATS: Record<EmojiCat, string[]> = {
-  '✨이펙트': ['🎉','🎊','❤️','💖','💕','💗','🥰','⭐','🌟','✨','🔥'],
+  '✨이펙트': ['🎉','🎊','❤️','💖','💕','💗','🥰','⭐','🌟','✨','🔥','🌸','💫','🦋','🌈','💎','🌺','🫶'],
   '감정': [
     '😄','😆','🥰','😎','🤣','😅','😭','😤',
     '🥺','😱','🤩','😴','🤔','😏','👻','😡',
@@ -446,7 +455,11 @@ function MessageInputBar({ onSend, disabled, showEmojiPanel, setShowEmojiPanel, 
         <EmojiPanel
           emojiCat={emojiCat}
           setEmojiCat={setEmojiCat}
-          onPick={e => setText(prev => prev + e)}
+          onPick={e => {
+            // 이펙트 이모지: 단독 입력 (기존 내용 교체)
+            if (SPECIAL_EMOJI_MAP[e]) setText(e)
+            else setText(prev => prev + e)
+          }}
         />
       )}
       {/* 입력 중 특수 이모지 감지 표시 */}
@@ -562,7 +575,7 @@ export default function MessagesPage() {
     const now = Date.now()
     const recent = groupMessages.filter(m =>
       !triggeredMsgIds.current.has(m.id) &&
-      now - m.createdAt.getTime() < 4000
+      now - m.createdAt.getTime() < 6000
     )
     for (const msg of recent) {
       triggeredMsgIds.current.add(msg.id)
@@ -673,7 +686,7 @@ export default function MessagesPage() {
   return (
     <div className="flex flex-col h-[calc(100vh-112px)] overflow-hidden">
       {chatEffect && (
-        <EffectOverlay type={chatEffect} count={20} onEnd={() => setChatEffect(null)} />
+        <EffectOverlay type={chatEffect} count={25} duration={3800} onEnd={() => setChatEffect(null)} />
       )}
 
       {/* ── 탭 바 — sky(그룹) / pink(DM): 보라색 말풍선과 명도 3:1+ 대비 ── */}

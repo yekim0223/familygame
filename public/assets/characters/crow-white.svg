@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 44" width="64" height="44">
+  <!-- 날개 위쪽 -->
+  <path d="M20,24 Q14,8 4,10 Q6,18 14,24Z" fill="#D0D8E4"/>
+  <path d="M8,10 Q4,3 1,7" stroke="#C0CAD8" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <path d="M5,13 Q1,7 0,12" stroke="#BCC6D4" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <path d="M11,8 Q8,1 5,5" stroke="#C0CAD8" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <!-- 몸통 -->
+  <ellipse cx="26" cy="28" rx="14" ry="10" fill="#F2F4F8"/>
+  <!-- 몸통 테두리 (흰색이라 구분용) -->
+  <ellipse cx="26" cy="28" rx="14" ry="10" fill="none" stroke="#C8D0DC" stroke-width="0.8"/>
+  <!-- 꼬리 깃털 -->
+  <path d="M12,28 Q4,26 2,34 Q8,28 13,30Z" fill="#D8DFE8"/>
+  <path d="M12,30 Q5,32 4,40 Q10,32 13,32Z" fill="#CDD5E0"/>
+  <!-- 머리 -->
+  <circle cx="40" cy="17" r="13" fill="#EAEEF4"/>
+  <!-- 머리 테두리 -->
+  <circle cx="40" cy="17" r="13" fill="none" stroke="#C8D0DC" stroke-width="0.8"/>
+  <!-- 진주빛 광택 -->
+  <ellipse cx="36" cy="12" rx="8" ry="4" fill="white" opacity="0.7"/>
+  <!-- 눈 테두리 -->
+  <circle cx="45" cy="14" r="6" fill="#B8C0CC"/>
+  <!-- 눈 흰자 -->
+  <circle cx="45" cy="14" r="5.5" fill="white"/>
+  <!-- 눈동자 (어두운 회색) -->
+  <circle cx="46" cy="14" r="3.5" fill="#404858"/>
+  <!-- 눈 반짝임 -->
+  <circle cx="47.5" cy="12.5" r="1.4" fill="white"/>
+  <circle cx="45" cy="16.2" r="0.7" fill="white"/>
+  <!-- 볼터치 (핑크) -->
+  <ellipse cx="42" cy="20" rx="3.5" ry="2" fill="#FFB0C0" opacity="0.5"/>
+  <!-- 부리 -->
+  <path d="M53,14 L63,17 L53,20Z" fill="#FFA500"/>
+  <line x1="57" y1="17" x2="62" y2="17.5" stroke="#CC7000" stroke-width="1"/>
+  <circle cx="57.5" cy="16.5" r="1" fill="#CC6600"/>
+  <!-- 날개 깃털 디테일 -->
+  <path d="M18,20 Q12,12 8,14 Q10,18 16,22Z" fill="#E0E6EE"/>
+  <!-- 발 -->
+  <path d="M30,36 L27,41" stroke="#FFA500" stroke-width="2" stroke-linecap="round"/>
+  <path d="M27,41 L24,39" stroke="#FFA500" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M27,41 L26,43" stroke="#FFA500" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M27,41 L30,43" stroke="#FFA500" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

@@ -1,5 +1,5 @@
-import { orderBy } from 'firebase/firestore'
-import { fsAdd, fsSubscribe } from '../firestore'
+import { orderBy, where } from 'firebase/firestore'
+import { fsAdd, fsSubscribe, fsQuery, fsDelete } from '../firestore'
 
 export type GameId = 'galaga' | 'ponpoko' | 'minesweeper' | 'whacamole' | 'sudoku'
 
@@ -22,6 +22,15 @@ export async function saveGameScore(
   score: number
 ): Promise<{ id: string | null; error: string | null }> {
   return fsAdd(col(familyId), { memberId, memberName, gameId, score })
+}
+
+// 특정 게임 점수 전체 삭제 (DAD 전용)
+export async function clearGameScores(
+  familyId: string,
+  gameId: GameId
+): Promise<void> {
+  const { data } = await fsQuery<GameScore>(col(familyId), [where('gameId', '==', gameId)])
+  await Promise.all(data.map(s => fsDelete(`${col(familyId)}/${s.id}`)))
 }
 
 // 전체 게임 점수 구독 — 클라이언트에서 게임별 필터링 (인덱스 불필요)

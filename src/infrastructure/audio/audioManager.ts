@@ -220,9 +220,12 @@ class AudioManager {
       this.bgmGain.gain.cancelScheduledValues(now)
       this.bgmGain.gain.setValueAtTime(this.bgmGain.gain.value, now)
       this.bgmGain.gain.linearRampToValueAtTime(0, now + 0.08)
+      // MUTE/중지 상태에서는 gain을 0으로 유지 (리셋 금지)
       setTimeout(() => {
-        if (this.bgmGain) this.bgmGain.gain.value = 0.12
-      }, 120)
+        if (this.bgmGain && this.running && this.theme !== 'MUTE') {
+          this.bgmGain.gain.value = 0.12
+        }
+      }, 250)
     }
   }
 
@@ -233,9 +236,16 @@ class AudioManager {
     this.theme = theme
     this.noteIdx = 0
     try { localStorage.setItem('fq_bgm_theme', theme) } catch { /* ignore */ }
-    if (theme !== 'MUTE') {
+    if (theme === 'MUTE') {
+      // MUTE: gain을 즉시 0으로 고정 (스케줄된 음표 완전 차단)
+      if (this.bgmGain && this.ctx) {
+        const now = this.ctx.currentTime
+        this.bgmGain.gain.cancelScheduledValues(now)
+        this.bgmGain.gain.setValueAtTime(0, now)
+      }
+    } else {
       this.resume()
-      setTimeout(() => this.startBGM(), 130)
+      setTimeout(() => this.startBGM(), 200)
     }
   }
 

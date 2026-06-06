@@ -5,6 +5,8 @@ import { fsQuery } from '../firestore'
 
 export type SpecialDayType = 'birthday' | 'anniversary' | 'holiday' | 'other'
 
+export type RepeatType = 'once' | 'monthly' | 'yearly'
+
 export interface SpecialDayDoc {
   id: string
   name: string       // 표시 이름 (예: "하윤 생일", "결혼기념일")
@@ -13,7 +15,14 @@ export interface SpecialDayDoc {
   day: number        // 1~31
   isLunar: boolean   // 음력 여부
   emoji: string      // 표시 이모지
+  repeatType: RepeatType  // 반복 타입 (기본: yearly)
   createdAt: Date
+}
+
+export const REPEAT_TYPE_LABELS: Record<RepeatType, string> = {
+  once:    '1회성',
+  monthly: '매월 반복',
+  yearly:  '연간 반복',
 }
 
 export const SPECIAL_DAY_TYPE_LABELS: Record<SpecialDayType, string> = {
@@ -60,8 +69,18 @@ export async function addSpecialDay(
   familyId: string,
   data: Omit<SpecialDayDoc, 'id' | 'createdAt'>
 ): Promise<{ error: string | null }> {
-  const { error } = await fsAdd(col(familyId), data)
+  const payload = { ...data, repeatType: data.repeatType ?? 'yearly' }
+  const { error } = await fsAdd(col(familyId), payload)
   return { error }
+}
+
+// 수정
+export async function updateSpecialDay(
+  familyId: string,
+  id: string,
+  data: Partial<Omit<SpecialDayDoc, 'id' | 'createdAt'>>
+): Promise<{ error: string | null }> {
+  return fsUpdate(`${col(familyId)}/${id}`, data)
 }
 
 // 삭제 (soft: isActive=false 대신 fsUpdate로 표시)

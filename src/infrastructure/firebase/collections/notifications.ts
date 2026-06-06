@@ -1,6 +1,6 @@
 // Design Ref: §4.1 Firestore — notifications 컬렉션
 import { where, orderBy } from 'firebase/firestore'
-import { fsAdd, fsUpdate, fsSubscribe, toDate } from '../firestore'
+import { fsAdd, fsUpdate, fsSubscribe, fsQuery, fsDelete, toDate } from '../firestore'
 import type { Notification, NotificationType } from '@/domain/entities/Message'
 
 function col(familyId: string) { return `families/${familyId}/notifications` }
@@ -39,6 +39,17 @@ export async function markNotificationRead(
   notifId: string
 ): Promise<{ error: string | null }> {
   return fsUpdate(`${col(familyId)}/${notifId}`, { isRead: true })
+}
+
+// 전체 삭제 — 특정 멤버의 알림 모두 삭제
+export async function deleteAllNotifications(
+  familyId: string,
+  targetMemberId: string
+): Promise<void> {
+  const { data } = await fsQuery<Notification>(col(familyId), [
+    where('targetMemberId', '==', targetMemberId),
+  ])
+  await Promise.all(data.map(n => fsDelete(`${col(familyId)}/${(n as any).id}`)))
 }
 
 // 전체 읽기 — 미읽음 알림 일괄 처리

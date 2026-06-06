@@ -18,9 +18,10 @@ import {
 } from '@/infrastructure/firebase/collections/praiseStickers'
 import { audioManager } from '@/infrastructure/audio/audioManager'
 import { clearAllFamilyMessages } from '@/infrastructure/firebase/collections/messages'
+import { clearGameScores } from '@/infrastructure/firebase/collections/gameScores'
 import type { Member } from '@/domain/entities/Member'
 import { APP_VERSION } from '@/config/version'
-import { ChildSelector } from '@/presentation/components/settings/ChildSelector'
+// import { ChildSelector } from '@/presentation/components/settings/ChildSelector'
 
 const INPUT_CLS = 'w-full input-pixel font-korean text-sm text-gold placeholder:text-panel-sub min-h-[44px] px-3 py-2.5 focus:outline-none focus:border-gold'
 
@@ -133,7 +134,7 @@ export default function SettingsPage() {
   const [stickerMsg, setStickerMsg] = useState('')
   const [stickerSending, setStickerSending] = useState(false)
   const [stickerToast, setStickerToast] = useState<string | null>(null)
-  const [stickerCoins, setStickerCoins] = useState(false)
+  const [_stickerCoins, setStickerCoins] = useState(false)
 
   const [openSection, setOpenSection] = useState<string | null>(null)
   const toggleSection = (key: string) => setOpenSection(p => p === key ? null : key)
@@ -208,22 +209,174 @@ export default function SettingsPage() {
     return () => { u1(); u2() }
   }, [familyId, isDad])
 
-  if (!isParent) {
-    return (
-      <div className="p-4">
-        <p className="font-korean text-sm text-panel-sub text-center">부모만 볼 수 있어요</p>
-      </div>
-    )
-  }
-
   const confirm = (message: string, onYes: () => void) => setConfirmModal({ message, onYes })
-  const children = members.filter(m => m.role === 'CHILD' && m.isActive)
+  void members.filter(m => m.role === 'CHILD' && m.isActive)  // 미사용: _children
+  // 스티커 대상: 나를 제외한 모든 활성 구성원
+  const stickerTargets = members.filter(m => m.id !== currentMember?.id && m.isActive)
 
   const handleLogout = async () => {
     await signOut()
     clearSession()
     clearAllLocalData()
     navigate('/login')
+  }
+
+  // ── 엔진 새로고침 (아이/부모 공통) ───────────────────────────────
+  const handleEngineRefresh = async () => {
+    if ('caches' in window) {
+      const keys = await window.caches.keys()
+      await Promise.all(keys.map(k => window.caches.delete(k)))
+    }
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations()
+      await Promise.all(regs.map(r => r.unregister()))
+    }
+    sessionStorage.clear()
+    const preserveKeys = [
+      'familyId', 'fq_last_login', 'fq_login_at', 'fq_member_cache',
+      'fq_fav_order', 'fq_weekly_comp', 'fq_monthly_comp',
+      'fq_bgm_theme', 'fq_inv_weapon', 'fq_inv_skin', 'fq_inv_pet', 'fq_inv_xp',
+      'fq_snapshots',
+    ]
+    Object.keys(localStorage)
+      .filter(k => !preserveKeys.includes(k))
+      .forEach(k => localStorage.removeItem(k))
+    window.location.reload()
+  }
+
+  // ── 스티커 전송 (아이/부모 공통 — early return 앞에 정의 필수) ───
+  const handleSendSticker = async () => {
+    if (!familyId || !stickerTarget || !currentMember) return
+    setStickerSending(true)
+    const { error } = await sendPraiseSticker(
+      familyId, currentMember.id, currentMember.name,
+      stickerTarget, stickerType, stickerMsg.trim()
+    )
+    setStickerSending(false)
+    if (error) { setStickerToast('발송 실패: ' + error) }
+    else {
+      audioManager.coinCollect()
+      setStickerMsg('')
+      setStickerToast('칭찬 스티커를 붙여줬어요! 🌟')
+      setStickerCoins(true)
+      setTimeout(() => setStickerCoins(false), 1200)
+    }
+    setTimeout(() => setStickerToast(null), 3000)
+  }
+
+  // ── 공통 스티커 패널 렌더 함수 ───────────────────────────────────
+  const _renderStickerPanel = () => (
+    <>
+      <p className="font-korean text-xs font-bold text-panel-sub mb-2">누구에게?</p>
+      <div className="flex flex-wrap gap-1.5 mb-3">
+        {stickerTargets.map(m => (
+          <button
+            key={m.id}
+            type="button"
+            onClick={() => setStickerTarget(m.id)}
+            className={[
+              'px-3 py-1.5 border-2 font-korean text-sm transition-colors',
+              stickerTarget === m.id
+                ? 'border-gold bg-gold/10 text-gold font-bold'
+                : 'border-panel-border text-panel-sub hover:border-gold/40',
+            ].join(' ')}
+          >
+            {m.name}
+          </button>
+        ))}
+      </div>
+      <div className="grid grid-cols-4 gap-1.5 mb-3">
+        {(Object.entries(STICKER_INFO) as [StickerType, typeof STICKER_INFO[StickerType]][]).map(([key, info]) => (
+          <button
+            key={key}
+            type="button"
+            onClick={() => setStickerType(key)}
+            className={`flex flex-col items-center gap-0.5 py-2 border-2 transition-colors
+              ${stickerType === key ? `${info.border} bg-gold/10` : 'border-panel-border bg-panel-darkest hover:border-gold/40'}`}
+          >
+            <img src={info.svg} alt={info.label} width={24} height={24} style={{ imageRendering: 'pixelated' }} />
+            <span className="font-korean text-xs text-cream leading-tight text-center">{info.label}</span>
+          </button>
+        ))}
+      </div>
+      <input
+        value={stickerMsg}
+        onChange={e => setStickerMsg(e.target.value)}
+        placeholder="짧은 칭찬 메시지... (선택)"
+        maxLength={30}
+        className={`${INPUT_CLS} mb-3`}
+      />
+      <PixelButton variant="gold" size="lg" fullWidth
+        disabled={!stickerTarget || stickerSending}
+        onClick={handleSendSticker}
+      >
+        {stickerSending ? '붙이는 중...' : '화이트보드에 붙여주기'}
+      </PixelButton>
+      {stickerToast && (
+        <p className="font-korean text-xs text-gold text-center mt-2">{stickerToast}</p>
+      )}
+    </>
+  )
+
+  // ── 아이 전용 작업공간 ────────────────────────────────────────────
+  if (!isParent) {
+    return (
+      <div className="p-3 space-y-3">
+        {toast && (
+          <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-[9990] px-4 py-2
+            border-4 font-korean text-sm ${toast.type === 'success' ? 'border-approved text-approved bg-panel-darkest' : 'border-rejected text-rejected bg-panel-darkest'}`}>
+            {toast.message}
+          </div>
+        )}
+        <PixelModal open={!!confirmModal} title="확인" onClose={() => setConfirmModal(null)} size="sm">
+          <p className="font-korean text-sm text-cream text-center mb-5 whitespace-pre-line">{confirmModal?.message}</p>
+          <div className="flex gap-3">
+            <PixelButton variant="ghost" className="flex-1" onClick={() => setConfirmModal(null)}>취소</PixelButton>
+            <PixelButton variant="danger" className="flex-1" onClick={() => { confirmModal?.onYes(); setConfirmModal(null) }}>실행</PixelButton>
+          </div>
+        </PixelModal>
+
+        <h1 className="t-heading text-gold t-pixel-shadow px-1">작업공간</h1>
+
+        {/* 칭찬 스티커 보내기 */}
+        <AccordionSection
+          icon="/assets/icons/star.svg"
+          title="칭찬 스티커 보내기"
+          description="가족에게 칭찬 스티커 발송"
+          open={openSection === 'sticker'}
+          onToggle={() => toggleSection('sticker')}
+        >
+          {_renderStickerPanel()}
+        </AccordionSection>
+
+        {/* 기념일·생일 관리 */}
+        <NavRow
+          icon="/assets/icons/calendar.svg"
+          title="기념일·생일 관리"
+          description="달력에 기념일을 표시해요"
+          onClick={() => navigate('/settings/special-days')}
+        />
+
+        {/* 엔진 완전 새로고침 */}
+        <AccordionSection
+          icon="/assets/icons/lightning.svg"
+          title="엔진 완전 새로고침"
+          description="앱 꼬임 해결, 세션 유지"
+          open={openSection === 'cache'}
+          onToggle={() => toggleSection('cache')}
+        >
+          <p className="t-micro text-panel-sub mb-3">SW 캐시 + localStorage 꼬임 해결. 세션은 유지됩니다.</p>
+          <PixelButton variant="danger" size="lg" fullWidth onClick={handleEngineRefresh}>
+            캐시 강제 초기화 + 재시작
+          </PixelButton>
+        </AccordionSection>
+
+        {/* 로그아웃 */}
+        <PixelButton variant="danger" size="lg" fullWidth onClick={handleLogout}>
+          로그아웃
+        </PixelButton>
+      </div>
+    )
   }
 
   const handleNicknameSave = async (member: Member) => {
@@ -239,19 +392,6 @@ export default function SettingsPage() {
     }
     showToast('저장됐어요', 'success')
     setEditingId(null)
-  }
-
-  const handleSendSticker = async () => {
-    if (!familyId || !stickerTarget || !currentMember) return
-    setStickerSending(true)
-    const { error } = await sendPraiseSticker(
-      familyId, currentMember.id, currentMember.name,
-      stickerTarget, stickerType, stickerMsg.trim()
-    )
-    setStickerSending(false)
-    if (error) { setStickerToast('발송 실패: ' + error) }
-    else { audioManager.coinCollect(); setStickerMsg(''); setStickerToast('칭찬 스티커를 붙여줬어요! 🌟'); setStickerCoins(true); setTimeout(() => setStickerCoins(false), 1200) }
-    setTimeout(() => setStickerToast(null), 3000)
   }
 
   const handleTournamentToggle = async () => {
@@ -457,67 +597,17 @@ export default function SettingsPage() {
       <NavRow icon="/assets/icons/letter.svg"   title="두근두근 질문함"  description="아이들의 답변 확인" onClick={() => navigate('/settings/question-answers')} />
       <NavRow icon="/assets/icons/calendar.svg" title="기념일·생일 관리" description="달력에 기념일을 표시해요" onClick={() => navigate('/settings/special-days')} />
 
-      {/* ════ 3: 칭찬·응원 — AccordionSection (자녀 있을 때만) ════════════ */}
-      {children.length > 0 && (
-        <>
-          <AccordionSection
-            icon="/assets/icons/star.svg"
-            title="칭찬 스티커 보내기"
-            description="아이에게 칭찬 스티커 발송"
-            open={openSection === 'sticker'}
-            onToggle={() => toggleSection('sticker')}
-          >
-            <p className="font-korean text-xs font-bold text-panel-sub mb-1">누구에게?</p>
-            <ChildSelector
-              children={children}
-              selectedId={stickerTarget}
-              onSelect={setStickerTarget}
-              showAvatar
-            />
-            <div className="grid grid-cols-4 gap-1.5 mb-3">
-              {(Object.entries(STICKER_INFO) as [StickerType, typeof STICKER_INFO[StickerType]][]).map(([key, info]) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setStickerType(key)}
-                  className={`flex flex-col items-center gap-0.5 py-2 border-2 transition-colors
-                    ${stickerType === key ? `${info.border} bg-gold/10` : 'border-panel-border bg-panel-darkest hover:border-gold/40'}`}
-                >
-                  <span className="text-2xl">{info.emoji}</span>
-                  <span className="font-korean text-xs text-cream leading-tight text-center">{info.label}</span>
-                </button>
-              ))}
-            </div>
-            <input
-              value={stickerMsg}
-              onChange={e => setStickerMsg(e.target.value)}
-              placeholder="짧은 칭찬 메시지... (선택)"
-              maxLength={30}
-              className={`${INPUT_CLS} mb-3`}
-            />
-            <div className="relative overflow-visible h-0 pointer-events-none" aria-hidden>
-              {stickerCoins && [0, 1, 2].map(i => (
-                <span
-                  key={i}
-                  className="absolute animate-coin-drop text-2xl select-none"
-                  style={{ top: '-32px', left: `${15 + i * 35}%`, animationDelay: `${i * 0.22}s` }}
-                >
-                  🪙
-                </span>
-              ))}
-            </div>
-            <PixelButton variant="gold" size="lg" fullWidth
-              disabled={!stickerTarget || stickerSending}
-              onClick={handleSendSticker}
-            >
-              {stickerSending ? '붙이는 중...' : '화이트보드에 붙여주기'}
-            </PixelButton>
-            {stickerToast && (
-              <p className="font-korean text-xs text-gold text-center mt-2">{stickerToast}</p>
-            )}
-          </AccordionSection>
-
-        </>
+      {/* ════ 3: 칭찬 스티커 (가족 모두 서로 보낼 수 있음) ══════════════ */}
+      {stickerTargets.length > 0 && (
+        <AccordionSection
+          icon="/assets/icons/star.svg"
+          title="칭찬 스티커 보내기"
+          description="가족에게 칭찬 스티커 발송"
+          open={openSection === 'sticker'}
+          onToggle={() => toggleSection('sticker')}
+        >
+          {_renderStickerPanel()}
+        </AccordionSection>
       )}
 
       {/* ════ 4: 아빠 작업방 — NavRow + AccordionSection (DAD 전용) ═════ */}
@@ -630,6 +720,55 @@ export default function SettingsPage() {
           </AccordionSection>
 
           <AccordionSection
+            icon="/assets/icons/lightning.svg"
+            title="엔진 완전 새로고침"
+            description="SW 캐시·localStorage 꼬임 해결, 세션 유지"
+            open={openSection === 'cache'}
+            onToggle={() => toggleSection('cache')}
+          >
+            <p className="t-micro text-panel-sub mb-3">SW 캐시 + localStorage 꼬임 해결. 세션은 유지됩니다.</p>
+            <PixelButton variant="danger" size="lg" fullWidth onClick={handleEngineRefresh}>
+              캐시 강제 초기화 + 재시작
+            </PixelButton>
+          </AccordionSection>
+
+          <AccordionSection
+            icon="/assets/icons/gamepad.svg"
+            title="게임 랭크 초기화"
+            description="게임별 순위 기록 전체 삭제"
+            danger
+            open={openSection === 'clearrank'}
+            onToggle={() => toggleSection('clearrank')}
+          >
+            <p className="t-micro text-panel-sub mb-3">선택한 게임의 점수 기록을 모두 삭제합니다. 되돌릴 수 없어요.</p>
+            <div className="flex flex-col gap-2">
+              {([
+                { id: 'galaga',     label: '갤러그' },
+                { id: 'ponpoko',    label: '슈퍼점핑' },
+                { id: 'minesweeper', label: '마이펫 찾기' },
+                { id: 'whacamole',  label: '아빠잡기' },
+                { id: 'sudoku',     label: '언도쿠' },
+              ] as const).map(game => (
+                <PixelButton
+                  key={game.id}
+                  variant="danger" size="sm" fullWidth
+                  onClick={() => confirm(`${game.label} 랭크 기록을 모두 삭제할까요?\n되돌릴 수 없어요.`, async () => {
+                    if (!familyId) return
+                    try {
+                      await clearGameScores(familyId, game.id)
+                      showToast(`${game.label} 랭크가 초기화됐어요`, 'success')
+                    } catch {
+                      showToast('삭제 실패', 'error')
+                    }
+                  })}
+                >
+                  {game.label} 랭크 삭제
+                </PixelButton>
+              ))}
+            </div>
+          </AccordionSection>
+
+          <AccordionSection
             icon="/assets/icons/trash.svg"
             title="채팅 기록 삭제"
             description="그룹 채팅 전체 기록을 영구 삭제"
@@ -652,45 +791,10 @@ export default function SettingsPage() {
           </AccordionSection>
 
           <AccordionSection
-            icon="/assets/icons/lightning.svg"
-            title="엔진 완전 새로고침"
-            description="SW 캐시·localStorage 꼬임 해결, 세션 유지"
-            open={openSection === 'cache'}
-            onToggle={() => toggleSection('cache')}
-          >
-            <p className="t-micro text-panel-sub mb-3">SW 캐시 + localStorage 꼬임 해결. 세션은 유지됩니다.</p>
-            <PixelButton
-              variant="danger" size="lg" fullWidth
-              onClick={async () => {
-                if ('caches' in window) {
-                  const keys = await window.caches.keys()
-                  await Promise.all(keys.map(k => window.caches.delete(k)))
-                }
-                if ('serviceWorker' in navigator) {
-                  const regs = await navigator.serviceWorker.getRegistrations()
-                  await Promise.all(regs.map(r => r.unregister()))
-                }
-                sessionStorage.clear()
-                const preserveKeys = [
-                  'familyId', 'fq_last_login', 'fq_login_at', 'fq_member_cache',
-                  'fq_fav_order', 'fq_weekly_comp', 'fq_monthly_comp',
-                  'fq_bgm_theme', 'fq_inv_weapon', 'fq_inv_skin', 'fq_inv_pet', 'fq_inv_xp',
-                  'fq_snapshots',
-                ]
-                Object.keys(localStorage)
-                  .filter(k => !preserveKeys.includes(k))
-                  .forEach(k => localStorage.removeItem(k))
-                window.location.reload()
-              }}
-            >
-              캐시 강제 초기화 + 재시작
-            </PixelButton>
-          </AccordionSection>
-
-          <AccordionSection
             icon="/assets/icons/save.svg"
             title={`상태 저장 & 롤백 ${snapshots.length > 0 ? `(${snapshots.length})` : ''}`}
             description="현재 상태를 저장하고 이전 시점으로 복원"
+            danger
             open={openSection === 'snapshot'}
             onToggle={() => toggleSection('snapshot')}
           >
