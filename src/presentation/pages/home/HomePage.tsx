@@ -869,7 +869,7 @@ export default function HomePage() {
         )}
 
         {/* ⑦ 칭찬 화이트보드 (자녀 전용 — 하단) */}
-        {isChild && familyId && (
+        {familyId && (
           <PraiseWhiteboard familyId={familyId} memberId={currentMember.id} />
         )}
 
