@@ -19,7 +19,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | **디자인** | 마인크래프트 오마주 픽셀 아트 + 여아 감성 퍼플/핑크 |
 | **Firebase 프로젝트** | `family-quest-8b41b` |
 | **배포 URL** | `family-quest-8b41b.web.app` |
-| **현재 버전** | 8.1 |
+| **현재 버전** | 9.0 |
 
 ---
 
@@ -211,19 +211,22 @@ const [members, setMembers] = useState<Member[]>([])
 useEffect(() => subscribeMembers(familyId, setMembers), [familyId])
 ```
 
-### MissionListPage 필터 구조
+### MissionListPage 필터 + 정렬 구조
 
 ```typescript
 // 탭: 전체(기본) | 공동 미션(targetMemberIds.length > 1) | 개별 미션(length === 1)
 // 개별 미션 선택 시 → 아이별 탭 표시 (부모만)
-// 즐겨찾기 우선 정렬 → 날짜+상태 정렬
+// 정렬(SortKey): 'newest'(기본) | 'oldest' | 'deadline' | 'difficulty' | 'favorites'
+// - favorites: favOrder 배열 순서 우선, 나머지 최신순
+// - deadline: EXPIRED 맨 뒤, 나머지 endDate 오름차순
+// MissionCard 배지: createdAt 24h 이내 → NEW, updatedAt 24h 이내(등록 후 1분+) → UP
 ```
 
 ### EXPIRED/CHILD_REJECTED 포함 필수 파일 (5곳)
 
 - `src/domain/entities/Mission.ts` — STATUS_LABEL
-- `src/presentation/components/missions/MissionCard.tsx` — STATUS_INFO
-- `src/presentation/pages/missions/MissionListPage.tsx` — STATUS_SORT
+- `src/presentation/components/missions/MissionCard.tsx` — NEW/UP 배지 포함
+- `src/presentation/pages/missions/MissionListPage.tsx` — SortKey 5종
 - `src/presentation/pages/missions/MissionDetailPage.tsx` — STATUS_LABEL
 - ~~`src/presentation/pages/home/HomePage.tsx`~~ — statusLabel 섹션 제거됨
 
@@ -248,9 +251,10 @@ families/{familyId}/
   notifications/{id}  type, targetMemberId, content, relatedId, isRead
   notices/{id}        title, content, authorId, authorName, createdAt
   begging/{id}        submitterId, type, content, status, dadApproved, momApproved
-  special_days/{id}   name, type, month, day, isLunar, emoji, deleted
+  special_days/{id}   name, type, month, day, isLunar, emoji, deleted,
+                      repeatType('once'|'monthly'|'yearly')  ← 반복 타입 (기본 'yearly')
   question_answers/{id} memberId, question, answer, emotion, reward, dateKey
-  game_scores/{id}    memberId, memberName, gameId('galaga'|'tetris'|'ponpoko'|'snake'),
+  game_scores/{id}    memberId, memberName, gameId('galaga'|'ponpoko'|'minesweeper'|'whacamole'|'sudoku'),
                       score, playedAt                ← 게임 점수 기록
   config/tournament   active, title, roundNumber, startDate, endDate, difficulty(1-5)
                                                      ← 천하제일 주간 대회 설정 (단일 문서)
@@ -430,7 +434,94 @@ CHILD → border-approved | border-gold (id 해시로 자녀별 고유 배정)
 
 ---
 
-## 12. 현재 상태 (2026-06-04 Session 51 완료 기준 — v8.1, 배포 완료)
+## 12. 현재 상태 (2026-06-09 Session 52 완료 기준 — v9.0, 배포 완료)
+
+### 구현 완료 (Session 52 — v8.2~v9.0)
+
+- **[게임 버그 수정]**:
+  - PAUSE 버튼 더블 파이어: `onTouchStart+onMouseDown` → `onPointerDown` (GalagaGame/PonpokoGame/WhacAMoleGame)
+  - WhacAMoleGame 오타 소리 버그: `clearHole()`에 `genRef.current[idx]++` 추가로 pendingTimer 무효화
+  - MUTE 음소거 미동작: `stopBGM()` gain 리셋 조건에 `this.theme !== 'MUTE'` 추가, `setTheme('MUTE')` 즉시 cancelScheduledValues
+
+- **[WhacAMoleGame 개편]**: 기본 30초 + 엄마 보너스 최대 30초 = 총 1분 상한. 엄마 등장 350~700ms 랜덤 표시
+
+- **[게임 랭크 초기화]**: DAD 작업방 → 5종 게임 각각 개별 초기화 버튼 추가 (`clearGameScores`)
+
+- **[칭찬 스티커 전면 개편]**:
+  - StickerType 8종 → 16종, 이모지 → SVG 아이콘 (`/assets/icons/*.svg`)
+  - 발신 대상: 부모→아이 전용 → **가족 전원 서로 주고받기** (`stickerTargets = 나 제외 전원`)
+  - PraiseWhiteboard: isChild 조건 제거 → 전 가족 표시, PAGE_SIZE=6 더보기 페이지네이션
+
+- **[BottomNav 배지 개선]**:
+  - 메시지 탭: 빨간 점 → `(n)` 숫자 텍스트
+  - 퀘스트 탭: 전체 ACTIVE 수 → `fq_missions_seen_{memberId}` 타임스탬프 이후 NEW 미션 수
+
+- **[아이 작업공간]**:
+  - Header 드롭다운 "내 작업공간" 모든 역할(CHILD 포함) 표시
+  - SettingsPage 아이용 화면: 칭찬스티커 보내기 + 기념일관리 NavRow + 엔진새로고침 + 로그아웃
+  - `handleSendSticker` 정의 위치: `if (!isParent) return` **이전**에 배치 (TDZ ReferenceError 방지)
+
+- **[SpecialDaysPage 반복 타입]**:
+  - 신규 필드: `repeatType: 'once' | 'monthly' | 'yearly'` (기본 'yearly')
+  - 아이도 등록/수정 가능, 삭제는 부모(DAD/MOM)만
+
+- **[CalendarPage D-day 정책]**:
+  - `repeatType === 'yearly'`만 D-day 카운터 표시
+  - `repeatType === 'once'`는 지난 날짜 숨김
+
+- **[React.lazy 코드 스플리팅]**: 17개+ 페이지 dynamic import 적용 (988KB → 816KB 번들)
+
+- **[알림 전체 삭제]**: `deleteAllNotifications()` + NotificationsPage "전체 삭제" 버튼 추가
+  - "전체 읽기" 버튼 자동 제거되던 버그 수정 (마운트 시 자동읽기 useEffect 제거)
+
+- **[까마귀 SVG + 홈 날기 애니]**:
+  - `crow-black.svg`, `crow-blue.svg`, `crow-white.svg` (64×44 pixel art)
+  - 18~45초 주기로 캐릭터 상단 날아다님 (`animate-crow-ltr/rtl`)
+  - z-index 5 (캐릭터 z-20 아래)
+
+- **[캐릭터 쓰러짐 로직]** (12회 이상 연타 시):
+  - `charFallen=true` → 90도 rotate + Zzzz 말풍선 (화이트 텍스트, 캐릭터 위)
+  - 10초 동안 모든 탭 반응 없음, 펫은 별도 패닉 모드
+
+- **[펫 전용 감정 아이콘]**: 캐릭터와 분리된 밝은 SVG 감정 이모지 (skull 없음)
+
+- **[MessagesPage 이펙트 이모지 7종 추가]**: 🌸💫🦋🌈💎🌺🫶 (여아 감성). 한 개 선택 시 기존 입력 대체. 이펙트 지속 3.8초
+
+- **[홈 피드 축소]**: 용사의 여정 `.slice(0, 3)`, 공지사항 2개 기본 + "더보기" 확장
+
+- **[게임 설명서]**: `docs/family-quest-guide.md` + `public/docs/guide.html` + `docs/family-quest-guide.pdf`
+
+- **[MissionListPage 정렬]**:
+  - SortKey 5종: 최신순(기본) / 오래된순 / 마감임박 / 난이도↑ / 즐겨찾기
+  - 결과 수 옆 컴팩트 pill 버튼 UI
+  - MissionCard: 등록 24h 이내 → `NEW` 배지, 수정 24h 이내 → `UP` 배지
+
+### 코딩 규칙 추가 (Session 52)
+
+```typescript
+// 58. 게임 PAUSE 버튼: onPointerDown 사용 (onTouchStart+onMouseDown 조합 금지 — 더블파이어)
+//
+// 59. WhacAMoleGame genRef 패턴: clearHole() 에서 genRef.current[idx]++ 로 타이머 무효화
+//     handleTap에서 activeRef.current.delete(idx) 하지 말 것 — clearHole의 250ms 딜레이 전에 호출 시 오타 소리
+//
+// 60. 칭찬 스티커 발신 대상: stickerTargets = members.filter(m.id !== currentMember.id && m.isActive)
+//     부모/아이 구분 없이 가족 전원 (자기 자신만 제외)
+//
+// 61. SettingsPage 아이용 조기 return 패턴: handleSendSticker 등 함수는 반드시 if(!isParent) return 이전에 정의
+//     React hook 규칙 + TDZ ReferenceError 방지
+//
+// 62. special_days repeatType: 'once'(1회성) | 'monthly'(매월) | 'yearly'(연간, 기본)
+//     CalendarPage: yearly → D-day 표시, once → 지난 날짜 숨김, monthly → 매월 표시
+//
+// 63. MissionCard 배지: getNewBadge(mission) 함수 — 'new'|'updated'|null 반환
+//     'new': now - createdAt < 24h
+//     'updated': now - updatedAt < 24h AND updatedAt - createdAt > 60_000ms
+//     Mission.ts updatedAt?: Date — fsUpdate 자동 추가 (firestore.ts 헬퍼)
+```
+
+---
+
+## 12-prev. 이전 상태 (2026-06-04 Session 51 완료 기준 — v8.1, 배포 완료)
 
 ### 구현 완료 (Session 51 — v8.0~v8.1)
 
@@ -1540,87 +1631,26 @@ npm run deploy
 firebase deploy --only firestore:rules,firestore:indexes
 ```
 
-### 진행 현황 (Session 38 기준 — v2.9.1, 배포 대기)
+### 진행 현황 (Session 52 기준 — v9.0, 배포 완료)
 
 ```
-Phase 1 — 완료 ✓ (tailwind 토큰 + PixelButton/PixelCard/PixelModal)
-Phase 2 — 완료 ✓ (AppLayout/Header/BottomNav 다크화)
-Phase 3 — 완료 ✓ (미션 관련 페이지 전체)
-Phase 4 — 완료 ✓ (보조 페이지 15개 다크 개편 전체)
-[마일스톤] 게임 탭 — 완료 ✓ (레트로 게임 3종 + 랭킹 + 채팅 알림, v1.8.0)
-[마일스톤 2-1] 사운드 시스템 — 완료 ✓ (Web Audio BGM 4테마 + 헤더 미니 플레이어 + 게임 SFX, v1.9.0)
-[마일스톤 2-2] 게임 개편 + 인벤토리 + 주간 대회 — 완료 ✓
-[마일스톤 2-3] 레거시 숙청 + 로그인 개편 + 메신저 강화 — 완료 ✓
-[마일스톤 3-1] 메인화면 개편 + 응원시스템 + 패밀리 늬우스 + 달력 타임라인 — 완료 ✓
-[대개정판 Session 28] 게임 대개편 + 오디오 파이프라인 + UI 수술 — 완료 ✓ (v2.0.0)
-[마일스톤 2-3 종착지 Session 29] 재화 단일화 + 슬롯 상점 + 특퀘 UX + 안전장치 — 완료 ✓ (v2.1.0)
-[Session 30] 인벤토리-Firebase 이중 장부 해결 — 완료 ✓
-[Session 31] HomePage 실시간 인벤토리 연동 + TS 에러 전면 청산 — 완료 ✓
-[Session 32] HomePage 비주얼 RPG 오버홀(던전 다크·펫 프레임) + Header GNB 컴팩트화 — 완료 ✓
-[Session 33] SettingsPage 통합(MasterSettingsPage 흡수) + HomePage CharacterSprite 바인딩 교정 — 완료 ✓ (v2.5.0)
-[Session 34] UI/UX 디자인 일관성 전면 정비 — 완료 ✓ (v2.6.0 배포)
-  - Sprint A: 폰트 규칙·버튼 통일·섹션 헤더 단일화
-  - Sprint B: ApprovalList/SpecialDays/QuestionAnswers/QuestionBox 다크 테마
-  - Sprint C: Statistics/Register 다크 재작성 + ChildSelector 컴포넌트 추출
-[Session 35] UX 수술 + 코드 정리 — 완료 ✓ (v2.7.0 배포 대기)
-  - Sprint A: DM 헤더 컴팩트화 + displayBanner stale 버그 + 폰트 규칙
-  - Sprint B: ProfilePage 아이템 상점 제거 + 캐릭터 시스템 단일화
-  - Sprint C: GNB 오디오 3버튼 → 단일 테마 아이콘
-[Session 36] UX 전면 개편 — 완료 ✓ (v2.8.0 배포 대기)
-[Session 37] UX 개편 완성 — 완료 ✓ (v2.9.0 배포 대기)
-  - SettingsPage 전면 통일 (NavRow+AccordionSection 패턴 전체 적용)
-  - 게임 3초 카운트다운 + 게임오버 5초 + 나가기 버튼 제거 + 지뢰찾기 색상
-  - G슬롯 파티클 + EXP바 smooth transition + 레벨업 flash 오버레이
-  - 홈 로딩창 첫 로그인 1회만 표시 (fq_anim_shown 플래그)
-[Session 37b] MessagesPage 버그픽스 — 완료 ✓ (v2.9.0 배포 대기)
-  - 게임 알림 채팅 차단 (sendMessage 완전 제거)
-  - 닉네임 중복 해결 (getMemberInfo 삭제, 스프라이트+이름 한 줄 통합)
-  - 달 모양 아이콘 제거 (petId={null} 3곳)
-  - 입력바 크기 조화
-[Session 38] 전체 코드 점검 + 버그픽스 — 완료 ✓ (v2.9.1 배포 대기)
-  - P0: pickCheer 연산자 우선순위 버그 수정
-  - P0: myRank 계산 오류 수정 (1위 undefined 메달 해결)
-  - P1: 미션 Good 슬롯 → addGameXP 연동 (difficulty*1000 pts)
-  - P1: 홈 피드 5개 → 10개
-  - P1: 원터치 응원 프리셋 아빠/엄마 역할별 분기
-  - P2: handleGameOver allScores 불필요 의존성 제거
-  - P2: ResultScreen raw 버튼 → PixelButton
-  - P3: toDateKey → src/utils/dateUtils.ts 공통 유틸 추출
-  - P3: ProfilePage CHILD '딸' → '아이'
-  - P3: EXPIRED 레이블 '소멸됨' 통일
-  - P3: 스냅샷 설명 명확화 (서버 데이터 미저장 명시)
-  - Sprint A: ProfilePage 상단 컴팩트화 (xl→md 가로형)
-  - Sprint B: Header 아이콘 어린이 친화 교체 (🎸🌟🎒)
-  - Sprint C: SettingsPage 아빠 작업공간 아코디언 4섹션
-  - Sprint D: 게임 게임오버 3초 딜레이 + 오버레이 + 버튼 확대
-  - Sprint E: HomePage RPG 시네 카드 (배너그라디언트 배경+펫 통합+무기제거+편집CTA)
-  - Sprint F: SettingsPage 아빠 작업방 NavRow+AccordionSection 세로 리스트 + 큰 아이콘 패턴
-  - Sprint G (긴급 버그픽스): MessagesPage DM 이름 중복 버그 수정 (isDM 조건 추가)
-               HomePage 캐릭터 편집 버튼 → 카드 우측 하단 absolute 배치
+[Session 28~51] — 모두 완료 (§12-prev 참조)
+[Session 51] OBSERVER 삭제 + 스도쿠 버그 + 이모지→SVG — 완료 ✓ (v8.1)
+[Session 52] 게임 버그·UX·칭찬스티커·아이작업공간·기념일반복·달력·코드스플리팅
+             알림삭제·까마귀·캐릭터쓰러짐·메신저이펙트·게임설명서·미션정렬 — 완료 ✓ (v9.0)
+```
+
+### 잔존/미완성 (Session 52 이후)
+
+| 항목 | 비고 |
+|------|------|
+| 언도쿠 퍼즐 단일 정답 보장 | Lv3~5 백트래킹 |
+| FCM 푸시 알림 + Badging API | 2~3세션 |
+| 너구리 원작 다층 플랫폼 | 전용 1~2세션 |
 
 ---
-## 다음 세션 (Session 39) 작업 계획
+## 다음 세션 작업 시 주의사항
 
-### 우선순위 1: 보상 발송 완료 코인 이펙트
-- `RewardSendPage.tsx` 발송 성공 시 코인 🪙 3개 흘러내리는 keyframe
-  (기존 `.animate-coin-drop` 재활용)
-- SettingsPage 칭찬스티커 발송 완료 시에도 동일 이펙트
-
-### 우선순위 2: CharacterSprite petId 명시 전달
-- ProfilePage에서 `previewPetId || currentMember.character.petId`를 displayPetId로 쓰지만
-  CharacterSprite 내부에서도 `invPet` 폴백이 있어 불일치 가능성
-- 해결: ProfilePage의 CharacterSprite에 `petId={displayPetId}` 명시적 전달
-
-### 잔존 이슈 (다음 세션 선택 작업)
-- 게임 중 Header 뒤로가기 버튼 노출 문제 (의도적 보류)
-- dynamic import로 게임 코드 스플리팅 (현재 번들 ~945KB)
-- Firestore 인덱스 배포 확인 (praise_stickers / cheer_messages / tournament_scores)
-
-Phase 5 — 캐릭터 스프라이트 개선 (논의 완료):
-  - 현재: 이모지 기반 CharacterSprite (직업별 ⚔️🏹🧙 등)
-  - 방향: kenney.nl 등 무료 PNG 팩 도입 검토 중
-    → 규격: 투명 배경 PNG, 64×64 or 128×128, 직업별 8종 세트
-    → 파일 준비 후 /public/assets/characters/ 에 배치 → CharacterSprite <img> 교체
 ```
 
 ### 앱 초기화 로직
@@ -1784,4 +1814,4 @@ Phase 5 — 캐릭터 스프라이트 개선 (논의 완료):
 ---
 
 *패밀리 퀘스트 — 우리 가족만의 특별한 게임 세계 ⛏*  
-*최초 작성: 2026-04-23 | 마지막 업데이트: 2026-06-04 (Session 45 완료 — v5.8: 보상체계 개편 + 게임 에셋 교체 + SVG 완성)*
+*최초 작성: 2026-04-23 | 마지막 업데이트: 2026-06-09 (Session 52 완료 — v9.0: 게임버그·칭찬스티커·아이작업공간·미션정렬·까마귀·게임설명서)*
