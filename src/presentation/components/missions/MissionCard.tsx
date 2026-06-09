@@ -11,6 +11,16 @@ interface MissionCardProps {
   onFavoriteToggle?: (id: string, current: boolean) => void
 }
 
+const NOW_24H = 24 * 60 * 60 * 1000
+
+function getNewBadge(mission: Mission): 'new' | 'updated' | null {
+  const now = Date.now()
+  if (now - mission.createdAt.getTime() < NOW_24H) return 'new'
+  if (mission.updatedAt && now - mission.updatedAt.getTime() < NOW_24H
+      && mission.updatedAt.getTime() - mission.createdAt.getTime() > 60_000) return 'updated'
+  return null
+}
+
 function getDaysLeft(endDate: Date): string {
   const diff = Math.ceil((endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
   if (diff < 0) return '기간 종료'
@@ -32,6 +42,7 @@ function formatRewards(mission: Mission): string {
 export function MissionCard({ mission, onFavoriteToggle }: MissionCardProps) {
   const diffInfo = DIFFICULTY_INFO[mission.difficulty]
   const daysLeft = getDaysLeft(mission.endDate)
+  const newBadge = getNewBadge(mission)
 
   // 특별 퀘스트: 배경 → bg-panel-dark (황금탄 #D4A843 폐기). 텍스트 색상 일반과 동일
   const isSpecial = !!mission.isSpecial
@@ -71,12 +82,24 @@ export function MissionCard({ mission, onFavoriteToggle }: MissionCardProps) {
           </div>
 
           <div className="flex-1 min-w-0">
-            {/* 제목 + 즐겨찾기 */}
+            {/* 제목 + 새로등록/업데이트 배지 + 즐겨찾기 */}
             <div className="flex items-center justify-between gap-1">
-              <p className={`font-korean text-sm font-bold ${textMain} truncate`}>
-                {mission.emoji && <span className="mr-1">{mission.emoji}</span>}
-                {mission.title}
-              </p>
+              <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                <p className={`font-korean text-sm font-bold ${textMain} truncate`}>
+                  {mission.emoji && <span className="mr-1">{mission.emoji}</span>}
+                  {mission.title}
+                </p>
+                {newBadge === 'new' && (
+                  <span className="flex-shrink-0 font-pixel text-[9px] bg-approved/20 border border-approved text-approved px-1 py-0.5 leading-none">
+                    NEW
+                  </span>
+                )}
+                {newBadge === 'updated' && (
+                  <span className="flex-shrink-0 font-pixel text-[9px] bg-sky/20 border border-sky text-sky px-1 py-0.5 leading-none">
+                    UP
+                  </span>
+                )}
+              </div>
               <button
                 type="button"
                 onClick={e => { e.preventDefault(); onFavoriteToggle?.(mission.id, mission.isFavorite) }}

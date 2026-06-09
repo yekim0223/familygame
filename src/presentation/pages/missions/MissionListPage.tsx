@@ -6,7 +6,7 @@ import { useMissionStore } from '@/infrastructure/stores/missionStore'
 import { useMembers } from '@/presentation/hooks/useMembers'
 import { MissionCard } from '@/presentation/components/missions/MissionCard'
 import { toggleMissionFavorite } from '@/infrastructure/firebase/collections/missions'
-import type { Mission, MissionStatus } from '@/domain/entities/Mission'
+import type { Mission } from '@/domain/entities/Mission'
 
 const LS_FAV_ORDER = 'fq_fav_order'
 
@@ -18,16 +18,15 @@ function writeFavOrder(ids: string[]) {
 }
 
 type MissionMode = 'all' | 'shared' | 'individual'
+type SortKey = 'newest' | 'oldest' | 'deadline' | 'difficulty' | 'favorites'
 
-const STATUS_SORT: Record<MissionStatus, number> = {
-  PENDING_APPROVAL: 0,
-  ON_HOLD:          1,
-  ACTIVE:           2,
-  CHILD_REJECTED:   3,
-  APPROVED:         4,
-  REJECTED:         5,
-  EXPIRED:          6,
-}
+const SORT_OPTIONS: { key: SortKey; label: string; icon: string }[] = [
+  { key: 'newest',     label: '최신순',   icon: '🆕' },
+  { key: 'oldest',     label: '오래된순', icon: '📅' },
+  { key: 'deadline',   label: '마감임박', icon: '⏰' },
+  { key: 'difficulty', label: '난이도↑',  icon: '🔥' },
+  { key: 'favorites',  label: '즐겨찾기', icon: '⭐' },
+]
 
 export default function MissionListPage() {
   const { missions, loading } = useMissionStore()
@@ -36,6 +35,7 @@ export default function MissionListPage() {
   const { members } = useMembers()
 
   const [mode, setMode]               = useState<MissionMode>('all')
+  const [sortKey, setSortKey]             = useState<SortKey>('newest')
   const [selectedChild, setSelectedChild] = useState<string | null>(null)
   const [favOrder, setFavOrder]           = useState<string[]>(readFavOrder)
 
@@ -68,15 +68,12 @@ export default function MissionListPage() {
     let base: Mission[]
 
     if (mode === 'all') {
-      // 전체 미션
       base = isParent
         ? missions
         : missions.filter(m => m.targetMemberIds.includes(currentMember?.id ?? ''))
     } else if (mode === 'shared') {
-      // 공동 미션: targetMemberIds 2명 이상
       base = missions.filter(m => m.targetMemberIds.length > 1)
     } else {
-      // 개별 미션: targetMemberIds 1명
       const individualMissions = missions.filter(m => m.targetMemberIds.length === 1)
       if (isParent) {
         base = selectedChild
@@ -89,20 +86,29 @@ export default function MissionListPage() {
       }
     }
 
-    // 즐겨찾기 우선, 그 다음 날짜+상태 정렬
     return [...base].sort((a, b) => {
-      const aIdx = favOrder.indexOf(a.id)
-      const bIdx = favOrder.indexOf(b.id)
-      const aFav = aIdx !== -1
-      const bFav = bIdx !== -1
-      if (aFav && !bFav) return -1
-      if (!aFav && bFav) return 1
-      if (aFav && bFav) return aIdx - bIdx
-      const dDiff = b.startDate.getTime() - a.startDate.getTime()
-      if (dDiff !== 0) return dDiff
-      return (STATUS_SORT[a.status] ?? 99) - (STATUS_SORT[b.status] ?? 99)
+      if (sortKey === 'favorites') {
+        const aIdx = favOrder.indexOf(a.id)
+        const bIdx = favOrder.indexOf(b.id)
+        const aFav = aIdx !== -1
+        const bFav = bIdx !== -1
+        if (aFav && !bFav) return -1
+        if (!aFav && bFav) return 1
+        if (aFav && bFav) return aIdx - bIdx
+        return b.createdAt.getTime() - a.createdAt.getTime()
+      }
+      if (sortKey === 'oldest') return a.createdAt.getTime() - b.createdAt.getTime()
+      if (sortKey === 'deadline') {
+        const aExp = a.status === 'EXPIRED', bExp = b.status === 'EXPIRED'
+        if (aExp && !bExp) return 1
+        if (!aExp && bExp) return -1
+        return a.endDate.getTime() - b.endDate.getTime()
+      }
+      if (sortKey === 'difficulty') return b.difficulty - a.difficulty
+      // 'newest' (default)
+      return b.createdAt.getTime() - a.createdAt.getTime()
     })
-  }, [missions, mode, selectedChild, isParent, currentMember?.id, favOrder])
+  }, [missions, mode, selectedChild, isParent, currentMember?.id, favOrder, sortKey])
 
   const handleFavoriteToggle = useCallback((id: string, current: boolean) => {
     if (!familyId) return
@@ -164,10 +170,29 @@ export default function MissionListPage() {
         </div>
       )}
 
-      {/* 결과 수 */}
-      <p className="font-korean text-xs text-panel-sub text-right">
-        {mode === 'all' ? '전체' : mode === 'shared' ? '공동' : '개별'} · {filtered.length}개
-      </p>
+      {/* 결과 수 + 정렬 */}
+      <div className="flex items-center justify-between gap-2">
+        <p className="font-korean text-xs text-panel-sub whitespace-nowrap">
+          {mode === 'all' ? '전체' : mode === 'shared' ? '공동' : '개별'} · {filtered.length}개
+        </p>
+        <div className="flex gap-1 overflow-x-auto flex-shrink-0 pb-0.5">
+          {SORT_OPTIONS.map(opt => (
+            <button
+              key={opt.key}
+              type="button"
+              onClick={() => setSortKey(opt.key)}
+              className={[
+                'flex-shrink-0 px-2 py-1 border-2 font-korean text-xs transition-colors',
+                sortKey === opt.key
+                  ? 'bg-gold/20 border-gold text-gold font-bold'
+                  : 'bg-panel-darkest border-panel-border text-panel-sub',
+              ].join(' ')}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* 미션 목록 */}
       {loading ? (

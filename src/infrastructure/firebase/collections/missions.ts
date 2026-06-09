@@ -12,6 +12,7 @@ function toMission(raw: any): Mission {
     startDate:  toDate(raw.startDate),
     endDate:    toDate(raw.endDate),
     createdAt:  toDate(raw.createdAt),
+    updatedAt:  raw.updatedAt ? toDate(raw.updatedAt) : undefined,
     statusHistory: (raw.statusHistory ?? []).map((h: any) => ({
       ...h,
       changedAt: toDate(h.changedAt),

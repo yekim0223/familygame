@@ -59,6 +59,7 @@ export interface Mission {
   endDate: Date
   statusHistory: StatusChange[]
   createdAt: Date
+  updatedAt?: Date  // 수정 시 업데이트
 }
 
 // 카테고리 한글 레이블 맵
